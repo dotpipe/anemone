@@ -1,0 +1,129 @@
+{
+  "vector_2d": [
+    {
+      "gloss": "a quantity with magnitude and direction in the plane",
+      "formula": "(x, y)",
+      "exec": "lambda x, y: (x, y)"
+    }
+  ],
+
+  "vector_3d": [
+    {
+      "gloss": "a quantity with magnitude and direction in space",
+      "formula": "(x, y, z)",
+      "exec": "lambda x, y, z: (x, y, z)"
+    }
+  ],
+
+  "magnitude_2d": [
+    {
+      "gloss": "the length of a vector in the plane",
+      "formula": "(x^2 + y^2)^(1/2)",
+      "exec": "lambda x, y: (x**2 + y**2)**0.5"
+    }
+  ],
+
+  "magnitude_3d": [
+    {
+      "gloss": "the length of a vector in space",
+      "formula": "(x^2 + y^2 + z^2)^(1/2)",
+      "exec": "lambda x, y, z: (x**2 + y**2 + z**2)**0.5"
+    }
+  ],
+
+  "unit_vector_2d": [
+    {
+      "gloss": "a vector of length one in the same direction as the original vector",
+      "formula": "(x, y) / magnitude",
+      "exec": "lambda x, y: (x / ((x**2 + y**2)**0.5), y / ((x**2 + y**2)**0.5))"
+    }
+  ],
+
+  "unit_vector_3d": [
+    {
+      "gloss": "a vector of length one in the same direction as the original vector",
+      "formula": "(x, y, z) / magnitude",
+      "exec": "lambda x, y, z: (x / ((x**2 + y**2 + z**2)**0.5), y / ((x**2 + y**2 + z**2)**0.5), z / ((x**2 + y**2 + z**2)**0.5))"
+    }
+  ],
+
+  "vector_addition_2d": [
+    {
+      "gloss": "adding two vectors in the plane",
+      "formula": "(x1 + x2, y1 + y2)",
+      "exec": "lambda x1, y1, x2, y2: (x1 + x2, y1 + y2)"
+    }
+  ],
+
+  "vector_addition_3d": [
+    {
+      "gloss": "adding two vectors in space",
+      "formula": "(x1 + x2, y1 + y2, z1 + z2)",
+      "exec": "lambda x1, y1, z1, x2, y2, z2: (x1 + x2, y1 + y2, z1 + z2)"
+    }
+  ],
+
+  "scalar_multiplication_2d": [
+    {
+      "gloss": "multiplying a vector in the plane by a scalar",
+      "formula": "k * (x, y) = (k*x, k*y)",
+      "exec": "lambda k, x, y: (k*x, k*y)"
+    }
+  ],
+
+  "scalar_multiplication_3d": [
+    {
+      "gloss": "multiplying a vector in space by a scalar",
+      "formula": "k * (x, y, z) = (k*x, k*y, k*z)",
+      "exec": "lambda k, x, y, z: (k*x, k*y, k*z)"
+    }
+  ],
+
+  "dot_product_2d": [
+    {
+      "gloss": "the dot product of two vectors in the plane",
+      "formula": "x1*x2 + y1*y2",
+      "exec": "lambda x1, y1, x2, y2: x1*x2 + y1*y2"
+    }
+  ],
+
+  "dot_product_3d": [
+    {
+      "gloss": "the dot product of two vectors in space",
+      "formula": "x1*x2 + y1*y2 + z1*z2",
+      "exec": "lambda x1, y1, z1, x2, y2, z2: x1*x2 + y1*y2 + z1*z2"
+    }
+  ],
+
+  "cross_product": [
+    {
+      "gloss": "a vector perpendicular to two vectors in space",
+      "formula": "(y1*z2 - z1*y2, z1*x2 - x1*z2, x1*y2 - y1*x2)",
+      "exec": "lambda x1, y1, z1, x2, y2, z2: (y1*z2 - z1*y2, z1*x2 - x1*z2, x1*y2 - y1*x2)"
+    }
+  ],
+
+  "angle_between_vectors": [
+    {
+      "gloss": "the angle between two vectors using the dot product",
+      "formula": "cos(theta) = (v dot w) / (|v| * |w|)",
+      "exec": "lambda math, v, w: (v[0]*w[0] + v[1]*w[1] + (v[2]*w[2] if len(v)==3 else 0)) / (((sum(c*c for c in v))**0.5) * ((sum(c*c for c in w))**0.5))"
+    }
+  ],
+
+  "projection_scalar": [
+    {
+      "gloss": "the scalar projection of vector v onto vector w",
+      "formula": "(v dot w) / |w|",
+      "exec": "lambda v, w: (v[0]*w[0] + v[1]*w[1] + (v[2]*w[2] if len(v)==3 else 0)) / ((sum(c*c for c in w))**0.5)"
+    }
+  ],
+
+  "projection_vector": [
+    {
+      "gloss": "the vector projection of v onto w",
+      "formula": "((v dot w) / |w|^2) * w",
+      "exec": "lambda v, w: [((v[0]*w[0] + v[1]*w[1] + (v[2]*w[2] if len(v)==3 else 0)) / (sum(c*c for c in w))) * w[i] for i in range(len(w))]"
+    }
+  ]
+}

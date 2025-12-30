@@ -1,0 +1,185 @@
+{
+  "limit_definition": [
+    {
+      "gloss": "the value a function approaches as the input approaches a point",
+      "formula": "lim f(x) as x -> a",
+      "exec": "lambda f, x, a, h: f(a + h)"
+    }
+  ],
+
+  "difference_quotient": [
+    {
+      "gloss": "the average rate of change of a function over an interval",
+      "formula": "(f(x + h) - f(x)) / h",
+      "exec": "lambda f, x, h: (f(x + h) - f(x)) / h"
+    }
+  ],
+
+  "derivative_definition": [
+    {
+      "gloss": "the instantaneous rate of change of a function",
+      "formula": "lim (f(x + h) - f(x)) / h as h -> 0",
+      "exec": "lambda f, x, h: (f(x + h) - f(x)) / h"
+    }
+  ],
+
+  "power_rule": [
+    {
+      "gloss": "the derivative of a power function",
+      "formula": "d/dx x^n = n * x^(n - 1)",
+      "exec": "lambda n, x: n * (x ** (n - 1))"
+    }
+  ],
+
+  "derivative_constant": [
+    {
+      "gloss": "the derivative of a constant is zero",
+      "formula": "d/dx c = 0",
+      "exec": "lambda c: 0"
+    }
+  ],
+
+  "derivative_linear": [
+    {
+      "gloss": "the derivative of a linear function",
+      "formula": "d/dx (a*x + b) = a",
+      "exec": "lambda a, b, x: a"
+    }
+  ],
+
+  "derivative_sum": [
+    {
+      "gloss": "the derivative of a sum is the sum of the derivatives",
+      "formula": "d/dx (f + g) = f' + g'",
+      "exec": "lambda f, g, x, h: ((f(x + h) - f(x)) / h) + ((g(x + h) - g(x)) / h)"
+    }
+  ],
+
+  "derivative_product_rule": [
+    {
+      "gloss": "the derivative of a product of two functions",
+      "formula": "(f * g)' = f' * g + f * g'",
+      "exec": "lambda f, g, x, h: ((f(x + h) - f(x)) / h) * g(x) + f(x) * ((g(x + h) - g(x)) / h)"
+    }
+  ],
+
+  "derivative_quotient_rule": [
+    {
+      "gloss": "the derivative of a quotient of two functions",
+      "formula": "(f / g)' = (f' * g - f * g') / g^2",
+      "exec": "lambda f, g, x, h: (((f(x + h) - f(x)) / h) * g(x) - f(x) * ((g(x + h) - g(x)) / h)) / (g(x)**2)"
+    }
+  ],
+
+  "derivative_chain_rule": [
+    {
+      "gloss": "the derivative of a composite function",
+      "formula": "d/dx f(g(x)) = f'(g(x)) * g'(x)",
+      "exec": "lambda f, g, x, h: ((f(g(x + h)) - f(g(x))) / h)"
+    }
+  ],
+
+  "derivative_sine": [
+    {
+      "gloss": "the derivative of sine",
+      "formula": "d/dx sin(x) = cos(x)",
+      "exec": "lambda math, x: math.cos(x)"
+    }
+  ],
+
+  "derivative_cosine": [
+    {
+      "gloss": "the derivative of cosine",
+      "formula": "d/dx cos(x) = -sin(x)",
+      "exec": "lambda math, x: -math.sin(x)"
+    }
+  ],
+
+  "derivative_tangent": [
+    {
+      "gloss": "the derivative of tangent",
+      "formula": "d/dx tan(x) = sec(x)^2",
+      "exec": "lambda math, x: 1 / (math.cos(x)**2)"
+    }
+  ],
+
+  "derivative_exponential": [
+    {
+      "gloss": "the derivative of the natural exponential function",
+      "formula": "d/dx e^x = e^x",
+      "exec": "lambda math, x: math.e ** x"
+    }
+  ],
+
+  "derivative_logarithm": [
+    {
+      "gloss": "the derivative of the natural logarithm",
+      "formula": "d/dx ln(x) = 1 / x",
+      "exec": "lambda x: 1 / x"
+    }
+  ],
+
+  "antiderivative_power_rule": [
+    {
+      "gloss": "the antiderivative of a power function",
+      "formula": "∫ x^n dx = x^(n+1) / (n+1) + C",
+      "exec": "lambda n, x: (x ** (n + 1)) / (n + 1)"
+    }
+  ],
+
+  "antiderivative_exponential": [
+    {
+      "gloss": "the antiderivative of the natural exponential function",
+      "formula": "∫ e^x dx = e^x + C",
+      "exec": "lambda math, x: math.e ** x"
+    }
+  ],
+
+  "antiderivative_sine": [
+    {
+      "gloss": "the antiderivative of sine",
+      "formula": "∫ sin(x) dx = -cos(x) + C",
+      "exec": "lambda math, x: -math.cos(x)"
+    }
+  ],
+
+  "antiderivative_cosine": [
+    {
+      "gloss": "the antiderivative of cosine",
+      "formula": "∫ cos(x) dx = sin(x) + C",
+      "exec": "lambda math, x: math.sin(x)"
+    }
+  ],
+
+  "riemann_sum_left": [
+    {
+      "gloss": "a left endpoint Riemann sum approximation of area",
+      "formula": "sum f(x_i) * delta_x",
+      "exec": "lambda f, xs, dx: sum(f(x) * dx for x in xs)"
+    }
+  ],
+
+  "riemann_sum_right": [
+    {
+      "gloss": "a right endpoint Riemann sum approximation of area",
+      "formula": "sum f(x_i+1) * delta_x",
+      "exec": "lambda f, xs, dx: sum(f(x) * dx for x in xs)"
+    }
+  ],
+
+  "definite_integral_approx": [
+    {
+      "gloss": "an approximation of the definite integral using Riemann sums",
+      "formula": "lim sum f(x_i) * delta_x",
+      "exec": "lambda f, xs, dx: sum(f(x) * dx for x in xs)"
+    }
+  ],
+
+  "fundamental_theorem_of_calculus": [
+    {
+      "gloss": "the theorem connecting differentiation and integration",
+      "formula": "d/dx ∫ f(t) dt = f(x)",
+      "exec": "lambda f, x: f(x)"
+    }
+  ]
+}

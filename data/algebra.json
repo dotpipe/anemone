@@ -1,0 +1,217 @@
+{
+  "variable": [
+    {
+      "gloss": "a symbol that represents an unknown or changeable quantity",
+      "formula": "x, y, z",
+      "exec": "lambda x: x"
+    }
+  ],
+
+  "constant": [
+    {
+      "gloss": "a fixed value that does not change",
+      "formula": "c",
+      "exec": "lambda c: c"
+    }
+  ],
+
+  "coefficient": [
+    {
+      "gloss": "a number that multiplies a variable",
+      "formula": "a in a*x",
+      "exec": "lambda a, x: a * x"
+    }
+  ],
+
+  "term": [
+    {
+      "gloss": "a single mathematical expression made of numbers, variables, or their product",
+      "formula": "a*x^n",
+      "exec": "lambda a, x, n: a * (x ** n)"
+    }
+  ],
+
+  "like_terms": [
+    {
+      "gloss": "terms that have the same variable raised to the same power",
+      "formula": "a*x^n and b*x^n",
+      "exec": "lambda a, b: a + b"
+    }
+  ],
+
+  "combine_like_terms": [
+    {
+      "gloss": "simplifying an expression by adding or subtracting like terms",
+      "formula": "(a + b)*x^n",
+      "exec": "lambda a, b: a + b"
+    }
+  ],
+
+  "monomial": [
+    {
+      "gloss": "an expression with one term",
+      "formula": "a*x^n",
+      "exec": "lambda a, x, n: a * (x ** n)"
+    }
+  ],
+
+  "binomial": [
+    {
+      "gloss": "an expression with two terms",
+      "formula": "a*x^n + b*x^m",
+      "exec": "lambda a, b, x, n, m: a*(x**n) + b*(x**m)"
+    }
+  ],
+
+  "trinomial": [
+    {
+      "gloss": "an expression with three terms",
+      "formula": "a*x^2 + b*x + c",
+      "exec": "lambda a, b, c, x: a*(x**2) + b*x + c"
+    }
+  ],
+
+  "polynomial": [
+    {
+      "gloss": "an expression made of multiple terms with nonnegative integer exponents",
+      "formula": "a_n*x^n + ... + a1*x + a0",
+      "exec": "lambda coeffs, x: sum(c * (x ** i) for i, c in enumerate(coeffs))"
+    }
+  ],
+
+  "evaluate_polynomial": [
+    {
+      "gloss": "computing the value of a polynomial at a given input",
+      "formula": "P(x)",
+      "exec": "lambda coeffs, x: sum(c * (x ** i) for i, c in enumerate(coeffs))"
+    }
+  ],
+
+  "linear_expression": [
+    {
+      "gloss": "an expression where the variable has exponent one",
+      "formula": "a*x + b",
+      "exec": "lambda a, b, x: a*x + b"
+    }
+  ],
+
+  "quadratic_expression": [
+    {
+      "gloss": "an expression where the highest exponent is two",
+      "formula": "a*x^2 + b*x + c",
+      "exec": "lambda a, b, c, x: a*(x**2) + b*x + c"
+    }
+  ],
+
+  "factor_difference_of_squares": [
+    {
+      "gloss": "rewriting the difference of squares as a product of conjugates",
+      "formula": "a^2 - b^2 = (a - b)(a + b)",
+      "exec": "lambda a, b: ((a - b), (a + b))"
+    }
+  ],
+
+  "factor_trinomial_simple": [
+    {
+      "gloss": "factoring a quadratic trinomial with leading coefficient one",
+      "formula": "x^2 + b*x + c",
+      "exec": "lambda b, c: None"
+    }
+  ],
+
+  "expand_binomial_square": [
+    {
+      "gloss": "expanding the square of a binomial",
+      "formula": "(a + b)^2 = a^2 + 2ab + b^2",
+      "exec": "lambda a, b: a**2 + 2*a*b + b**2"
+    }
+  ],
+
+  "expand_binomial_cube": [
+    {
+      "gloss": "expanding the cube of a binomial",
+      "formula": "(a + b)^3 = a^3 + 3a^2b + 3ab^2 + b^3",
+      "exec": "lambda a, b: a**3 + 3*(a**2)*b + 3*a*(b**2) + b**3"
+    }
+  ],
+
+  "solve_linear_equation": [
+    {
+      "gloss": "solving an equation where the variable has exponent one",
+      "formula": "a*x + b = c",
+      "exec": "lambda a, b, c: (c - b) / a"
+    }
+  ],
+
+  "solve_two_step_equation": [
+    {
+      "gloss": "isolating a variable by undoing addition or subtraction and then multiplication or division",
+      "formula": "a*x + b = c",
+      "exec": "lambda a, b, c: (c - b) / a"
+    }
+  ],
+
+  "solve_equation_with_parentheses": [
+    {
+      "gloss": "solving an equation that requires removing parentheses before isolating the variable",
+      "formula": "a*(x + b) + c = d",
+      "exec": "lambda a, b, c, d: ((d - c) / a) - b"
+    }
+  ],
+
+  "solve_linear_two_sided": [
+    {
+      "gloss": "solving an equation where the variable appears on both sides",
+      "formula": "a*x + b = c*x + d",
+      "exec": "lambda a, b, c, d: (d - b) / (a - c)"
+    }
+  ],
+
+  "quadratic_equation": [
+    {
+      "gloss": "a second degree polynomial equation",
+      "formula": "a*x^2 + b*x + c = 0",
+      "exec": "lambda a, b, c: ((-b + (b**2 - 4*a*c)**0.5)/(2*a), (-b - (b**2 - 4*a*c)**0.5)/(2*a))"
+    }
+  ],
+
+  "quadratic_formula": [
+    {
+      "gloss": "the rule for solving any quadratic equation",
+      "formula": "x = (-b +/- (b^2 - 4ac)^(1/2)) / (2a)",
+      "exec": "lambda a, b, c: ((-b + (b**2 - 4*a*c)**0.5)/(2*a), (-b - (b**2 - 4*a*c)**0.5)/(2*a))"
+    }
+  ],
+
+  "discriminant": [
+    {
+      "gloss": "the expression that determines the nature of the roots of a quadratic",
+      "formula": "b^2 - 4ac",
+      "exec": "lambda a, b, c: b**2 - 4*a*c"
+    }
+  ],
+
+  "system_two_equations": [
+    {
+      "gloss": "solving a system of two linear equations in two variables",
+      "formula": "a1*x + b1*y = c1, a2*x + b2*y = c2",
+      "exec": "lambda a1, b1, c1, a2, b2, c2: ((c1*b2 - c2*b1)/(a1*b2 - a2*b1), (a1*c2 - a2*c1)/(a1*b2 - a2*b1))"
+    }
+  ],
+
+  "substitution_method": [
+    {
+      "gloss": "solving a system by expressing one variable in terms of the other and substituting",
+      "formula": "solve y = f(x) then substitute",
+      "exec": "lambda f, g, guess: None"
+    }
+  ],
+
+  "elimination_method": [
+    {
+      "gloss": "solving a system by adding or subtracting equations to eliminate a variable",
+      "formula": "combine equations to remove one variable",
+      "exec": "lambda eq1, eq2: None"
+    }
+  ]
+}

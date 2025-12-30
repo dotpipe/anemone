@@ -1,0 +1,193 @@
+{
+  "speed": [
+    {
+      "gloss": "the rate of change of distance with respect to time",
+      "formula": "v = d / t",
+      "exec": "lambda d, t: d / t"
+    }
+  ],
+
+  "velocity": [
+    {
+      "gloss": "the rate of change of displacement with respect to time",
+      "formula": "v = delta_x / t",
+      "exec": "lambda dx, t: dx / t"
+    }
+  ],
+
+  "acceleration": [
+    {
+      "gloss": "the rate of change of velocity with respect to time",
+      "formula": "a = delta_v / t",
+      "exec": "lambda dv, t: dv / t"
+    }
+  ],
+
+  "force": [
+    {
+      "gloss": "the product of mass and acceleration",
+      "formula": "F = m * a",
+      "exec": "lambda m, a: m * a"
+    }
+  ],
+
+  "weight": [
+    {
+      "gloss": "the force due to gravity on a mass",
+      "formula": "W = m * g",
+      "exec": "lambda m, g: m * g"
+    }
+  ],
+
+  "momentum": [
+    {
+      "gloss": "the product of mass and velocity",
+      "formula": "p = m * v",
+      "exec": "lambda m, v: m * v"
+    }
+  ],
+
+  "kinetic_energy": [
+    {
+      "gloss": "the energy of motion",
+      "formula": "KE = (1/2) * m * v^2",
+      "exec": "lambda m, v: 0.5 * m * (v ** 2)"
+    }
+  ],
+
+  "potential_energy_gravitational": [
+    {
+      "gloss": "the energy stored due to height in a gravitational field",
+      "formula": "PE = m * g * h",
+      "exec": "lambda m, g, h: m * g * h"
+    }
+  ],
+
+  "work": [
+    {
+      "gloss": "the product of force and displacement in the direction of the force",
+      "formula": "W = F * d",
+      "exec": "lambda F, d: F * d"
+    }
+  ],
+
+  "power": [
+    {
+      "gloss": "the rate at which work is done",
+      "formula": "P = W / t",
+      "exec": "lambda W, t: W / t"
+    }
+  ],
+
+  "ohms_law": [
+    {
+      "gloss": "the relationship between voltage, current, and resistance",
+      "formula": "V = I * R",
+      "exec": "lambda I, R: I * R"
+    }
+  ],
+
+  "electrical_power": [
+    {
+      "gloss": "the rate of electrical energy transfer",
+      "formula": "P = V * I",
+      "exec": "lambda V, I: V * I"
+    }
+  ],
+
+  "coulombs_law": [
+    {
+      "gloss": "the electrostatic force between two point charges",
+      "formula": "F = k * q1 * q2 / r^2",
+      "exec": "lambda k, q1, q2, r: k * q1 * q2 / (r ** 2)"
+    }
+  ],
+
+  "pressure": [
+    {
+      "gloss": "force applied per unit area",
+      "formula": "P = F / A",
+      "exec": "lambda F, A: F / A"
+    }
+  ],
+
+  "density": [
+    {
+      "gloss": "mass per unit volume",
+      "formula": "rho = m / V",
+      "exec": "lambda m, V: m / V"
+    }
+  ],
+
+  "hookes_law": [
+    {
+      "gloss": "the restoring force of a spring is proportional to displacement",
+      "formula": "F = k * x",
+      "exec": "lambda k, x: k * x"
+    }
+  ],
+
+  "wave_speed": [
+    {
+      "gloss": "the speed of a wave",
+      "formula": "v = f * lambda",
+      "exec": "lambda f, wavelength: f * wavelength"
+    }
+  ],
+
+  "frequency": [
+    {
+      "gloss": "the number of cycles per unit time",
+      "formula": "f = 1 / T",
+      "exec": "lambda T: 1 / T"
+    }
+  ],
+
+  "period": [
+    {
+      "gloss": "the time required for one complete cycle",
+      "formula": "T = 1 / f",
+      "exec": "lambda f: 1 / f"
+    }
+  ],
+
+  "ideal_gas_law": [
+    {
+      "gloss": "the relationship between pressure, volume, temperature, and moles of gas",
+      "formula": "P * V = n * R * T",
+      "exec": "lambda n, R, T, V: (n * R * T) / V"
+    }
+  ],
+
+  "centripetal_force": [
+    {
+      "gloss": "the force required to keep an object moving in a circular path",
+      "formula": "F = m * v^2 / r",
+      "exec": "lambda m, v, r: m * (v ** 2) / r"
+    }
+  ],
+
+  "centripetal_acceleration": [
+    {
+      "gloss": "the acceleration of an object moving in a circular path",
+      "formula": "a = v^2 / r",
+      "exec": "lambda v, r: (v ** 2) / r"
+    }
+  ],
+
+  "mechanical_advantage_lever": [
+    {
+      "gloss": "the ratio of output force to input force for a lever",
+      "formula": "MA = d_in / d_out",
+      "exec": "lambda d_in, d_out: d_in / d_out"
+    }
+  ],
+
+  "mechanical_advantage_pulley": [
+    {
+      "gloss": "the mechanical advantage of a pulley system",
+      "formula": "MA = number_of_supporting_strings",
+      "exec": "lambda n: n"
+    }
+  ]
+}

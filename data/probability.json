@@ -1,0 +1,121 @@
+{
+  "probability_event": [
+    {
+      "gloss": "the chance of an event occurring",
+      "formula": "P(E) = favorable / total",
+      "exec": "lambda favorable, total: favorable / total"
+    }
+  ],
+
+  "probability_complement": [
+    {
+      "gloss": "the probability that an event does not occur",
+      "formula": "P(E') = 1 - P(E)",
+      "exec": "lambda p: 1 - p"
+    }
+  ],
+
+  "probability_union_disjoint": [
+    {
+      "gloss": "the probability of one of two mutually exclusive events occurring",
+      "formula": "P(A or B) = P(A) + P(B)",
+      "exec": "lambda pA, pB: pA + pB"
+    }
+  ],
+
+  "probability_union_general": [
+    {
+      "gloss": "the probability of one of two events occurring",
+      "formula": "P(A or B) = P(A) + P(B) - P(A and B)",
+      "exec": "lambda pA, pB, pAB: pA + pB - pAB"
+    }
+  ],
+
+  "probability_independent": [
+    {
+      "gloss": "the probability of two independent events both occurring",
+      "formula": "P(A and B) = P(A) * P(B)",
+      "exec": "lambda pA, pB: pA * pB"
+    }
+  ],
+
+  "probability_conditional": [
+    {
+      "gloss": "the probability of event A given that event B has occurred",
+      "formula": "P(A|B) = P(A and B) / P(B)",
+      "exec": "lambda pAB, pB: pAB / pB"
+    }
+  ],
+
+  "bayes_theorem": [
+    {
+      "gloss": "a formula for updating probabilities based on new information",
+      "formula": "P(A|B) = P(B|A)*P(A) / P(B)",
+      "exec": "lambda pBA, pA, pB: (pBA * pA) / pB"
+    }
+  ],
+
+  "expected_value_discrete": [
+    {
+      "gloss": "the long term average value of a random variable",
+      "formula": "E(X) = sum(x_i * p_i)",
+      "exec": "lambda xs, ps: sum(xs[i] * ps[i] for i in range(len(xs)))"
+    }
+  ],
+
+  "variance_discrete": [
+    {
+      "gloss": "the average squared deviation from the expected value",
+      "formula": "Var(X) = sum((x_i - E)^2 * p_i)",
+      "exec": "lambda xs, ps: (lambda E: sum(((xs[i] - E)**2) * ps[i] for i in range(len(xs))))(sum(xs[i] * ps[i] for i in range(len(xs))))"
+    }
+  ],
+
+  "standard_deviation_discrete": [
+    {
+      "gloss": "the square root of the variance",
+      "formula": "SD(X) = (Var(X))^(1/2)",
+      "exec": "lambda xs, ps: ((lambda E: sum(((xs[i] - E)**2) * ps[i] for i in range(len(xs))))(sum(xs[i] * ps[i] for i in range(len(xs)))))**0.5"
+    }
+  ],
+
+  "binomial_probability": [
+    {
+      "gloss": "the probability of k successes in n independent trials",
+      "formula": "P = C(n,k) * p^k * (1-p)^(n-k)",
+      "exec": "lambda math, n, k, p: math.comb(n, k) * (p**k) * ((1-p)**(n-k))"
+    }
+  ],
+
+  "geometric_probability": [
+    {
+      "gloss": "the probability that the first success occurs on trial k",
+      "formula": "P = (1-p)^(k-1) * p",
+      "exec": "lambda p, k: ((1-p)**(k-1)) * p"
+    }
+  ],
+
+  "poisson_probability": [
+    {
+      "gloss": "the probability of k events occurring in a fixed interval",
+      "formula": "P = (lambda^k * e^(-lambda)) / k!",
+      "exec": "lambda math, lam, k: ((lam**k) * math.exp(-lam)) / math.factorial(k)"
+    }
+  ],
+
+  "normal_pdf": [
+    {
+      "gloss": "the probability density function of the normal distribution",
+      "formula": "(1 / (sd * (2*pi)^(1/2))) * exp(-(x - mean)^2 / (2*sd^2))",
+      "exec": "lambda math, x, mean, sd: (1/(sd*((2*math.pi)**0.5))) * math.exp(-((x-mean)**2)/(2*(sd**2)))"
+    }
+  ],
+
+  "normal_cdf_approx": [
+    {
+      "gloss": "an approximation of the cumulative distribution function of the normal distribution",
+      "formula": "approximation using error function",
+      "exec": "lambda math, x, mean, sd: 0.5*(1 + math.erf((x-mean)/(sd*(2**0.5))))"
+    }
+  ]
+}

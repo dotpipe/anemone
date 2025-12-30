@@ -1,0 +1,307 @@
+{
+  "topics": {
+    "skills": {
+      "count": 1,
+      "neighbors": {
+        "lets": 1,
+        "test": 1,
+        "anticipatory": 1,
+        "skills": 1
+      },
+      "vectors": {}
+    },
+    "x": {
+      "count": 2,
+      "neighbors": {
+        "x": 3,
+        "whati": 1,
+        "s": 1,
+        "add": 1,
+        "one": 1
+      },
+      "vectors": {
+        "x": 2,
+        "whati": 1,
+        "s": 1,
+        "add": 1,
+        "one": 1
+      }
+    },
+    "get": {
+      "count": 1,
+      "neighbors": {
+        "add": 1,
+        "anotehr": 1,
+        "one": 1,
+        "get": 1
+      },
+      "vectors": {
+        "anotehr": 1,
+        "get": 1
+      }
+    },
+    "want": {
+      "count": 1,
+      "neighbors": {
+        "long": 1,
+        "asyou": 1,
+        "get": 1,
+        "x": 2,
+        "variable": 1,
+        "want": 1
+      },
+      "vectors": {}
+    },
+    "now": {
+      "count": 1,
+      "neighbors": {
+        "add": 1,
+        "x": 1,
+        "now": 1
+      },
+      "vectors": {
+        "add": 1,
+        "now": 1
+      }
+    },
+    "general": {
+      "count": 1,
+      "neighbors": {},
+      "vectors": {}
+    },
+    "computer": {
+      "count": 4,
+      "neighbors": {
+        "hey": 3,
+        "there": 3,
+        "computer": 4,
+        "hell": 1,
+        "friendly": 1,
+        "ther": 1
+      },
+      "vectors": {}
+    },
+    "words": {
+      "count": 1,
+      "neighbors": {
+        "figured": 1,
+        "little": 1,
+        "more": 1,
+        "whiley": 1,
+        "words": 1
+      },
+      "vectors": {
+        "figured": 1,
+        "little": 1,
+        "more": 1,
+        "whiley": 1,
+        "words": 1
+      }
+    },
+    "boring": {
+      "count": 1,
+      "neighbors": {
+        "ill": 1,
+        "say": 1,
+        "sound": 1,
+        "boring": 1
+      },
+      "vectors": {
+        "ill": 1,
+        "say": 1,
+        "sound": 1,
+        "boring": 1
+      }
+    },
+    "bored": {
+      "count": 1,
+      "neighbors": {
+        "howcome": 1,
+        "you're": 1,
+        "bored": 1
+      },
+      "vectors": {
+        "howcome": 1,
+        "you're": 1,
+        "bored": 1
+      }
+    },
+    "wake": {
+      "count": 1,
+      "neighbors": {
+        "havent": 1,
+        "seen": 1,
+        "come": 1,
+        "alive": 1,
+        "yethowi": 1,
+        "wanted": 1,
+        "there": 1,
+        "any": 1,
+        "instruction": 1,
+        "wake": 1
+      },
+      "vectors": {
+        "havent": 1,
+        "seen": 1,
+        "come": 1,
+        "alive": 1,
+        "yethowi": 1,
+        "wanted": 1,
+        "there": 1,
+        "any": 1,
+        "instruction": 1,
+        "wake": 1
+      }
+    },
+    "sure": {
+      "count": 1,
+      "neighbors": {
+        "moment": 1,
+        "know": 2,
+        "thisis": 1,
+        "right": 1,
+        "i'll": 1,
+        "sure": 1
+      },
+      "vectors": {
+        "moment": 1,
+        "know": 2,
+        "thisis": 1,
+        "right": 1,
+        "i'll": 1,
+        "sure": 1
+      }
+    },
+    "quaint": {
+      "count": 1,
+      "neighbors": {
+        "actually": 1,
+        "quite": 1,
+        "quaint": 1
+      },
+      "vectors": {
+        "actually": 1,
+        "quite": 1,
+        "quaint": 1
+      }
+    },
+    "adsorption": {
+      "count": 1,
+      "neighbors": {
+        "not": 1,
+        "bad": 1,
+        "adsorption": 1
+      },
+      "vectors": {
+        "not": 1,
+        "bad": 1,
+        "adsorption": 1
+      }
+    },
+    "space": {
+      "count": 1,
+      "neighbors": {
+        "journey": 1,
+        "adventure": 1,
+        "i'm": 1,
+        "goingto": 1,
+        "traveling": 1,
+        "through": 1,
+        "netowrksof": 1,
+        "space": 1
+      },
+      "vectors": {}
+    },
+    "hello": {
+      "count": 1,
+      "neighbors": {
+        "hello": 1
+      },
+      "vectors": {
+        "hello": 1
+      }
+    },
+    "personally": {
+      "count": 1,
+      "neighbors": {
+        "you'renottoobadatthis": 1,
+        "stuff": 1,
+        "ithink": 1,
+        "ijustneeed": 1,
+        "togive": 1,
+        "more": 1,
+        "context": 1,
+        "run": 1,
+        "personally": 1
+      },
+      "vectors": {
+        "you'renottoobadatthis": 1,
+        "stuff": 1,
+        "ithink": 1,
+        "ijustneeed": 1,
+        "togive": 1,
+        "more": 1,
+        "context": 1,
+        "run": 1,
+        "personally": 1
+      }
+    },
+    "heck": {
+      "count": 1,
+      "neighbors": {
+        "really": 1,
+        "like": 1,
+        "whothe": 1,
+        "heck": 1
+      },
+      "vectors": {}
+    },
+    "history": {
+      "count": 1,
+      "neighbors": {
+        "who": 1,
+        "there's": 1,
+        "nothing": 1,
+        "like": 1,
+        "history": 1
+      },
+      "vectors": {
+        "who": 1,
+        "there's": 1,
+        "nothing": 1,
+        "history": 1
+      }
+    },
+    "aboard": {
+      "count": 1,
+      "neighbors": {
+        "thank": 1,
+        "youfor": 1,
+        "joining": 1,
+        "us": 1,
+        "all": 1,
+        "aboard": 1
+      },
+      "vectors": {}
+    },
+    "entails": {
+      "count": 1,
+      "neighbors": {
+        "testing": 1,
+        "gotta": 1,
+        "know": 1,
+        "whatthis": 1,
+        "really": 1,
+        "entails": 1
+      },
+      "vectors": {
+        "testing": 1,
+        "gotta": 1,
+        "know": 1,
+        "whatthis": 1,
+        "really": 1,
+        "entails": 1
+      }
+    }
+  }
+}

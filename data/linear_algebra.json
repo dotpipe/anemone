@@ -1,0 +1,153 @@
+{
+  "vector": [
+    {
+      "gloss": "an ordered list of numbers representing magnitude and direction",
+      "formula": "(v1, v2, ..., vn)",
+      "exec": "lambda *coords: coords"
+    }
+  ],
+
+  "matrix_2x2": [
+    {
+      "gloss": "a rectangular array of numbers with 2 rows and 2 columns",
+      "formula": "[[a, b], [c, d]]",
+      "exec": "lambda a, b, c, d: [[a, b], [c, d]]"
+    }
+  ],
+
+  "matrix_3x3": [
+    {
+      "gloss": "a rectangular array of numbers with 3 rows and 3 columns",
+      "formula": "[[a, b, c], [d, e, f], [g, h, i]]",
+      "exec": "lambda a, b, c, d, e, f, g, h, i: [[a, b, c], [d, e, f], [g, h, i]]"
+    }
+  ],
+
+  "matrix_addition": [
+    {
+      "gloss": "adding two matrices element by element",
+      "formula": "A + B",
+      "exec": "lambda A, B: [[A[i][j] + B[i][j] for j in range(len(A[0]))] for i in range(len(A))]"
+    }
+  ],
+
+  "matrix_subtraction": [
+    {
+      "gloss": "subtracting two matrices element by element",
+      "formula": "A - B",
+      "exec": "lambda A, B: [[A[i][j] - B[i][j] for j in range(len(A[0]))] for i in range(len(A))]"
+    }
+  ],
+
+  "scalar_multiplication": [
+    {
+      "gloss": "multiplying every entry of a matrix by a scalar",
+      "formula": "k * A",
+      "exec": "lambda k, A: [[k * A[i][j] for j in range(len(A[0]))] for i in range(len(A))]"
+    }
+  ],
+
+  "matrix_multiplication": [
+    {
+      "gloss": "multiplying two matrices using row by column products",
+      "formula": "C[i][j] = sum(A[i][k] * B[k][j])",
+      "exec": "lambda A, B: [[sum(A[i][k] * B[k][j] for k in range(len(B))) for j in range(len(B[0]))] for i in range(len(A))]"
+    }
+  ],
+
+  "matrix_transpose": [
+    {
+      "gloss": "flipping a matrix over its diagonal",
+      "formula": "A^T",
+      "exec": "lambda A: [[A[j][i] for j in range(len(A))] for i in range(len(A[0]))]"
+    }
+  ],
+
+  "determinant_2x2": [
+    {
+      "gloss": "the determinant of a 2 by 2 matrix",
+      "formula": "det = a*d - b*c",
+      "exec": "lambda a, b, c, d: a*d - b*c"
+    }
+  ],
+
+  "determinant_3x3": [
+    {
+      "gloss": "the determinant of a 3 by 3 matrix",
+      "formula": "a(ei - fh) - b(di - fg) + c(dh - eg)",
+      "exec": "lambda a, b, c, d, e, f, g, h, i: a*(e*i - f*h) - b*(d*i - f*g) + c*(d*h - e*g)"
+    }
+  ],
+
+  "inverse_2x2": [
+    {
+      "gloss": "the inverse of a 2 by 2 matrix when the determinant is nonzero",
+      "formula": "A^{-1} = (1/det) * [[d, -b], [-c, a]]",
+      "exec": "lambda a, b, c, d: None if (a*d - b*c)==0 else [[d/(a*d - b*c), -b/(a*d - b*c)], [-c/(a*d - b*c), a/(a*d - b*c)]]"
+    }
+  ],
+
+  "dot_product": [
+    {
+      "gloss": "a scalar measuring alignment of two vectors",
+      "formula": "v dot w = sum(v_i * w_i)",
+      "exec": "lambda v, w: sum(v[i] * w[i] for i in range(len(v)))"
+    }
+  ],
+
+  "cross_product": [
+    {
+      "gloss": "a vector perpendicular to two vectors in 3D space",
+      "formula": "(v2*w3 - v3*w2, v3*w1 - v1*w3, v1*w2 - v2*w1)",
+      "exec": "lambda v, w: (v[1]*w[2] - v[2]*w[1], v[2]*w[0] - v[0]*w[2], v[0]*w[1] - v[1]*w[0])"
+    }
+  ],
+
+  "vector_magnitude": [
+    {
+      "gloss": "the length of a vector",
+      "formula": "(v1^2 + v2^2 + ... + vn^2)^(1/2)",
+      "exec": "lambda v: (sum(c*c for c in v))**0.5"
+    }
+  ],
+
+  "unit_vector": [
+    {
+      "gloss": "a vector of length one in the same direction as the original vector",
+      "formula": "v / |v|",
+      "exec": "lambda v: [c / ((sum(x*x for x in v))**0.5) for c in v]"
+    }
+  ],
+
+  "projection_scalar": [
+    {
+      "gloss": "the scalar projection of v onto w",
+      "formula": "(v dot w) / |w|",
+      "exec": "lambda v, w: (sum(v[i]*w[i] for i in range(len(v)))) / ((sum(c*c for c in w))**0.5)"
+    }
+  ],
+
+  "projection_vector": [
+    {
+      "gloss": "the vector projection of v onto w",
+      "formula": "((v dot w) / |w|^2) * w",
+      "exec": "lambda v, w: [((sum(v[i]*w[i] for i in range(len(v)))) / (sum(c*c for c in w))) * w[i] for i in range(len(w))]"
+    }
+  ],
+
+  "eigenvalue_equation": [
+    {
+      "gloss": "a scalar lambda such that A*v = lambda*v",
+      "formula": "det(A - lambda*I) = 0",
+      "exec": "lambda A: None"
+    }
+  ],
+
+  "eigenvector_definition": [
+    {
+      "gloss": "a nonzero vector v such that A*v = lambda*v",
+      "formula": "A*v = lambda*v",
+      "exec": "lambda A, lam: None"
+    }
+  ]
+}

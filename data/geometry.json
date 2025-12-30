@@ -1,0 +1,225 @@
+{
+  "point_distance_1d": [
+    {
+      "gloss": "the distance between two points on a line",
+      "formula": "abs(x2 - x1)",
+      "exec": "lambda x1, x2: abs(x2 - x1)"
+    }
+  ],
+
+  "point_distance_2d": [
+    {
+      "gloss": "the distance between two points in the plane",
+      "formula": "((x2 - x1)^2 + (y2 - y1)^2)^(1/2)",
+      "exec": "lambda x1, y1, x2, y2: ((x2 - x1)**2 + (y2 - y1)**2)**0.5"
+    }
+  ],
+
+  "point_distance_3d": [
+    {
+      "gloss": "the distance between two points in space",
+      "formula": "((x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2)^(1/2)",
+      "exec": "lambda x1, y1, z1, x2, y2, z2: ((x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2)**0.5"
+    }
+  ],
+
+  "midpoint_2d": [
+    {
+      "gloss": "the point halfway between two points in the plane",
+      "formula": "((x1 + x2)/2, (y1 + y2)/2)",
+      "exec": "lambda x1, y1, x2, y2: ((x1 + x2)/2.0, (y1 + y2)/2.0)"
+    }
+  ],
+
+  "midpoint_3d": [
+    {
+      "gloss": "the point halfway between two points in space",
+      "formula": "((x1 + x2)/2, (y1 + y2)/2, (z1 + z2)/2)",
+      "exec": "lambda x1, y1, z1, x2, y2, z2: ((x1 + x2)/2.0, (y1 + y2)/2.0, (z1 + z2)/2.0)"
+    }
+  ],
+
+  "slope": [
+    {
+      "gloss": "the rate of change between two points on a line",
+      "formula": "(y2 - y1) / (x2 - x1)",
+      "exec": "lambda x1, y1, x2, y2: (y2 - y1) / (x2 - x1)"
+    }
+  ],
+
+  "area_rectangle": [
+    {
+      "gloss": "the measure of space enclosed by a rectangle",
+      "formula": "length * width",
+      "exec": "lambda length, width: length * width"
+    }
+  ],
+
+  "perimeter_rectangle": [
+    {
+      "gloss": "the distance around a rectangle",
+      "formula": "2 * (length + width)",
+      "exec": "lambda length, width: 2 * (length + width)"
+    }
+  ],
+
+  "area_square": [
+    {
+      "gloss": "the measure of space enclosed by a square",
+      "formula": "s^2",
+      "exec": "lambda s: s**2"
+    }
+  ],
+
+  "perimeter_square": [
+    {
+      "gloss": "the distance around a square",
+      "formula": "4 * s",
+      "exec": "lambda s: 4 * s"
+    }
+  ],
+
+  "area_triangle": [
+    {
+      "gloss": "the measure of space enclosed by a triangle",
+      "formula": "(1/2) * base * height",
+      "exec": "lambda base, height: 0.5 * base * height"
+    }
+  ],
+
+  "perimeter_triangle": [
+    {
+      "gloss": "the distance around a triangle",
+      "formula": "a + b + c",
+      "exec": "lambda a, b, c: a + b + c"
+    }
+  ],
+
+  "area_parallelogram": [
+    {
+      "gloss": "the measure of space enclosed by a parallelogram",
+      "formula": "base * height",
+      "exec": "lambda base, height: base * height"
+    }
+  ],
+
+  "area_trapezoid": [
+    {
+      "gloss": "the measure of space enclosed by a trapezoid",
+      "formula": "(1/2) * (b1 + b2) * height",
+      "exec": "lambda b1, b2, height: 0.5 * (b1 + b2) * height"
+    }
+  ],
+
+  "area_circle": [
+    {
+      "gloss": "the measure of space enclosed by a circle",
+      "formula": "pi * r^2",
+      "exec": "lambda math, r: math.pi * r**2"
+    }
+  ],
+
+  "circumference_circle": [
+    {
+      "gloss": "the distance around a circle",
+      "formula": "2 * pi * r",
+      "exec": "lambda math, r: 2 * math.pi * r"
+    }
+  ],
+
+  "arc_length": [
+    {
+      "gloss": "the length of an arc of a circle",
+      "formula": "theta * r",
+      "exec": "lambda r, theta: r * theta"
+    }
+  ],
+
+  "sector_area": [
+    {
+      "gloss": "the area of a sector of a circle",
+      "formula": "(1/2) * r^2 * theta",
+      "exec": "lambda r, theta: 0.5 * r**2 * theta"
+    }
+  ],
+
+  "pythagorean_theorem": [
+    {
+      "gloss": "the relationship between the legs and hypotenuse of a right triangle",
+      "formula": "(a^2 + b^2)^(1/2)",
+      "exec": "lambda a, b: (a**2 + b**2)**0.5"
+    }
+  ],
+
+  "volume_cube": [
+    {
+      "gloss": "the space contained within a cube",
+      "formula": "s^3",
+      "exec": "lambda s: s**3"
+    }
+  ],
+
+  "volume_rectangular_prism": [
+    {
+      "gloss": "the space contained within a rectangular prism",
+      "formula": "l * w * h",
+      "exec": "lambda l, w, h: l * w * h"
+    }
+  ],
+
+  "volume_cylinder": [
+    {
+      "gloss": "the space contained within a cylinder",
+      "formula": "pi * r^2 * h",
+      "exec": "lambda math, r, h: math.pi * r**2 * h"
+    }
+  ],
+
+  "volume_cone": [
+    {
+      "gloss": "the space contained within a cone",
+      "formula": "(1/3) * pi * r^2 * h",
+      "exec": "lambda math, r, h: (1.0/3.0) * math.pi * r**2 * h"
+    }
+  ],
+
+  "volume_sphere": [
+    {
+      "gloss": "the space contained within a sphere",
+      "formula": "(4/3) * pi * r^3",
+      "exec": "lambda math, r: (4.0/3.0) * math.pi * r**3"
+    }
+  ],
+
+  "surface_area_cube": [
+    {
+      "gloss": "the total area of the surface of a cube",
+      "formula": "6 * s^2",
+      "exec": "lambda s: 6 * s**2"
+    }
+  ],
+
+  "surface_area_rectangular_prism": [
+    {
+      "gloss": "the total area of the surface of a rectangular prism",
+      "formula": "2*(lw + lh + wh)",
+      "exec": "lambda l, w, h: 2*(l*w + l*h + w*h)"
+    }
+  ],
+
+  "surface_area_sphere": [
+    {
+      "gloss": "the total area of the surface of a sphere",
+      "formula": "4 * pi * r^2",
+      "exec": "lambda math, r: 4 * math.pi * r**2"
+    }
+  ],
+
+  "surface_area_cylinder": [
+    {
+      "gloss": "the total area of the surface of a cylinder",
+      "formula": "2 * pi * r * (r + h)",
+      "exec": "lambda math, r, h: 2 * math.pi * r * (r + h)"
+    }
+  ]
+}

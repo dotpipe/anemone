@@ -1,0 +1,169 @@
+{
+  "opportunity_cost": [
+    {
+      "gloss": "the value of the next best alternative that is given up",
+      "formula": "opportunity_cost = value_of_best_alternative",
+      "exec": "lambda value: value"
+    }
+  ],
+
+  "scarcity": [
+    {
+      "gloss": "the condition of limited resources and unlimited wants",
+      "formula": "resources < wants",
+      "exec": "lambda resources, wants: resources < wants"
+    }
+  ],
+
+  "supply_function": [
+    {
+      "gloss": "the relationship showing how quantity supplied changes with price",
+      "formula": "Qs = a + bP",
+      "exec": "lambda a, b, P: a + b * P"
+    }
+  ],
+
+  "demand_function": [
+    {
+      "gloss": "the relationship showing how quantity demanded changes with price",
+      "formula": "Qd = a - bP",
+      "exec": "lambda a, b, P: a - b * P"
+    }
+  ],
+
+  "equilibrium_price": [
+    {
+      "gloss": "the price at which quantity supplied equals quantity demanded",
+      "formula": "Qs = Qd",
+      "exec": "lambda a_s, b_s, a_d, b_d: (a_d - a_s) / (b_s + b_d)"
+    }
+  ],
+
+  "equilibrium_quantity": [
+    {
+      "gloss": "the quantity exchanged at the equilibrium price",
+      "formula": "Q = a_s + b_s * P_eq",
+      "exec": "lambda a_s, b_s, P_eq: a_s + b_s * P_eq"
+    }
+  ],
+
+  "elasticity_price_demand": [
+    {
+      "gloss": "the responsiveness of quantity demanded to a change in price",
+      "formula": "Ed = (percent_change_Q) / (percent_change_P)",
+      "exec": "lambda pctQ, pctP: pctQ / pctP"
+    }
+  ],
+
+  "elasticity_price_supply": [
+    {
+      "gloss": "the responsiveness of quantity supplied to a change in price",
+      "formula": "Es = (percent_change_Q) / (percent_change_P)",
+      "exec": "lambda pctQ, pctP: pctQ / pctP"
+    }
+  ],
+
+  "total_revenue": [
+    {
+      "gloss": "the total income from selling a good or service",
+      "formula": "TR = P * Q",
+      "exec": "lambda P, Q: P * Q"
+    }
+  ],
+
+  "marginal_revenue": [
+    {
+      "gloss": "the additional revenue from selling one more unit",
+      "formula": "MR = delta_TR / delta_Q",
+      "exec": "lambda dTR, dQ: dTR / dQ"
+    }
+  ],
+
+  "total_cost": [
+    {
+      "gloss": "the total economic cost of production",
+      "formula": "TC = FC + VC",
+      "exec": "lambda FC, VC: FC + VC"
+    }
+  ],
+
+  "average_cost": [
+    {
+      "gloss": "the cost per unit of output",
+      "formula": "AC = TC / Q",
+      "exec": "lambda TC, Q: TC / Q"
+    }
+  ],
+
+  "marginal_cost": [
+    {
+      "gloss": "the additional cost of producing one more unit",
+      "formula": "MC = delta_TC / delta_Q",
+      "exec": "lambda dTC, dQ: dTC / dQ"
+    }
+  ],
+
+  "profit": [
+    {
+      "gloss": "the difference between total revenue and total cost",
+      "formula": "profit = TR - TC",
+      "exec": "lambda TR, TC: TR - TC"
+    }
+  ],
+
+  "gdp_expenditure": [
+    {
+      "gloss": "the total value of goods and services produced in an economy",
+      "formula": "GDP = C + I + G + NX",
+      "exec": "lambda C, I, G, NX: C + I + G + NX"
+    }
+  ],
+
+  "gdp_income": [
+    {
+      "gloss": "the total income earned by factors of production",
+      "formula": "GDP = wages + rent + interest + profit",
+      "exec": "lambda w, r, i, p: w + r + i + p"
+    }
+  ],
+
+  "inflation_rate": [
+    {
+      "gloss": "the percentage increase in the general price level",
+      "formula": "inflation = (CPI_new - CPI_old) / CPI_old",
+      "exec": "lambda CPI_new, CPI_old: (CPI_new - CPI_old) / CPI_old"
+    }
+  ],
+
+  "unemployment_rate": [
+    {
+      "gloss": "the percentage of the labor force that is unemployed",
+      "formula": "unemployment = unemployed / labor_force",
+      "exec": "lambda unemployed, labor_force: unemployed / labor_force"
+    }
+  ],
+
+  "money_multiplier": [
+    {
+      "gloss": "the factor by which deposits expand in the banking system",
+      "formula": "multiplier = 1 / reserve_ratio",
+      "exec": "lambda rr: 1 / rr"
+    }
+  ],
+
+  "present_value": [
+    {
+      "gloss": "the current value of a future payment",
+      "formula": "PV = FV / (1 + r)^n",
+      "exec": "lambda FV, r, n: FV / ((1 + r)**n)"
+    }
+  ],
+
+  "future_value": [
+    {
+      "gloss": "the value of a present amount after interest accumulates",
+      "formula": "FV = PV * (1 + r)^n",
+      "exec": "lambda PV, r, n: PV * ((1 + r)**n)"
+    }
+  ]
+}

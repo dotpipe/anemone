@@ -1,0 +1,145 @@
+{
+  "sine": [
+    {
+      "gloss": "the ratio of the opposite side to the hypotenuse in a right triangle",
+      "formula": "sin(theta)",
+      "exec": "lambda math, theta: math.sin(theta)"
+    }
+  ],
+
+  "cosine": [
+    {
+      "gloss": "the ratio of the adjacent side to the hypotenuse in a right triangle",
+      "formula": "cos(theta)",
+      "exec": "lambda math, theta: math.cos(theta)"
+    }
+  ],
+
+  "tangent": [
+    {
+      "gloss": "the ratio of the opposite side to the adjacent side in a right triangle",
+      "formula": "tan(theta)",
+      "exec": "lambda math, theta: math.tan(theta)"
+    }
+  ],
+
+  "cotangent": [
+    {
+      "gloss": "the reciprocal of tangent",
+      "formula": "cot(theta) = 1 / tan(theta)",
+      "exec": "lambda math, theta: 1.0 / math.tan(theta)"
+    }
+  ],
+
+  "secant": [
+    {
+      "gloss": "the reciprocal of cosine",
+      "formula": "sec(theta) = 1 / cos(theta)",
+      "exec": "lambda math, theta: 1.0 / math.cos(theta)"
+    }
+  ],
+
+  "cosecant": [
+    {
+      "gloss": "the reciprocal of sine",
+      "formula": "csc(theta) = 1 / sin(theta)",
+      "exec": "lambda math, theta: 1.0 / math.sin(theta)"
+    }
+  ],
+
+  "pythagorean_identity": [
+    {
+      "gloss": "the fundamental relationship between sine and cosine",
+      "formula": "sin(theta)^2 + cos(theta)^2 = 1",
+      "exec": "lambda math, theta: math.sin(theta)**2 + math.cos(theta)**2"
+    }
+  ],
+
+  "angle_sum_sine": [
+    {
+      "gloss": "the sine of a sum of two angles",
+      "formula": "sin(a + b) = sin(a)*cos(b) + cos(a)*sin(b)",
+      "exec": "lambda math, a, b: math.sin(a)*math.cos(b) + math.cos(a)*math.sin(b)"
+    }
+  ],
+
+  "angle_sum_cosine": [
+    {
+      "gloss": "the cosine of a sum of two angles",
+      "formula": "cos(a + b) = cos(a)*cos(b) - sin(a)*sin(b)",
+      "exec": "lambda math, a, b: math.cos(a)*math.cos(b) - math.sin(a)*math.sin(b)"
+    }
+  ],
+
+  "angle_sum_tangent": [
+    {
+      "gloss": "the tangent of a sum of two angles",
+      "formula": "tan(a + b) = (tan(a) + tan(b)) / (1 - tan(a)*tan(b))",
+      "exec": "lambda math, a, b: (math.tan(a) + math.tan(b)) / (1 - math.tan(a)*math.tan(b))"
+    }
+  ],
+
+  "double_angle_sine": [
+    {
+      "gloss": "the sine of twice an angle",
+      "formula": "sin(2*theta) = 2*sin(theta)*cos(theta)",
+      "exec": "lambda math, theta: 2 * math.sin(theta) * math.cos(theta)"
+    }
+  ],
+
+  "double_angle_cosine": [
+    {
+      "gloss": "the cosine of twice an angle",
+      "formula": "cos(2*theta) = cos(theta)^2 - sin(theta)^2",
+      "exec": "lambda math, theta: math.cos(theta)**2 - math.sin(theta)**2"
+    }
+  ],
+
+  "double_angle_tangent": [
+    {
+      "gloss": "the tangent of twice an angle",
+      "formula": "tan(2*theta) = 2*tan(theta) / (1 - tan(theta)^2)",
+      "exec": "lambda math, theta: 2*math.tan(theta) / (1 - math.tan(theta)**2)"
+    }
+  ],
+
+  "radians_to_degrees": [
+    {
+      "gloss": "converting an angle from radians to degrees",
+      "formula": "degrees = radians * 180 / pi",
+      "exec": "lambda math, rad: rad * 180.0 / math.pi"
+    }
+  ],
+
+  "degrees_to_radians": [
+    {
+      "gloss": "converting an angle from degrees to radians",
+      "formula": "radians = degrees * pi / 180",
+      "exec": "lambda math, deg: deg * math.pi / 180.0"
+    }
+  ],
+
+  "law_of_sines": [
+    {
+      "gloss": "a relationship between sides and angles of any triangle",
+      "formula": "a / sin(A) = b / sin(B) = c / sin(C)",
+      "exec": "lambda math, a, A, b, B: (a / math.sin(A), b / math.sin(B))"
+    }
+  ],
+
+  "law_of_cosines": [
+    {
+      "gloss": "a generalization of the Pythagorean theorem for any triangle",
+      "formula": "c^2 = a^2 + b^2 - 2ab*cos(C)",
+      "exec": "lambda math, a, b, C: (a**2 + b**2 - 2*a*b*math.cos(C))**0.5"
+    }
+  ],
+
+  "unit_circle_coordinates": [
+    {
+      "gloss": "the coordinates of a point on the unit circle",
+      "formula": "(cos(theta), sin(theta))",
+      "exec": "lambda math, theta: (math.cos(theta), math.sin(theta))"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+# Files not referenced in eng1neer.py
+vocab.py
+word_freq.txt
+words.py
+vocab.txt
+test.py
+parse_math_exec.js
+normalized_embeddings.npy
+icy.py
+engine.py
+eng9.py
+embeddings.npy
+drift_fields.jsonl
+dictionary.py
+completed_words.txt
+corpus.py
+can.py
+canon.py
+canon.txt
+canon2.txt
+c1.py
+c2.py
+annoy_index.ann
+.zencoder/
+.zenflow/
+__pycache__/
+venv/
