@@ -245,11 +245,18 @@ class NaturalCodeEngine:
         """
         Answers coding prompts using definitions.json for general answers and math.json for math code, with a verbal cue for the math operation. Now supports inequalities and code comments.
         Uses the masterkey logic from generate_code_templates.py for loop/operation prompts.
+        If the prompt suggests a function, wraps the generated code in a function definition.
         """
         import importlib.util
         import sys
-        # Try to use masterkey logic from generate_code_templates.py if available
         masterkey_path = os.path.join(os.path.dirname(__file__), 'generate_code_templates.py')
+        # Detect if prompt suggests a function
+        lower_prompt = prompt.lower()
+        function_words = [
+            'function', 'define', 'create', 'make', 'build', 'write', 'implement', 'procedure', 'method', 'routine', 'wrap', 'encapsulate', 'module', 'program', 'code', 'return'
+        ]
+        wants_function = any(word in lower_prompt for word in function_words)
+        # Try to use masterkey logic from generate_code_templates.py if available
         if os.path.exists(masterkey_path):
             spec = importlib.util.spec_from_file_location('generate_code_templates', masterkey_path)
             gct = importlib.util.module_from_spec(spec)
@@ -257,15 +264,26 @@ class NaturalCodeEngine:
             spec.loader.exec_module(gct)
             code = gct.generate_code(prompt)
             if code and not code.startswith('# No matching'):
+                # If function requested and code is not already a function, wrap it
+                if wants_function and not code.strip().startswith('def '):
+                    # Try to extract a function name from the prompt
+                    import re
+                    match = re.search(r'(?:function|define|create|make|build|write|implement) (\w+)', lower_prompt)
+                    func_name = match.group(1) if match else 'generated_function'
+                    # Find parameters (very basic: look for 'with X and Y' or 'parameters X, Y')
+                    params = ''
+                    param_match = re.search(r'(?:with|parameters?) ([\w, ]+)', lower_prompt)
+                    if param_match:
+                        params = ', '.join([p.strip() for p in re.split(r',|and', param_match.group(1)) if p.strip()])
+                    code_lines = code.splitlines()
+                    indented_code = '\n'.join('    ' + line if line.strip() else '' for line in code_lines)
+                    code = f"def {func_name}({params}):\n{indented_code}\n"
                 return code
+        import re
         # Fallback to original logic if masterkey doesn't match
-        # ...existing code (fallbacks, definitions, math, etc.)...
-        lower_prompt = prompt.lower()
         words = re.findall(r'\w+', lower_prompt)
         for word in words:
             self.start_inquiry_thread(word)
-        # ...existing code for print/display, templates, math, definitions, etc. ...
-        # (You can paste the rest of your fallback logic here if needed)
         return "# No actionable code structure detected from prompt."
 
 # Example usage:

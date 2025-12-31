@@ -215,6 +215,7 @@ def build_definition_style(
     """
     core_phrase = core_phrase.strip()
     if not core_phrase:
+        print("[DEBUG] Fallback: core_phrase is empty, using 'a mathematical concept'.")
         core_phrase = "a mathematical concept"
 
     # Simple article handling: a / an / the
@@ -294,6 +295,7 @@ def respond(defs: Dict[str, List[Dict[str, Any]]], text: str) -> str:
     # -------------------------------------------------------------
     # 2. Pure expression: "1+1", "2*3", "(5+5)/2"
     # -------------------------------------------------------------
+    import re
     if not re.search(r"[a-zA-Z]", raw):
         value = try_eval_expression(raw)
         if value is not None:
@@ -308,16 +310,120 @@ def respond(defs: Dict[str, List[Dict[str, Any]]], text: str) -> str:
 
     lower_tokens = [t.lower() for t in tokens]
 
-    # Try first token as term
+    # Try full normalized prompt as term first
+    full_prompt_norm = normalize_key(' '.join(tokens))
     term = lower_tokens[0]
-    if term not in defs and len(lower_tokens) > 1:
-        # Try last token as term
-        candidate = lower_tokens[-1]
-        if candidate in defs:
-            term = candidate
-
-    entry = defs.get(term)
+    entry = None
+    if full_prompt_norm in [normalize_key(k) for k in defs]:
+        for k in defs:
+            if normalize_key(k) == full_prompt_norm:
+                entry = defs[k]
+                print(f"[DEBUG] Direct match for full prompt: '{full_prompt_norm}' == '{k}'")
+                break
+    # If not, fall back to first token as term
     if not entry:
+        term = lower_tokens[0]
+
+
+    def normalize_key(key):
+        # Remove interrogatives, underscores, hyphens, 'of', and collapse spaces
+        interrogatives = ['what', 'which', 'who', 'whom', 'whose', 'when', 'where', 'why', 'how']
+        key = key.replace('_', ' ').replace('-', ' ').lower()
+        key = key.replace(' of ', ' ')
+        key = ' '.join(key.split())
+        words = [w for w in key.split() if w not in interrogatives]
+        return ' '.join(words)
+
+
+    def singularize(word):
+        # Simple English plural to singular
+        if word.endswith('ies'):
+            return word[:-3] + 'y'
+        if word.endswith('es'):
+            return word[:-2]
+        if word.endswith('s') and not word.endswith('ss'):
+            return word[:-1]
+        return word
+
+    def key_to_word_set(key):
+        # Include both original and singularized forms
+        words = normalize_key(key).split()
+        return set(words + [singularize(w) for w in words])
+
+    # Try direct match
+    entry = defs.get(term)
+    if entry:
+        print(f"[DEBUG] Direct match for term: '{term}'")
+
+    # Extra debug: show all keys that contain all prompt words (after normalization)
+    prompt_words_full = [singularize(w) for w in normalize_key(' '.join(tokens)).split()]
+    matching_keys = []
+    for k in defs:
+        k_norm = normalize_key(k)
+        if all(w in k_norm.split() for w in prompt_words_full):
+            matching_keys.append(k)
+    if matching_keys:
+        print(f"[DEBUG] Keys containing all prompt words: {matching_keys}")
+    # Try underscore-to-space, fuzzy, and regex/word matches
+    if not entry:
+        term_set = key_to_word_set(term)
+        for k in defs:
+            k_set = key_to_word_set(k)
+            overlap = len(term_set & k_set)
+            max_len = max(len(term_set), len(k_set))
+            if max_len > 0 and overlap / max_len >= 0.8:
+                print(f"[DEBUG] Fuzzy word overlap match: '{term}' ~ '{k}' (overlap {overlap}/{max_len})")
+                entry = defs[k]
+                break
+    # Try regex match for any word in the prompt against keys
+    if not entry:
+        import re
+        prompt_words = [singularize(w) for w in normalize_key(term).split()]
+        for k in defs:
+            k_norm = normalize_key(k)
+            for w in prompt_words:
+                if re.search(rf'\b{re.escape(w)}\b', k_norm):
+                    print(f"[DEBUG] Regex word match: '{w}' in '{k_norm}' (key: '{k}')")
+                    entry = defs[k]
+                    break
+            if entry:
+                break
+
+    # Try direct match again
+    if not entry:
+        entry = defs.get(term)
+        if entry:
+            print(f"[DEBUG] Second direct match for term: '{term}'")
+    # Try underscore-to-space match
+    if not entry:
+        for k in defs:
+            if normalize_key(k) == normalize_key(term):
+                print(f"[DEBUG] Underscore/space normalized match: '{term}' == '{k}'")
+                entry = defs[k]
+                break
+    # Try fuzzy match for ordinal/numbered laws (e.g. '1st law of thermodynamics' to 'first law thermodynamics')
+    if not entry:
+        import re
+        num_map = {'1st': 'first', '2nd': 'second', '3rd': 'third', '4th': 'fourth', '5th': 'fifth'}
+        norm_term = normalize_key(term)
+        for num, word in num_map.items():
+            if num in norm_term:
+                alt = norm_term.replace(num, word)
+                for k in defs:
+                    if normalize_key(k) == alt:
+                        print(f"[DEBUG] Ordinal/numbered law match: '{norm_term}' -> '{alt}' == '{k}'")
+                        entry = defs[k]
+                        break
+                if entry:
+                    break
+    # Try last token as term if still not found
+    if not entry and len(lower_tokens) > 1:
+        candidate = lower_tokens[-1]
+        entry = defs.get(candidate)
+        if entry:
+            print(f"[DEBUG] Last token as term match: '{candidate}'")
+    if not entry:
+        print(f"[DEBUG] No match found for: '{term}' (tokens: {tokens})")
         return "I do not have a definition for that yet."
 
     # if isinstance(entry, str):
@@ -331,7 +437,11 @@ def respond(defs: Dict[str, List[Dict[str, Any]]], text: str) -> str:
     # if isinstance(entry, list) and len(entry) > 1:
     #     return "Can you be more specific?"
 
-    sense = choose_sense(entry)
+    # Always pass a list to choose_sense
+    if isinstance(entry, dict):
+        sense = choose_sense([entry])
+    else:
+        sense = choose_sense(entry)
     # Handle both dict and string senses
     if isinstance(sense, dict):
         gloss = sense.get("gloss", "").strip()
@@ -362,7 +472,13 @@ def respond(defs: Dict[str, List[Dict[str, Any]]], text: str) -> str:
                 continue
             for s in sentences:
                 if t in s and t in defs:
-                    sub_sense = defs[t][0]
+                    entry = defs[t]
+                    if isinstance(entry, list):
+                        sub_sense = entry[0]
+                    elif isinstance(entry, dict):
+                        sub_sense = entry
+                    else:
+                        sub_sense = ""
                     if isinstance(sub_sense, dict):
                         sub_gloss = sub_sense.get("gloss", "")
                     elif isinstance(sub_sense, str):

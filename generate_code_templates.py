@@ -382,9 +382,7 @@ def parse_loops_and_ops_v2(prompt, depth=0, default_var='i'):
         op_word = loop_match.group(1).lower()
         op_value = loop_match.group(2)
         var = loop_match.group(3).replace("'", "")
-        cond_var = cond
-        cond_val = 0
-        code = f"while {cond_var} != {cond_val}:\n    {var} {op} {op_value}\n    print({var})"
+        inner_count = loop_match.group(4)
         outer_count = loop_match.group(5)
         cond = loop_match.group(6)
         op = opmap.get(op_word, '+=')
@@ -441,32 +439,72 @@ def parse_loops_and_ops(prompt, depth=0, default_var='i'):
              'modulo': '%=', 'mod': '%=', 'remainder': '%=', '%': '%=',
              'power': '**=', 'raise': '**=', '**': '**=', '^': '**=', '//': '//='}
     # Pattern for: operation, value, variable, inner loop, optional condition, outer loop, optional between-loop condition
-    pattern = re.compile(r"(?P<op_word>add|plus|sum|increment|subtract|minus|decrement|multiply|times|product|divide|quotient|modulo|mod|remainder|power|raise|\*\*|\^|//|%) (?P<op_value>\d+) to (?P<var>[a-zA-Z_][a-zA-Z0-9_]*)? ?(?P<inner_count>\d+) times(?: if (?P<cond>[^,]+?))?(?:,? ?(?P<between_cond>if [^,]+?)?,? ?(?:during|in|inside|within|over|through|for) a (?P<outer_count>\d+) repetition loop)?", re.IGNORECASE)
+    pattern = re.compile(
+        r"(?P<op_word>add|plus|sum|increment|subtract|minus|decrement|multiply|times|product|divide|quotient|modulo|mod|remainder|power|raise|\*\*|\^|//|%) "
+        r"(?P<op_value>\d+) to (?P<var>[a-zA-Z_][a-zA-Z0-9_]*)"  # operation, value, variable
+        r" (?P<inner_count>\d+) times"  # inner loop
+        r"(?: if (?P<cond>[^,]+?))?"  # optional condition after inner_count
+        r"(?:,?\s*)?"  # allow for optional comma and whitespace before outer loop phrase
+        r"(?:during|in|inside|within|over|through|for)? ?a (?P<outer_count>\d+) repetition loop"  # outer loop
+        r"(?:,? ?(?P<between_cond>if [^,]+?))?",  # optional between-loop condition at the end
+        re.IGNORECASE
+    )
     match = pattern.search(prompt)
     if not match:
+        # Try to match initialization: when X is Y
+        init_match = re.search(r"when ([a-zA-Z_][a-zA-Z0-9_]*) is (-?\d+)", prompt)
+        if init_match:
+            var_name = init_match.group(1)
+            var_init = init_match.group(2)
+            # Remove the initialization phrase from the prompt and try again
+            prompt_wo_init = re.sub(r"when [a-zA-Z_][a-zA-Z0-9_]* is -?\d+", "", prompt).strip(', ') 
+            code = f"{var_name} = {var_init}\n"
+            rest_code = parse_loops_and_ops(prompt_wo_init, depth=depth, default_var=var_name)
+            if rest_code:
+                code += rest_code
+            return code
         return ''
+
+    # 1. Name variables meaningfully
     var = match.group('var') if match.group('var') else default_var
     op = opmap.get(match.group('op_word'), '+=')
     val = match.group('op_value')
     inner_count = match.group('inner_count')
     cond = match.group('cond')
-    outer_count = match.group('outer_count') or '1'
     between_cond = match.group('between_cond')
-    code = ''
+    outer_count = match.group('outer_count') if match.group('outer_count') is not None else '1'
     indent = '    ' * depth
-    code += f"{indent}{var} = 0\n"
-    code += f"{indent}for _ in range({outer_count}):\n"
+
+    # 2. Initialize variables at the top
+    code = f"{indent}{var} = 0\n"
+
+    # 3. Add recursion check or conditional (if needed)
     if between_cond:
-        code += f"{indent}    if {between_cond[3:]}:\n"  # strip 'if '
+        code += f"{indent}if {between_cond[3:]}:\n"  # strip 'if '
         indent += '    '
-    code += f"{indent}    for _ in range({inner_count}):\n"
+
+    # 4. Add the first (outer) loop
+    code += f"{indent}for _ in range({outer_count}):\n"
+    indent += '    '
+
+    # 5. Add the inner loop
+    code += f"{indent}for _ in range({inner_count}):\n"
+    indent += '    '
+
+    # 6. Add the conditional for the operation (if needed)
     if cond:
-        code += f"{indent}        if {cond}:\n"
-        code += f"{indent}            {var} {op} {val}\n"
+        code += f"{indent}if {cond}:\n"
+        indent += '    '
+        code += f"{indent}{var} {op} {val}\n"
+        indent = indent[:-4]  # remove one indent after operation
     else:
-        code += f"{indent}        {var} {op} {val}\n"
-    code += f"{indent}    print({var})\n"
-    # Check for additional operations/loops recursively
+        code += f"{indent}{var} {op} {val}\n"
+
+    # 7. Print or return the result after the loops
+    indent = '    ' * (depth + 1)
+    code += f"{indent}print({var})\n"
+
+    # 8. Repeat for additional operations/loops recursively
     rest = prompt[match.end():].lstrip(', and')
     if rest.strip():
         next_code = parse_loops_and_ops(rest, depth=depth, default_var=default_var)
@@ -475,26 +513,101 @@ def parse_loops_and_ops(prompt, depth=0, default_var='i'):
     return code
 
 def generate_code(prompt: str):
+    # Special pattern for recursive factorial
+    import re
+    rec_match = re.search(r"define a function (\w+) that returns (\d+) if (\w+) is (\d+), otherwise returns (\w+) times \1 of \3 minus (\d+)", prompt.lower())
+    if rec_match:
+        func = rec_match.group(1)
+        base_val = rec_match.group(2)
+        var = rec_match.group(3)
+        base_case = rec_match.group(4)
+        recur_var = rec_match.group(5)
+        minus_val = rec_match.group(6)
+        code = f"def {func}({var}):\n    if {var} == {base_case}:\n        return {base_val}\n    else:\n        return {recur_var} * {func}({var} - {minus_val})"
+        return code
+
+    # ...existing code for combining masterkeys and function wrapping...
+    def make_func_name(prompt):
+        match = re.search(r'(?:function|define|create|make|build|write|implement) (\w+)', prompt.lower())
+        if match:
+            return match.group(1)
+        match2 = re.search(r'(add|subtract|increment|decrement|print|code|multiply|divide|sum|average|filter|sort|remove|append|extend|replace|update|clear|copy|reverse|join|split|strip|find|search|match|case|switch|try|except|finally|raise|assert|with|as|from|pass|continue|break|yield|lambda|generator|comprehension|tuple|set|frozenset|bool|int|float|str|bytes|bytearray|memoryview|complex|super|self|staticmethod|classmethod|property|del|global|nonlocal|assert|async|await|true|false|none)\s+([a-zA-Z_][a-zA-Z0-9_]*)', prompt.lower())
+        if match2:
+            return f"{match2.group(1)}_{match2.group(2)}"
+        return "generated_function"
+
+    def wrap_in_function(code, func_name):
+        if code.lstrip().startswith('def '):
+            return code
+        code_lines = code.splitlines()
+        indented = '\n'.join('    ' + line if line.strip() else '' for line in code_lines)
+        return f"def {func_name}():\n{indented}\n"
+
+    code_blocks = []
+    comments = []
     code = parse_loops_and_ops(prompt)
     if code:
-        comment = f"# MASTERKEY: This program was generated recursively from the prompt."
-        print(comment)
-        print(code)
-        return f"{comment}\n{code}"
-    # Try second masterkey
+        comments.append(f"# MASTERKEY: This program was generated recursively from the prompt.")
+        code_blocks.append(code)
     code2 = parse_loops_and_ops_v2(prompt)
     if code2:
-        comment = f"# MASTERKEY2: This program was generated from the prompt using natural language patterns."
-        print(comment)
-        print(code2)
-        return f"{comment}\n{code2}"
-    # Try universal masterkey
+        comments.append(f"# MASTERKEY2: This program was generated from the prompt using natural language patterns.")
+        code_blocks.append(code2)
     code3 = universal_masterkey(prompt)
     if code3 and not code3.startswith('# No actionable'):
-        comment = f"# UNIVERSAL MASTERKEY: This program was generated from the prompt using broad pattern matching."
+        comments.append(f"# UNIVERSAL MASTERKEY: This program was generated from the prompt using broad pattern matching.")
+        code_blocks.append(code3)
+    if code_blocks:
+        func_name = make_func_name(prompt)
+        combined_code = '\n'.join(code_blocks)
+        comment = '\n'.join(comments)
         print(comment)
-        print(code3)
-        return f"{comment}\n{code3}"
+        print(combined_code)
+        return f"{comment}\n{wrap_in_function(combined_code, func_name)}"
+    return "# No matching loop/operation pattern found."
+def make_func_name(prompt):
+    # Try to extract a function name from the prompt, fallback to 'generated_function'
+    match = re.search(r'(?:function|define|create|make|build|write|implement) (\w+)', prompt.lower())
+    if match:
+        return match.group(1)
+    # Otherwise, use first verb + variable as a name
+    match2 = re.search(r'(add|subtract|increment|decrement|print|code|multiply|divide|sum|average|filter|sort|remove|append|extend|replace|update|clear|copy|reverse|join|split|strip|find|search|match|case|switch|try|except|finally|raise|assert|with|as|from|pass|continue|break|yield|lambda|generator|comprehension|tuple|set|frozenset|bool|int|float|str|bytes|bytearray|memoryview|complex|super|self|staticmethod|classmethod|property|del|global|nonlocal|assert|async|await|true|false|none)\s+([a-zA-Z_][a-zA-Z0-9_]*)', prompt.lower())
+    if match2:
+        return f"{match2.group(1)}_{match2.group(2)}"
+    return "generated_function"
+
+def wrap_in_function(code, func_name):
+    # Only wrap if not already a function definition
+    if code.lstrip().startswith('def '):
+        return code
+    # Indent code
+    code_lines = code.splitlines()
+    indented = '\n'.join('    ' + line if line.strip() else '' for line in code_lines)
+    return f"def {func_name}():\n{indented}\n"
+
+    # Try all masterkeys and combine if multiple code blocks are found
+    code_blocks = []
+    comments = []
+    code = parse_loops_and_ops(prompt)
+    if code:
+        comments.append(f"# MASTERKEY: This program was generated recursively from the prompt.")
+        code_blocks.append(code)
+    code2 = parse_loops_and_ops_v2(prompt)
+    if code2:
+        comments.append(f"# MASTERKEY2: This program was generated from the prompt using natural language patterns.")
+        code_blocks.append(code2)
+    code3 = universal_masterkey(prompt)
+    if code3 and not code3.startswith('# No actionable'):
+        comments.append(f"# UNIVERSAL MASTERKEY: This program was generated from the prompt using broad pattern matching.")
+        code_blocks.append(code3)
+    if code_blocks:
+        # Combine all code blocks into one function
+        func_name = make_func_name(prompt)
+        combined_code = '\n'.join(code_blocks)
+        comment = '\n'.join(comments)
+        print(comment)
+        print(combined_code)
+        return f"{comment}\n{wrap_in_function(combined_code, func_name)}"
     return "# No matching loop/operation pattern found."
 
 if __name__ == "__main__":
