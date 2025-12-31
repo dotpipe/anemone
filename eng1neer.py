@@ -1,9 +1,13 @@
 # eng9.py
 
+
 import json
 import math
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
+
+# Import NaturalCodeEngine
+from new_natural_code_engine import NaturalCodeEngine
 
 # ---------------------------------------------------------------------
 # Safe evaluation context for math expressions and exec lambdas
@@ -163,6 +167,27 @@ def parse_math_exec(defs: Dict[str, List[Dict[str, Any]]],
 
 
 # ---------------------------------------------------------------------
+# Operator precedence helpers
+# ---------------------------------------------------------------------
+def get_operator_precedence(op: str) -> int:
+    """
+    Return precedence level for a given operator string.
+    Higher number = higher precedence.
+    """
+    precedence = {
+        '**': 4,
+        '^': 4,
+        '*': 3,
+        '/': 3,
+        '//': 3,
+        '%': 3,
+        '+': 2,
+        '-': 2,
+    }
+    return precedence.get(op, 0)
+
+
+# ---------------------------------------------------------------------
 # Sense selection and definition building
 # ---------------------------------------------------------------------
 
@@ -216,7 +241,7 @@ def build_definition_style(
     return base
 
 
-def split_gloss(gloss: str) -> (str, List[str]):
+def split_gloss(gloss: str) -> Tuple[str, List[str]]:
     """
     Split a gloss into a core phrase and detail phrases.
     The first clause becomes the core; the rest become details.
@@ -414,10 +439,9 @@ def respond(defs: Dict[str, List[Dict[str, Any]]], text: str) -> str:
             return f"{definition}\nResult: {math_result}"
 
     # -------------------------------------------------------------
-    # 5. Pure definition output
+    # 5. Pure definition output (moved to end unless question)
     # -------------------------------------------------------------
     definition = build_definition_style(term, core_phrase, detail_phrases, formula)
-    # Recursively resolve referenced terms in the gloss or formula
     referenced_terms = []
     for phrase in [gloss, formula] if formula else [gloss]:
         if phrase:
@@ -442,15 +466,27 @@ def respond(defs: Dict[str, List[Dict[str, Any]]], text: str) -> str:
             recursive_defs.append(f"    ↳ {rec_def}")
     if recursive_defs:
         definition += "\n" + "\n".join(recursive_defs)
+
+    # If the input is a question, return the definition immediately
+    if '?' in raw:
+        return definition
+
+    # Otherwise, return the definition last (after any math or assignment results)
+    # (The rest of the function already returns early for math/assignment cases)
     return definition
 
 
 # ---------------------------------------------------------------------
 # Simple CLI loop for manual testing
 # ---------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Simple CLI loop for manual testing
+# ---------------------------------------------------------------------
+
 
 if __name__ == "__main__":
     definitions = load_all_definitions()
+    code_engine = NaturalCodeEngine('data')
 
     while True:
         try:
@@ -464,4 +500,9 @@ if __name__ == "__main__":
         if line.lower() in {"quit", "exit"}:
             break
 
-        print(respond(definitions, line))
+        # If the prompt looks like a code generation request, use the code engine
+        if any(word in line.lower() for word in ["code", "generate", "python", "loop", "function", "print", "if", "while", "for", "define", "create"]):
+            code = code_engine.generate_code(line)
+            print(code)
+        else:
+            print(respond(definitions, line))
