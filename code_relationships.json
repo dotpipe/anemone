@@ -1,0 +1,187 @@
+{
+    "code_relationships": [
+        {
+            "term": "function",
+            "description": "A block of code that performs a specific task, often reusable and parameterized.",
+            "related_terms": [
+                "method",
+                "procedure",
+                "routine",
+                "lambda",
+                "decorator",
+                "closure",
+                "generator"
+            ],
+            "example": "def add(a, b): return a + b"
+        },
+        {
+            "term": "variable",
+            "description": "A named location used to store data in memory, which can be changed during execution.",
+            "related_terms": [
+                "parameter",
+                "attribute",
+                "field",
+                "global",
+                "local",
+                "constant",
+                "mutable",
+                "immutable"
+            ],
+            "example": "x = 5"
+        },
+        {
+            "term": "class",
+            "description": "A blueprint for creating objects, encapsulating data and behavior, supporting inheritance and polymorphism.",
+            "related_terms": [
+                "object",
+                "instance",
+                "type",
+                "inheritance",
+                "polymorphism",
+                "encapsulation",
+                "metaclass",
+                "abstract"
+            ],
+            "example": "class Dog: pass"
+        },
+        {
+            "term": "loop",
+            "description": "A sequence of instructions that is continually repeated until a certain condition is reached, supporting iteration over sequences.",
+            "related_terms": [
+                "for",
+                "while",
+                "iteration",
+                "break",
+                "continue",
+                "enumerate",
+                "zip",
+                "generator",
+                "range",
+                "comprehension"
+            ],
+            "example": "for i in range(10): print(i)"
+        },
+        {
+            "term": "conditional",
+            "description": "A statement that controls the flow of execution depending on some condition, allowing branching logic.",
+            "related_terms": [
+                "if",
+                "else",
+                "elif",
+                "switch",
+                "match",
+                "ternary",
+                "assert",
+                "short-circuit"
+            ],
+            "example": "if x > 0: print('Positive')"
+        },
+        {
+            "term": "exception",
+            "description": "An event that disrupts the normal flow of a program's instructions, handled by try-except blocks.",
+            "related_terms": [
+                "try",
+                "except",
+                "finally",
+                "raise",
+                "error",
+                "assertion",
+                "custom exception",
+                "traceback"
+            ],
+            "example": "try: x = 1/0\nexcept ZeroDivisionError: x = 0"
+        },
+        {
+            "term": "import",
+            "description": "Statement used to include external modules or packages, enabling code reuse and modularity.",
+            "related_terms": [
+                "from",
+                "as",
+                "module",
+                "package",
+                "sys.path",
+                "relative import",
+                "absolute import"
+            ],
+            "example": "import math"
+        },
+        {
+            "term": "list",
+            "description": "A mutable sequence of items, supporting indexing, slicing, and comprehension.",
+            "related_terms": [
+                "tuple",
+                "set",
+                "dict",
+                "comprehension",
+                "slice",
+                "append",
+                "extend",
+                "pop",
+                "sort",
+                "reverse"
+            ],
+            "example": "my_list = [1, 2, 3]"
+        },
+        {
+            "term": "dict",
+            "description": "A collection of key-value pairs, supporting fast lookup and flexible data structures.",
+            "related_terms": [
+                "mapping",
+                "setdefault",
+                "keys",
+                "values",
+                "items",
+                "comprehension",
+                "defaultdict",
+                "OrderedDict"
+            ],
+            "example": "my_dict = {'a': 1, 'b': 2}"
+        },
+        {
+            "term": "file",
+            "description": "An object used to read or write data to disk, supporting context management and various modes.",
+            "related_terms": [
+                "open",
+                "read",
+                "write",
+                "with",
+                "context manager",
+                "os",
+                "pathlib",
+                "seek",
+                "flush"
+            ],
+            "example": "with open('file.txt') as f: data = f.read()"
+        },
+        {
+            "term": "quantifier",
+            "description": "A construct that expresses the quantity of items to be processed, such as 'all', 'any', 'some', 'none', and supports aggregation.",
+            "related_terms": [
+                "all",
+                "any",
+                "sum",
+                "min",
+                "max",
+                "filter",
+                "map",
+                "reduce",
+                "count",
+                "exists"
+            ],
+            "example": "all(x > 0 for x in my_list)"
+        },
+        {
+            "term": "nesting",
+            "description": "The practice of placing one control structure inside another, such as loops within loops or conditionals within loops, to handle complex logic.",
+            "related_terms": [
+                "nested loop",
+                "nested conditional",
+                "recursion",
+                "scope",
+                "indentation"
+            ],
+            "example": "for i in range(3):\n    for j in range(2):\n        print(i, j)"
+        }
+    ],
+    "relationship_logic": "Terms are linked by their related_terms. Prompts can be parsed to identify terms and their relationships, enabling code generation or explanation based on the network of terms. This structure spans core Python concepts and idioms, including nesting and quantifiers for advanced logic."
+}

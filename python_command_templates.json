@@ -1,0 +1,62 @@
+[
+  {
+    "name": "for_loop",
+    "description": "Iterates over a sequence of values.",
+    "template": "for {item} in {iterable}:\n    # Do something with {item}\n    print({item})",
+    "use_case": "Use to repeat an action for each element in a list, tuple, or other iterable."
+  },
+  {
+    "name": "while_loop",
+    "description": "Repeats a block of code while a condition is true.",
+    "template": "while {condition}:\n    # Loop body\n    print('Looping')",
+    "use_case": "Use when you want to repeat actions until a condition becomes false."
+  },
+  {
+    "name": "if_statement",
+    "description": "Executes a block of code if a condition is true.",
+    "template": "if {condition}:\n    # Code to execute if condition is true\n    print('Condition met')",
+    "use_case": "Use to branch code execution based on a condition."
+  },
+  {
+    "name": "function_definition",
+    "description": "Defines a reusable block of code.",
+    "template": "def {function_name}({params}):\n    # Function body\n    return {return_value}",
+    "use_case": "Use to group code into a callable function."
+  },
+  {
+    "name": "list_comprehension",
+    "description": "Creates a new list by applying an expression to each item in an iterable.",
+    "template": "[{expression} for {item} in {iterable} if {condition}]",
+    "use_case": "Use for concise creation of lists from other iterables."
+  },
+  {
+    "name": "import_statement",
+    "description": "Imports a module or specific objects from a module.",
+    "template": "import {module}\nfrom {module} import {object}",
+    "use_case": "Use to access external libraries or code."
+  },
+  {
+    "name": "try_except",
+    "description": "Handles exceptions that may occur in a block of code.",
+    "template": "try:\n    # Code that may raise an exception\n    pass\nexcept {exception} as e:\n    print(e)",
+    "use_case": "Use to catch and handle errors gracefully."
+  },
+  {
+    "name": "with_statement",
+    "description": "Manages resources, such as files, using a context manager.",
+    "template": "with open({filename}, 'r') as f:\n    data = f.read()",
+    "use_case": "Use for safe and automatic resource management."
+  },
+  {
+    "name": "class_definition",
+    "description": "Defines a new class (object blueprint).",
+    "template": "class {ClassName}:\n    def __init__(self, {params}):\n        # Initialize attributes\n        pass",
+    "use_case": "Use to create custom data types and objects."
+  },
+  {
+    "name": "print_statement",
+    "description": "Outputs text or values to the console.",
+    "template": "print({value})",
+    "use_case": "Use to display information to the user or for debugging."
+  }
+]
