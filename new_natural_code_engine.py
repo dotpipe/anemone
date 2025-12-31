@@ -279,7 +279,6 @@ class NaturalCodeEngine:
                     indented_code = '\n'.join('    ' + line if line.strip() else '' for line in code_lines)
                     code = f"def {func_name}({params}):\n{indented_code}\n"
                 return code
-        import re
         # Fallback to original logic if masterkey doesn't match
         words = re.findall(r'\w+', lower_prompt)
         for word in words:
