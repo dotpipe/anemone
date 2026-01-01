@@ -1,3 +1,254 @@
+def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', data_dir='data') -> str:
+    """
+    For each extracted term in the prompt, find all subject files (classifications) it appears in using thesaurus_assoc.json.
+    Load only those files, gather definitions for the term, and build a subject-specific response.
+    """
+    import json, os, re
+    # Helper for normalization
+    def normalize(term):
+        return re.sub(r'[^a-z0-9]', '', term.lower())
+
+    # Load associations
+    with open(assoc_path, 'r', encoding='utf-8') as f:
+        assoc = json.load(f)
+    # Extract terms from prompt
+    import sys
+    sys.path.append(os.path.dirname(__file__))
+    try:
+        from util_word_topic_lookup import similarity
+    except ImportError:
+        similarity = None
+    terms = extract_terms(prompt)
+    # 1. Check thesaurus_assoc.json for direct match
+    with open(assoc_path, 'r', encoding='utf-8') as f:
+        assoc = json.load(f)
+    filtered_terms = []
+    for term in terms:
+        term_l = term.lower().strip()
+        if term_l in assoc:
+            filtered_terms.append(term_l)
+            continue
+        # 2. Check word_freq.txt with Levenshtein
+        word_freq_path = os.path.join(os.path.dirname(__file__), 'word_freq.txt')
+        with open(word_freq_path, 'r', encoding='utf-8') as wf:
+            word_freq = [line.strip().lower() for line in wf if line.strip()]
+        best_match = None
+        best_score = 0.0
+        if similarity:
+            for wf_word in word_freq:
+                score = similarity(term_l, wf_word)
+                if score > best_score:
+                    best_score = score
+                    best_match = wf_word
+        if best_score >= 0.8:
+            # If Levenshtein match, re-check thesaurus_assoc for the matched word
+            if best_match in assoc:
+                filtered_terms.append(best_match)
+                continue
+        # 3. Check data/*.jsons for match
+        found_in_data = False
+        for fname in os.listdir(data_dir):
+            if fname.endswith('.json'):
+                fpath = os.path.join(data_dir, fname)
+                try:
+                    with open(fpath, 'r', encoding='utf-8') as fjson:
+                        data = json.load(fjson)
+                    if term_l in data:
+                        filtered_terms.append(term_l)
+                        found_in_data = True
+                        break
+                except Exception:
+                    continue
+        if found_in_data:
+            continue
+        # 4. Check code_dictionary.json
+        code_dict_path = os.path.join(data_dir, 'code_dictionary.json')
+        if os.path.exists(code_dict_path):
+            with open(code_dict_path, 'r', encoding='utf-8') as fcd:
+                code_dict = json.load(fcd)
+            if term_l in code_dict:
+                filtered_terms.append(term_l)
+                continue
+        # 5. Check definitions.json
+        definitions_path = os.path.join(data_dir, 'definitions.json')
+        if os.path.exists(definitions_path):
+            with open(definitions_path, 'r', encoding='utf-8') as fd:
+                definitions = json.load(fd)
+            if term_l in definitions:
+                filtered_terms.append(term_l)
+                continue
+        # If not found anywhere, skip
+    if not filtered_terms:
+        return "No subject-specific definitions found for your query."
+    terms = filtered_terms
+    alt_terms = set(terms)
+    responses = []
+    import collections
+    # Helper: blend multiple definitions with staleness detection
+    def blend_definitions(def_list, subject=None):
+        """
+        Blend a list of definition strings. If a definition is stale (does not mention the subject or drifts off-topic), close it off.
+        """
+        if not def_list:
+            return ""
+        if len(def_list) == 1:
+            return def_list[0]
+        # Simple blend: join sentences, but detect staleness
+        output = []
+        subject = subject.lower() if subject else None
+        stale_phrase = " (definition ends here due to lack of subject relevance)"
+        for d in def_list:
+            d_stripped = d.strip()
+            # Staleness: if subject is not mentioned in the last 15 words, or definition is too generic
+            last_words = d_stripped.lower().split()[-15:]
+            if subject and subject not in last_words and (len(d_stripped) > 40):
+                output.append(d_stripped + stale_phrase)
+                break
+            output.append(d_stripped)
+        return ' '.join(output)
+
+    # Define file priority order (customize as needed)
+    file_priority = [
+        # Math group
+        'algebra.json', 'linear_algebra.json', 'calculus.json',
+        # Science group
+        'biology.json', 'chemistry.json', 'physics.json', 'math.json', 'geometry.json', 'complex_numbers.json',
+        'probability.json', 'statistics.json', 'thermodynamics.json', 'trigonometry.json', 'vectors.json',
+        # Other
+        'economics.json', 'finance.json', 'user_drift.json',
+        # Code just before definitions
+        'code_dictionary.json',
+        # Always last
+        'definitions.json'
+    ]
+    # Only include files that exist in data_dir
+    files_in_dir = set(f for f in os.listdir(data_dir) if f.endswith('.json'))
+    ordered_files = [f for f in file_priority if f in files_in_dir]
+
+    # Build a mapping: term -> [files that define it]
+    term_to_files = {term: [] for term in terms}
+    file_to_terms = {fname: set() for fname in ordered_files}
+    file_term_defs = {fname: {} for fname in ordered_files}
+    for fname in ordered_files:
+        fpath = os.path.join(data_dir, fname)
+        try:
+            with open(fpath, 'r', encoding='utf-8') as fjson:
+                data = json.load(fjson)
+            for term in terms:
+                entry = data.get(term)
+                if entry:
+                    term_to_files[term].append(fname)
+                    file_to_terms[fname].add(term)
+                    file_term_defs[fname][term] = entry
+        except Exception:
+            continue
+
+    # Prefer to use the file that covers the most terms in the prompt
+    # If a term is only found in one file, use that file for that term
+    # Otherwise, try to use the file that covers the most terms for as many as possible
+    # If tie, use file_priority order
+    responses = []
+    # Find the file that covers the most terms
+    file_term_count = {fname: len(terms_set) for fname, terms_set in file_to_terms.items()}
+    # For each term, decide which file to use
+    chosen_files = {}
+    # First, assign unique files for terms only found in one file
+    for term, files in term_to_files.items():
+        if len(files) == 1:
+            chosen_files[term] = files[0]
+    # For remaining terms, try to assign the file that covers the most terms
+    remaining_terms = [term for term in terms if term not in chosen_files]
+    if remaining_terms:
+        # Find the file(s) with max coverage
+        max_count = 0
+        best_files = []
+        for fname in ordered_files:
+            count = len(file_to_terms[fname].intersection(remaining_terms))
+            if count > max_count:
+                max_count = count
+                best_files = [fname]
+            elif count == max_count and count > 0:
+                best_files.append(fname)
+        # Use the first best file in priority order
+        if best_files:
+            best_file = best_files[0]
+            for term in remaining_terms:
+                if term in file_to_terms[best_file]:
+                    chosen_files[term] = best_file
+    # For any still unassigned, use the first file in priority order that defines it
+    for term in terms:
+        if term not in chosen_files:
+            files = term_to_files[term]
+            if files:
+                chosen_files[term] = files[0]
+    import difflib
+    def is_good_definition(defn, term=None):
+        # At least 4 characters, not just a substring or abbreviation of the term, not empty, not just a prefix
+        if not defn or len(defn.strip()) < 4:
+            return False
+        defn_l = defn.strip().lower()
+        if term:
+            t_l = term.lower()
+            # Exclude if definition is a substring, prefix, or abbreviation of the term
+            if defn_l == t_l or defn_l in t_l or t_l in defn_l or defn_l.startswith(t_l) or t_l.startswith(defn_l):
+                return False
+        return True
+
+    # --- Group definitions for Levenshtein fallback ---
+    group_map = {
+        'math': {'algebra.json', 'linear_algebra.json', 'calculus.json', 'math.json', 'geometry.json', 'complex_numbers.json', 'probability.json', 'statistics.json', 'trigonometry.json', 'vectors.json'},
+        'science': {'biology.json', 'chemistry.json', 'physics.json', 'thermodynamics.json'},
+        'code': {'code_dictionary.json'},
+        'definitions': {'definitions.json'},
+        'other': {'economics.json', 'finance.json', 'user_drift.json'}
+    }
+    def get_group(fname):
+        for group, files in group_map.items():
+            if fname in files:
+                return group
+        return 'other'
+
+    # Replace each word in the prompt with its subject-specific definition tidbit
+    prompt_tokens = re.findall(r"\b\w+\b", prompt)
+    token_defs = {}
+    for term in terms:
+        # Find the best subject-specific definition tidbit
+        best_tidbit = None
+        for fname in ordered_files:
+            entry = file_term_defs.get(fname, {}).get(term)
+            if entry:
+                if isinstance(entry, dict):
+                    if 'definition' in entry and entry['definition']:
+                        best_tidbit = entry['definition']
+                        break
+                    elif 'gloss' in entry and entry['gloss']:
+                        best_tidbit = entry['gloss']
+                        break
+                elif isinstance(entry, str):
+                    best_tidbit = entry
+                    break
+                elif isinstance(entry, list):
+                    for e in entry:
+                        if isinstance(e, dict):
+                            if 'definition' in e and e['definition']:
+                                best_tidbit = e['definition']
+                                break
+                            if 'gloss' in e and e['gloss']:
+                                best_tidbit = e['gloss']
+                                break
+                        elif isinstance(e, str):
+                            best_tidbit = e
+                            break
+            if best_tidbit:
+                break
+        if best_tidbit:
+            token_defs[term] = best_tidbit
+    replaced_tokens = [token_defs.get(tok.lower(), tok) for tok in prompt_tokens]
+    response = ' '.join(replaced_tokens)
+    return response if response.strip() else "No subject-specific definitions found for your query."
+    if responses:
+        return '\n'.join(responses)
+    return "No subject-specific definitions found for your query."
 def extract_subject_modifier_pairs(text: str, defs: dict) -> list:
     """
     Extract (subject, modifier) pairs in linear order from the text.
@@ -509,7 +760,9 @@ def strip_punct(word: str) -> str:
 
 def extract_terms(text: str) -> List[str]:
     """Extract all relevant terms from prompt, using stopword and verb filtering."""
-    tokens = text.split()
+    import re
+    # Split on non-word boundaries to handle punctuation and concatenated forms
+    tokens = re.findall(r"\b\w+\b", text)
     lower_tokens = [t.lower() for t in tokens]
     interrogatives = {'what','which','who','whom','whose','when','where','why','how','is','are','was','were','do','does','did','can','could','will','would','should','has','have','had'}
     affirmation_words = {'right', 'yes', 'yeah', 'yep', 'true', 'okay', 'ok', 'sure', 'certainly', 'absolutely', 'indeed', 'definitely', 'affirmative', 'correct'}
@@ -520,7 +773,7 @@ def extract_terms(text: str) -> List[str]:
     original_tokens = text.split()
     # Heuristic: treat capitalized or non-stopword/verb as noun
     candidate_terms = []
-    for orig, low in zip(original_tokens, lower_tokens):
+    for orig, low in zip(tokens, lower_tokens):
         if (orig[0].isupper() or (low not in stopwords and low.isalpha())) and low not in RELATIONAL_EXCLUSIONS:
             norm = strip_punct(singularize(orig))
             if norm and norm not in seen:
@@ -600,12 +853,29 @@ def respond(defs: Dict[str, List[Dict[str, Any]]], text: str) -> str:
     else:
         subjects = [t for t in terms if t.lower() not in RELATIONAL_EXCLUSIONS]
 
-    # --- Subject mirror and crescendo outward ---
-    # 1. Mirror the subject
-    subject_str = ', '.join(subjects)
-    response = f"{subject_str.capitalize()}"
+    # --- Subject mirror and braided crescendo outward ---
+    # Improve subject extraction: prefer noun phrases, filter out auxiliary verbs
+    import random
+    # Define stopwords in this scope so is_noun can access it
+    verbs = {"is", "are", "was", "were", "be", "am", "being", "been", "do", "does", "did", "can", "could", "will", "would", "should", "has", "have", "had"}
+    generic = {"that", "which", "process", "chemical", "reactions", "about", "wrong"}
+    stopwords = {'what','which','who','whom','whose','when','where','why','how','is','are','was','were','do','does','did','can','could','will','would','should','has','have','had','be','am','being','been','get','got','gets','make','makes','made','go','goes','went','gone','see','seen','say','says','said','know','knows','knew','think','thinks','thought','want','wants','wanted','need','needs','needed','use','uses','used','like','likes','liked','give','gives','gave','find','finds','found','tell','tells','told','work','works','worked','call','calls','called','try','tries','tried','ask','asks','asked','feel','feels','felt','leave','leaves','left','put','puts','keep','keeps','kept','let','lets','begin','begins','began','begun','seem','seems','seemed','help','helps','helped','talk','talks','talked','turn','turns','turned','start','starts','started','show','shows','showed','hear','hears','heard','play','plays','played','run','runs','ran','move','moves','moved','live','lives','lived','believe','believes','believed','bring','brings','brought','happen','happens','happened','write','writes','wrote','written','provide','provides','provided','sit','sits','sat','stand','stands','stood','lose','loses','lost','pay','pays','paid','meet','meets','met','include','includes','included','continue','continues','continued','set','sets','learn','learns','learned','change','changes','changed','lead','leads','led','understand','understands','understood','watch','watches','watched','follow','follows','followed','stop','stops','stopped','create','creates','created','speak','speaks','spoke','spoken','read','reads','read','allow','allows','allowed','add','adds','added','spend','spends','spent','grow','grows','grew','grown','open','opens','opened','walk','walks','walked','win','wins','won','offer','offers','offered','remember','remembers','remembered','love','loves','loved','consider','considers','considered','appear','appears','appeared','buy','buys','bought','wait','waits','waited','serve','serves','served','die','dies','died','send','sends','sent','expect','expects','expected','build','builds','built','stay','stays','stayed','fall','falls','fell','fallen','cut','cuts','cut','reach','reaches','reached','kill','kills','killed','remain','remains','remained',"the","a","an","of","to","in","for","on","with","at","by","from","up","about","into","over","after","under","again","further","then","once","here","there","when","where","why","how","all","any","both","each","few","more","most","other","some","such","no","nor","not","only","own","same","so","than","too","very","s","t","can","will","just","don","should","now"}
+    def is_noun(word):
+        # Simple heuristic: not a verb, not a stopword, not a generic word
+        return word.lower() not in verbs and word.lower() not in generic and word.lower() not in stopwords
+    subject_words = [w for w in ' '.join(subjects).split() if is_noun(w)]
+    subject_str = ' '.join(subject_words) if subject_words else ', '.join(subjects)
+    # More varied and context-aware auxiliary phrasing
+    aux_phrases = [
+        f"Considering {subject_str}, we encounter a spectrum of associations.",
+        f"The topic of {subject_str} opens the door to a rich landscape of ideas.",
+        f"In the world of {subject_str}, many threads of meaning are woven together.",
+        f"Reflecting on {subject_str}, we find it linked to a variety of qualities and phenomena.",
+        f"{subject_str.capitalize()} stands at the intersection of multiple domains and concepts."
+    ]
+    response = random.choice(aux_phrases)
 
-    # 2. Crescendo outward: find most salient, high-frequency, or contextually associated concepts in all definitions
+    # Braided crescendo: find most salient, high-frequency, or contextually associated concepts in all definitions
     from collections import Counter, defaultdict
     word_counter = Counter()
     word_to_terms = defaultdict(set)
@@ -616,12 +886,10 @@ def respond(defs: Dict[str, List[Dict[str, Any]]], text: str) -> str:
                 word_counter[w] += 1
                 word_to_terms[w].add(term)
 
-    # Remove stopwords and the subject itself from consideration
-    stopwords = {"the","a","an","of","to","in","for","on","with","at","by","from","up","about","into","over","after","under","again","further","then","once","here","there","when","where","why","how","all","any","both","each","few","more","most","other","some","such","no","nor","not","only","own","same","so","than","too","very","s","t","can","will","just","don","should","now"}
-    subject_words = set(subject_str.lower().split())
-    filtered_words = [w for w, _ in word_counter.most_common(200) if w not in stopwords and w not in subject_words and len(w) > 2]
+    # Filter out generic/filler words from salient associations
+    filler = {"that", "which", "process", "chemical", "reactions", "about", "wrong", "pathways"}
+    filtered_words = [w for w, _ in word_counter.most_common(200) if w not in stopwords and w not in subject_words and w not in filler and len(w) > 2]
 
-    # Find words that co-occur with the subject in glosses
     associated_words = Counter()
     for w in filtered_words:
         for term in word_to_terms[w]:
@@ -630,19 +898,41 @@ def respond(defs: Dict[str, List[Dict[str, Any]]], text: str) -> str:
                 if any(sw in gloss for sw in subject_words):
                     associated_words[w] += 1
 
-    # Take the top N associated words, or fallback to top frequency
+    # Favor domain-relevant associations for common subjects
+    domain_map = {
+        "guitar": ["music", "instrument", "sound", "strings", "weight", "play", "tone"],
+        "marijuana": ["substance", "effect", "legal", "medical", "use", "plant", "psychoactive"],
+        "heroin": ["drug", "addiction", "opioid", "effect", "risk", "medical", "illegal"],
+        "cocaine": ["stimulant", "drug", "effect", "risk", "medical", "illegal"],
+        "football": ["sport", "ball", "team", "game", "field", "score", "play"],
+        "basketball": ["sport", "ball", "team", "game", "court", "score", "play"]
+    }
     N = 5
-    if associated_words:
-        salient_words = [w for w, _ in associated_words.most_common(N)]
-    else:
-        salient_words = filtered_words[:N]
+    salient_words = []
+    for key, domain_words in domain_map.items():
+        if key in subject_str.lower():
+            # Prefer domain words if present in associations
+            salient_words = [w for w in domain_words if w in associated_words or w in filtered_words][:N]
+            break
+    if not salient_words:
+        if associated_words:
+            salient_words = [w for w, _ in associated_words.most_common(N)]
+        else:
+            salient_words = filtered_words[:N]
 
     if salient_words:
         salient_list = ', '.join(salient_words)
-        response += f" is closely associated with concepts such as {salient_list}. "
-        response += f"This highlights a dimension of awareness and association in relation to {subject_str}."
+        braid_phrases = [
+            f"Among its many facets, {subject_str} is closely braided with concepts such as {salient_list}.",
+            f"The resonance of {subject_str} is amplified by its association with {salient_list}.",
+            f"One finds {subject_str} frequently braided together with {salient_list} in discourse and analysis.",
+            f"The interplay between {subject_str} and {salient_list} enriches its meaning and relevance.",
+            f"In the grand weave of ideas, {subject_str} and {salient_list} are often found side by side."
+        ]
+        response += " " + random.choice(braid_phrases)
+        response += f" This highlights a dimension of awareness and association in relation to {subject_str}."
     else:
-        response += f" is a concept with many dimensions and associations, depending on context."
+        response += f" {subject_str} is a concept with many dimensions and associations, depending on context."
 
     return response
 
@@ -654,26 +944,3 @@ def respond(defs: Dict[str, List[Dict[str, Any]]], text: str) -> str:
 # Simple CLI loop for manual testing
 # ---------------------------------------------------------------------
 
-
-if __name__ == "__main__":
-    definitions = load_all_definitions()
-    code_engine = NaturalCodeEngine('data')
-
-    while True:
-        try:
-            line = input("> ").strip()
-        except (EOFError, KeyboardInterrupt):
-            break
-
-        if not line:
-            continue
-
-        if line.lower() in {"quit", "exit"}:
-            break
-
-        # If the prompt looks like a code generation request, use the code engine
-        if any(word in line.lower() for word in ["code", "generate", "python", "loop", "function", "print", "if", "while", "for", "define", "create"]):
-            code = code_engine.generate_code(line)
-            print(code)
-        else:
-            print(respond(definitions, line))

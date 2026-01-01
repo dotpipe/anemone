@@ -1,30 +1,35 @@
 # shell.py
 
 
-from prompt_toolkit import prompt
-from eng1neer import load_all_definitions, respond
-from new_natural_code_engine import NaturalCodeEngine
+from eng1neer import respond_subject_specific
 
-def main():
-    defs = load_all_definitions()
-    code_engine = NaturalCodeEngine('data')
+if __name__ == "__main__":
+    # Only load the thesaurus association file at startup
+    import json
+    assoc_path = 'thesaurus_assoc.json'
+    with open(assoc_path, 'r', encoding='utf-8') as f:
+        thesaurus_assoc = json.load(f)
 
     while True:
         try:
-            text = prompt("#%@!> ")
+            line = input("@#!$ > ").strip()
         except (EOFError, KeyboardInterrupt):
-            print()
             break
 
-        if not text.strip():
+        if not line:
             continue
 
+        if line.lower() in {"quit", "exit"}:
+            break
+
         # If the prompt looks like a code generation request, use the code engine
-        if any(word in text.lower() for word in ["code", "generate", "python", "loop", "function", "print", "if", "while", "for", "define", "create"]):
-            code = code_engine.generate_code(text)
+        if any(word in line.lower() for word in ["code", "generate", "python", "loop", "function", "print", "if", "while", "for", "define", "create"]):
+            # Lazy-load code engine only if needed
+            if 'code_engine' not in globals():
+                from new_natural_code_engine import NaturalCodeEngine
+                globals()['code_engine'] = NaturalCodeEngine('data')
+            code = globals()['code_engine'].generate_code(line)
             print(code)
         else:
-            print(respond(defs, text))
-
-if __name__ == "__main__":
-    main()
+            # Use subject-specific response, loading subject files only as needed
+            print(respond_subject_specific(line, assoc_path=assoc_path, data_dir='data'))
