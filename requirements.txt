@@ -6,3 +6,4 @@ nltk
 prompt_toolkit
 wordfreq
 sympy
+tk

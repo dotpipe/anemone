@@ -31,3 +31,6 @@ old_generate_code.py
 nesting_builder.py
 demo_natural_code_engine.py
 temp/
+build/
+dist/
+shell.spec

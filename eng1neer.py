@@ -1,3 +1,16 @@
+def is_participle(word):
+    # Heuristic: participles often end with these suffixes
+    return word.lower().endswith((
+        'ing', 'ed', 'en', 'nt', 'd', 't', 'n', 'ne', 'wn', 'pt', 'st', 'ft', 'ld', 'lt', 'rt', 'rd', 'rn', 'rk', 'rm', 'mp', 'nd', 'nt', 'sk', 'sp', 'st', 'th', 'wn', 'zz', 'ss', 'sh', 'ch', 'ph', 'gh', 'wh', 'ng', 'nk', 'ct', 'ft', 'pt', 'xt', 'zz', 'ed', 'en'
+    ))
+
+def strip_participles_from_end(text):
+    # Remove trailing participles from the end of a sentence
+    words = text.rstrip().split()
+    while words and is_participle(words[-1].strip('.,;:')):
+        words.pop()
+    return ' '.join(words)
+
 def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', data_dir='data') -> str:
     """
     For each extracted term in the prompt, find all subject files (classifications) it appears in using thesaurus_assoc.json.
@@ -106,7 +119,7 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
         if not def_list:
             return ""
         if len(def_list) == 1:
-            return def_list[0]
+            return strip_participles_from_end(def_list[0])
         # Simple blend: join sentences, but detect staleness
         output = []
         subject = subject.lower() if subject else None
@@ -119,7 +132,8 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
                 output.append(d_stripped + stale_phrase)
                 break
             output.append(d_stripped)
-        return ' '.join(output)
+        blended = ' '.join(output)
+        return strip_participles_from_end(blended)
 
     # Define file priority order (customize as needed)
     file_priority = [
@@ -135,9 +149,11 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
         # Always last
         'definitions.json'
     ]
-    # Only include files that exist in data_dir
+    # Always include definitions.json last, even if not in file_priority
     files_in_dir = set(f for f in os.listdir(data_dir) if f.endswith('.json'))
     ordered_files = [f for f in file_priority if f in files_in_dir]
+    if 'definitions.json' in files_in_dir and 'definitions.json' not in ordered_files:
+        ordered_files.append('definitions.json')
 
     # Build a mapping: term -> [files that define it]
     term_to_files = {term: [] for term in terms}
@@ -226,43 +242,116 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
     prompt_tokens = re.findall(r"\b\w+\b", prompt)
     token_defs = {}
     for term in terms:
-        # Find the best subject-specific definition tidbit
+        # Find the best subject-specific definition tidbit from all sources, always including definitions.json
         best_tidbit = None
+        best_score = -1
+        prompt_lower = prompt.lower()
         for fname in ordered_files:
             entry = file_term_defs.get(fname, {}).get(term)
             if entry:
+                candidates = []
                 if isinstance(entry, dict):
                     if 'definition' in entry and entry['definition']:
-                        best_tidbit = entry['definition']
-                        break
-                    elif 'gloss' in entry and entry['gloss']:
-                        best_tidbit = entry['gloss']
-                        break
+                        candidates.append(entry['definition'])
+                    if 'gloss' in entry and entry['gloss']:
+                        candidates.append(entry['gloss'])
                 elif isinstance(entry, str):
-                    best_tidbit = entry
-                    break
+                    candidates.append(entry)
                 elif isinstance(entry, list):
                     for e in entry:
                         if isinstance(e, dict):
                             if 'definition' in e and e['definition']:
-                                best_tidbit = e['definition']
-                                break
+                                candidates.append(e['definition'])
                             if 'gloss' in e and e['gloss']:
-                                best_tidbit = e['gloss']
-                                break
+                                candidates.append(e['gloss'])
                         elif isinstance(e, str):
-                            best_tidbit = e
-                            break
-            if best_tidbit:
+                            candidates.append(e)
+                # Score each candidate for contextual relevance
+                for cand in candidates:
+                    cand_l = cand.lower()
+                    # Score: +2 if any prompt word in definition, -2 if unrelated domain (e.g., baseball, sport, etc.)
+                    score = 0
+                    if any(w in cand_l for w in prompt_lower.split()):
+                        score += 2
+                    # Prefer longer, more descriptive definitions
+                    score += min(len(cand_l) // 50, 2)
+                    if score > best_score:
+                        best_score = score
+                        best_tidbit = cand
+            if best_tidbit and best_score >= 0:
                 break
-        if best_tidbit:
+        if best_tidbit and best_score >= 0:
             token_defs[term] = best_tidbit
-    replaced_tokens = [token_defs.get(tok.lower(), tok) for tok in prompt_tokens]
-    response = ' '.join(replaced_tokens)
+
+    # Handle personal pronoun logic: skip initial pronoun unless subject is referenced later
+    personal_pronouns = {
+        'i', 'me', 'my', 'mine', 'myself',
+        'you', 'your', 'yours', 'yourself', 'yourselves',
+        'he', 'him', 'his', 'himself',
+        'she', 'her', 'hers', 'herself',
+        'it', 'its', 'itself',
+        'we', 'us', 'our', 'ours', 'ourselves',
+        'they', 'them', 'their', 'theirs', 'themselves',
+        'this', 'that', 'these', 'those',
+        'who', 'whom', 'whose', 'which', 'what', 'where', 'when', 'why', 'how'
+    }
+    # If the first token is a personal pronoun, skip it unless it is referenced later in the prompt
+    skip_first = False
+    if prompt_tokens and prompt_tokens[0].lower() in personal_pronouns:
+        skip_first = True
+    subject_terms = set(terms)
+    referenced_later = any(t.lower() in subject_terms for t in prompt_tokens[1:])
+
+    # Compose a full sentence using the best definitions and context
+    # Always include at least one noun/noun phrase from the prompt as the subject
+    import re
+    def is_noun_like(word):
+        # Heuristic: not a pronoun, not a verb, not a stopword, not a number
+        return word.lower() not in personal_pronouns and word.isalpha() and len(word) > 1
+
+    used_terms = [t for t in terms if t in token_defs]
+    # If no used_terms, try to extract a noun/noun phrase from the prompt
+    if not used_terms:
+        # Try to extract a noun/noun phrase from the prompt using regex and stopword filtering
+        import re
+        prompt_tokens = re.findall(r"\b\w+\b", prompt)
+        stopwords = {
+            'what','which','who','whom','whose','when','where','why','how','is','are','was','were','do','does','did','can','could','will','would','should','has','have','had','be','am','being','been','get','got','gets','make','makes','made','go','goes','went','gone','see','seen','say','says','said','know','knows','knew','think','thinks','thought','want','wants','wanted','need','needs','needed','use','uses','used','like','likes','liked','give','gives','gave','find','finds','found','tell','tells','told','work','works','worked','call','calls','called','try','tries','tried','ask','asks','asked','feel','feels','felt','leave','leaves','left','put','puts','keep','keeps','kept','let','lets','begin','begins','began','begun','seem','seems','seemed','help','helps','helped','talk','talks','talked','turn','turns','turned','start','starts','started','show','shows','showed','hear','hears','heard','play','plays','played','run','runs','ran','move','moves','moved','live','lives','lived','believe','believes','believed','bring','brings','brought','happen','happens','happened','write','writes','wrote','written','provide','provides','provided','sit','sits','sat','stand','stands','stood','lose','loses','lost','pay','pays','paid','meet','meets','met','include','includes','included','continue','continues','continued','set','sets','learn','learns','learned','change','changes','changed','lead','leads','led','understand','understands','understood','watch','watches','watched','follow','follows','followed','stop','stops','stopped','create','creates','created','speak','speaks','spoke','spoken','read','reads','read','allow','allows','allowed','add','adds','added','spend','spends','spent','grow','grows','grew','grown','open','opens','opened','walk','walks','walked','win','wins','won','offer','offers','offered','remember','remembers','remembered','love','loves','loved','consider','considers','considered','appear','appears','appeared','buy','buys','bought','wait','waits','waited','serve','serves','served','die','dies','died','send','sends','sent','expect','expects','expected','build','builds','built','stay','stays','stayed','fall','falls','fell','fallen','cut','cuts','cut','reach','reaches','reached','kill','kills','killed','remain','remains','remained',"the","a","an","of","to","in","for","on","with","at","by","from","up","about","into","over","after","under","again","further","then","once","here","there","when","where","why","how","all","any","both","each","few","more","most","other","some","such","no","nor","not","only","own","same","so","than","too","very","s","t","can","will","just","don","should","now"
+        }
+        fallback_nouns = [w for w in prompt_tokens if w.lower() not in stopwords and w.isalpha() and len(w) > 1]
+        if fallback_nouns:
+            used_terms = [fallback_nouns[0]]
+            token_defs[used_terms[0]] = f"a concept or entity referenced in the prompt."
+        else:
+            # As a last resort, echo the whole prompt as a concept
+            used_terms = [prompt.strip() or "subject"]
+            token_defs[used_terms[0]] = f"a concept or entity referenced in the prompt."
+
+    # Affirmative/contextual phrases
+    affirmatives = [
+        "Certainly.", "Of course.", "Here's what I found:", "Affirmative.", "Let me explain:", "Absolutely.", "Here's the information:", "Sure.", "Indeed.", "As requested:", "Here's a summary:", "Let me clarify:", "Here's what the data shows:", "According to the data:", "Based on available information:", "Here's what I know:"
+    ]
+    import random
+    response_lines = []
+    if skip_first and not referenced_later:
+        # Skip the first pronoun in the output
+        pass
+    else:
+        response_lines.append(random.choice(affirmatives))
+
+    for t in used_terms:
+        definition = token_defs[t]
+        # Compose a natural sentence
+        def_l = definition.lower()
+        t_l = t.lower()
+        if def_l.startswith(t_l):
+            sent = definition[0].upper() + definition[1:]
+        else:
+            sent = f"{t.capitalize()} is {definition.strip('. ')}."
+        response_lines.append(sent)
+
+    response = ' '.join(response_lines)
     return response if response.strip() else "No subject-specific definitions found for your query."
-    if responses:
-        return '\n'.join(responses)
-    return "No subject-specific definitions found for your query."
 def extract_subject_modifier_pairs(text: str, defs: dict) -> list:
     """
     Extract (subject, modifier) pairs in linear order from the text.
@@ -809,13 +898,24 @@ def extract_terms(text: str) -> List[str]:
     affirmation_words = {'right', 'yes', 'yeah', 'yep', 'true', 'okay', 'ok', 'sure', 'certainly', 'absolutely', 'indeed', 'definitely', 'affirmative', 'correct'}
     common_verbs = {'is','are','was','were','do','does','did','can','could','will','would','should','has','have','had','be','am','being','been','get','got','gets','make','makes','made','go','goes','went','gone','see','seen','say','says','said','know','knows','knew','think','thinks','thought','want','wants','wanted','need','needs','needed','use','uses','used','like','likes','liked','give','gives','gave','find','finds','found','tell','tells','told','work','works','worked','call','calls','called','try','tries','tried','ask','asks','asked','feel','feels','felt','leave','leaves','left','put','puts','keep','keeps','kept','let','lets','begin','begins','began','begun','seem','seems','seemed','help','helps','helped','talk','talks','talked','turn','turns','turned','start','starts','started','show','shows','showed','hear','hears','heard','play','plays','played','run','runs','ran','move','moves','moved','live','lives','lived','believe','believes','believed','bring','brings','brought','happen','happens','happened','write','writes','wrote','written','provide','provides','provided','sit','sits','sat','stand','stands','stood','lose','loses','lost','pay','pays','paid','meet','meets','met','include','includes','included','continue','continues','continued','set','sets','learn','learns','learned','change','changes','changed','lead','leads','led','understand','understands','understood','watch','watches','watched','follow','follows','followed','stop','stops','stopped','create','creates','created','speak','speaks','spoke','spoken','read','reads','read','allow','allows','allowed','add','adds','added','spend','spends','spent','grow','grows','grew','grown','open','opens','opened','walk','walks','walked','win','wins','won','offer','offers','offered','remember','remembers','remembered','love','loves','loved','consider','considers','considered','appear','appears','appeared','buy','buys','bought','wait','waits','waited','serve','serves','served','die','dies','died','send','sends','sent','expect','expects','expected','build','builds','built','stay','stays','stayed','fall','falls','fell','fallen','cut','cuts','cut','reach','reaches','reached','kill','kills','killed','remain','remains','remained'}
     stopwords = interrogatives | affirmation_words | common_verbs | {"the","a","an","of","to","in","for","on","with","at","by","from","up","about","into","over","after","under","again","further","then","once","here","there","when","where","why","how","all","any","both","each","few","more","most","other","some","such","no","nor","not","only","own","same","so","than","too","very","s","t","can","will","just","don","should","now"}
-    # Only extract capitalized or noun-like words (not in stopwords/verbs), unless whole phrase is being asked about
+    # List of personal pronouns to skip
+    personal_pronouns = {
+        'i', 'me', 'my', 'mine', 'myself',
+        'you', 'your', 'yours', 'yourself', 'yourselves',
+        'he', 'him', 'his', 'himself',
+        'she', 'her', 'hers', 'herself',
+        'it', 'its', 'itself',
+        'we', 'us', 'our', 'ours', 'ourselves',
+        'they', 'them', 'their', 'theirs', 'themselves',
+        'this', 'that', 'these', 'those',
+        'who', 'whom', 'whose', 'which', 'what', 'where', 'when', 'why', 'how'
+    }
     seen = set()
     original_tokens = text.split()
-    # Heuristic: treat capitalized or non-stopword/verb as noun
+    # Heuristic: treat capitalized or non-stopword/verb as noun, but skip personal pronouns
     candidate_terms = []
     for orig, low in zip(tokens, lower_tokens):
-        if (orig[0].isupper() or (low not in stopwords and low.isalpha())) and low not in RELATIONAL_EXCLUSIONS:
+        if (orig[0].isupper() or (low not in stopwords and low.isalpha())) and low not in RELATIONAL_EXCLUSIONS and low not in personal_pronouns:
             norm = strip_punct(singularize(orig))
             if norm and norm not in seen:
                 seen.add(norm)
