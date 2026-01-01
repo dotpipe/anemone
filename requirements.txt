@@ -1,0 +1,7 @@
+nltk
+prompt_toolkit
+wordfreq
+numpy
+nltk
+prompt_toolkit
+wordfreq

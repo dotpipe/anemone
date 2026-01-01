@@ -1,16 +1,220 @@
+import os
+import json
+import re
+CODE_DICTIONARY_PATH = os.path.join(os.path.dirname(__file__), 'data', 'code_dictionary.json')
+if os.path.exists(CODE_DICTIONARY_PATH):
+    with open(CODE_DICTIONARY_PATH, 'r', encoding='utf-8') as f:
+        CODE_DICTIONARY = json.load(f)
+else:
+    CODE_DICTIONARY = {}
+
+# Helper: get all related words (synonyms/antonyms) for a word
+def get_related_words(word):
+    rel = set()
+    entry = CODE_DICTIONARY.get(word, {})
+    for w in entry.get('synonyms', []):
+        rel.add(w)
+    for w in entry.get('antonyms', []):
+        rel.add(w)
+    return rel
+import re
+
+# --- New: Extract and classify prompt pieces ---
+def extract_prompt_pieces(prompt):
+    """
+    Extract and classify pieces of the prompt:
+    - loops
+    - instantiations
+    - variable changes
+    - conditionals
+    - recursion
+    Returns a dict with lists of detected elements.
+    """
+    pieces = {
+        'loops': [],
+        'instantiations': [],
+        'variable_changes': [],
+        'conditionals': [],
+        'recursion': [],
+        'variables': [],
+        'print_actions': [],
+        'increments': [],
+        'decrements': [],
+        'numbers': [],
+        'tokens': []
+    }
+    # Tokenize and list all subject tokens (words)
+    tokens = re.findall(r"\b\w+\b", prompt)
+    pieces['tokens'] = tokens
+
+    # Variables: look for variable-like words (single letters or common variable names)
+    var_candidates = re.findall(r"\b([a-zA-Z_][a-zA-Z0-9_]*)\b", prompt)
+    # Filter out common English words (very basic stoplist)
+    stopwords = set(['the','a','an','of','to','in','on','for','by','with','and','or','if','is','as','at','from','that','this','it','per','function','code','print','display','times','range','variable','increment','decrement','add','subtract','increase','decrease','set','make','create','define','build','write','implement','procedure','method','routine','wrap','encapsulate','module','program','return'])
+    variables = [v for v in var_candidates if v.lower() not in stopwords and not v.isdigit()]
+    pieces['variables'] = list(set(variables))
+
+    # Print/display actions
+    print_patterns = [r"print", r"display", r"show", r"output"]
+    for pat in print_patterns:
+            for m in re.finditer(pat, prompt, re.IGNORECASE):
+                pieces['print_actions'].append(m.group(0))
+
+    # Increments/decrements
+    inc_patterns = [r"increment", r"increase", r"add", r"plus"]
+    for pat in inc_patterns:
+        for m in re.finditer(pat, prompt, re.IGNORECASE):
+            pieces['increments'].append(m.group(0))
+    dec_patterns = [r"decrement", r"decrease", r"subtract", r"minus"]
+    for pat in dec_patterns:
+        for m in re.finditer(pat, prompt, re.IGNORECASE):
+            pieces['decrements'].append(m.group(0))
+
+        # Numbers (integers or decimals)
+        num_matches = re.findall(r"\b\d+(?:\.\d+)?\b", prompt)
+        pieces['numbers'] = num_matches
+
+        # Loops
+        loop_patterns = [
+            r"for (?:each|every|all|) ?[a-zA-Z_][a-zA-Z0-9_]* in range\((\d+)\)",
+            r"for (\d+) times?",
+        r"repeat (\d+) times",
+        r"for (\d+) repetitions?",
+        r"for (\d+) rounds?",
+        r"while [^\n]+",
+        r"until [^\n]+",
+    ]
+    for pat in loop_patterns:
+        for m in re.finditer(pat, prompt, re.IGNORECASE):
+            pieces['loops'].append(m.group(0))
+    # Instantiations
+    inst_patterns = [
+        r"(initialize|instantiate|create|make|set|assign|define) [a-zA-Z_][a-zA-Z0-9_]*",
+        r"[a-zA-Z_][a-zA-Z0-9_]* is (\d+|True|False|None|\'.*?\'|\".*?\")",
+    ]
+    for pat in inst_patterns:
+        for m in re.finditer(pat, prompt, re.IGNORECASE):
+            pieces['instantiations'].append(m.group(0))
+    # Variable changes
+    var_change_patterns = [
+        r"(increment|decrement|add|subtract|increase|decrease|plus|minus|multiply|divide|set|change|update) [a-zA-Z_][a-zA-Z0-9_]*",
+        r"[a-zA-Z_][a-zA-Z0-9_]* (\+=|-=|\*=|/=|=) [^\n]+",
+    ]
+    for pat in var_change_patterns:
+        for m in re.finditer(pat, prompt, re.IGNORECASE):
+            pieces['variable_changes'].append(m.group(0))
+    # Conditionals
+    cond_patterns = [
+        r"if [^\n]+",
+        r"when [^\n]+",
+        r"unless [^\n]+",
+        r"except [^\n]+",
+    ]
+    for pat in cond_patterns:
+        for m in re.finditer(pat, prompt, re.IGNORECASE):
+            pieces['conditionals'].append(m.group(0))
+    # Recursion
+    rec_patterns = [
+        r"recurs(ive|ion|ively)",
+        r"call itself",
+        r"calls itself",
+        r"repeat until",
+    ]
+    for pat in rec_patterns:
+        for m in re.finditer(pat, prompt, re.IGNORECASE):
+            pieces['recursion'].append(m.group(0))
+    # print("[DEBUG] Extracted prompt pieces:", pieces)
+    return pieces
 import re
 
 def universal_masterkey(prompt, depth=0, default_var='i'):
+    # Load code_dictionary and python_command_templates.json at the start of this function
+    import os
+    import json
+    CODE_DICTIONARY_PATH = os.path.join(os.path.dirname(__file__), 'data', 'code_dictionary.json')
+    if os.path.exists(CODE_DICTIONARY_PATH):
+        with open(CODE_DICTIONARY_PATH, 'r', encoding='utf-8') as f:
+            CODE_DICTIONARY = json.load(f)
+    else:
+        CODE_DICTIONARY = {}
+    PYTHON_COMMAND_PATH = os.path.join(os.path.dirname(__file__), 'python_command_templates.json')
+    if os.path.exists(PYTHON_COMMAND_PATH):
+        with open(PYTHON_COMMAND_PATH, 'r', encoding='utf-8') as f:
+            PYTHON_COMMANDS = json.load(f)
+    else:
+        PYTHON_COMMANDS = []
+    # Ensure each command name is present as both a synonym and antonym for itself in code_dictionary
+    for cmd in PYTHON_COMMANDS:
+        name = cmd.get('name')
+        if name:
+            entry = CODE_DICTIONARY.setdefault(name, {'synonyms': [], 'antonyms': []})
+            if name not in entry['synonyms']:
+                entry['synonyms'].append(name)
+            if name not in entry['antonyms']:
+                entry['antonyms'].append(name)
+    # Expand prompt tokens using synonyms/antonyms from code_dictionary and python_command_templates.json
+    import json
+    import os
+    # Load code_dictionary
+    CODE_DICTIONARY_PATH = os.path.join(os.path.dirname(__file__), 'data', 'code_dictionary.json')
+    if os.path.exists(CODE_DICTIONARY_PATH):
+        with open(CODE_DICTIONARY_PATH, 'r', encoding='utf-8') as f:
+            CODE_DICTIONARY = json.load(f)
+    else:
+        CODE_DICTIONARY = {}
+    # Load python_command_templates.json
+    PYTHON_COMMAND_PATH = os.path.join(os.path.dirname(__file__), 'python_command_templates.json')
+    if os.path.exists(PYTHON_COMMAND_PATH):
+        with open(PYTHON_COMMAND_PATH, 'r', encoding='utf-8') as f:
+            PYTHON_COMMANDS = json.load(f)
+    else:
+        PYTHON_COMMANDS = []
+    # Tokenize prompt
     import re
-    opmap = {
-        'add': '+=', 'plus': '+=', 'sum': '+=', 'increment': '+=', 'increase': '+=', 'raise': '+=',
-        'subtract': '-=', 'minus': '-=', 'decrement': '-=', 'decrease': '-=', 'reduce': '-=',
-        'multiply': '*=', 'times': '*=', 'product': '*=', 'double': '*=', 'triple': '*=',
-        'divide': '/=', 'quotient': '/=', 'halve': '/=',
-        'modulo': '%=', 'mod': '%=', 'remainder': '%=', '%': '%=',
-        'power': '**=', 'raise_to': '**=', '**': '**=', '^': '**=', '//': '//=',
-        'set': '=', 'assign': '=', 'initialize': '=', 'make': '=',
-    }
+    tokens = re.findall(r"\b\w+\b", prompt)
+    expanded_tokens = set(tokens)
+    # Expand with synonyms/antonyms from code_dictionary
+    for t in tokens:
+        entry = CODE_DICTIONARY.get(t.lower(), {})
+        for w in entry.get('synonyms', []):
+            expanded_tokens.add(w)
+        for w in entry.get('antonyms', []):
+            expanded_tokens.add(w)
+    # Expand with python_command_templates.json 'name' fields
+    for cmd in PYTHON_COMMANDS:
+        name = cmd.get('name')
+        if name and name not in expanded_tokens:
+            expanded_tokens.add(name)
+        # Add synonyms/antonyms if present
+        entry = CODE_DICTIONARY.get(name.lower(), {}) if name else {}
+        for w in entry.get('synonyms', []):
+            expanded_tokens.add(w)
+        for w in entry.get('antonyms', []):
+            expanded_tokens.add(w)
+
+    # MASTERKEY: Print quoted strings in loop and after
+    quoted = re.findall(r'"([^"]*)"|\'([^\']*)\'', prompt)
+    quoted_strings = [q[0] if q[0] else q[1] for q in quoted if q[0] or q[1]]
+    number_match = re.search(r'(\d+)', prompt)
+    if len(quoted_strings) >= 2 and number_match:
+        count = number_match.group(1)
+        code = f"for _ in range({count}):\n    print({repr(quoted_strings[0])})\nprint({repr(quoted_strings[1])})"
+        return code
+    def expand_keys(keys, op):
+        expanded = set(keys)
+        for k in keys:
+            expanded.update(get_related_words(k))
+        return {k: op for k in expanded}
+
+    opmap = {}
+    opmap.update(expand_keys(['add', 'plus', 'sum', 'increment', 'increase', 'raise'], '+='))
+    opmap.update(expand_keys(['subtract', 'minus', 'decrement', 'decrease', 'reduce'], '-='))
+    opmap.update(expand_keys(['multiply', 'times', 'product', 'double', 'triple'], '*='))
+    opmap.update(expand_keys(['divide', 'quotient', 'halve'], '/='))
+    opmap.update(expand_keys(['modulo', 'mod', 'remainder', '%'], '%='))
+    opmap.update(expand_keys(['power', 'raise_to', '**', '^'], '**='))
+    opmap.update(expand_keys(['//'], '//='))
+    opmap.update(expand_keys(['set', 'assign', 'initialize', 'make'], '='))
     synonym_map = {
         'increase': 'add', 'raise': 'add', 'sum': 'add',
         'decrease': 'subtract', 'reduce': 'subtract',
@@ -303,15 +507,21 @@ def parse_loops_and_ops_v2(prompt, depth=0, default_var='i'):
         code = f"for n in range({rng}):\n    print(n ** 2)"
         return code
     
-    opmap = {
-        'add': '+=', 'plus': '+=', 'sum': '+=', 'increment': '+=', 'increase': '+=', 'raise': '+=',
-        'subtract': '-=', 'minus': '-=', 'decrement': '-=', 'decrease': '-=', 'reduce': '-=',
-        'multiply': '*=', 'times': '*=', 'product': '*=', 'double': '*=', 'triple': '*=',
-        'divide': '/=', 'quotient': '/=', 'halve': '/=',
-        'modulo': '%=', 'mod': '%=', 'remainder': '%=', '%': '%=',
-        'power': '**=', 'raise_to': '**=', '**': '**=', '^': '**=', '//': '//=',
-        'set': '=', 'assign': '=', 'initialize': '=', 'make': '=',
-    }
+    def expand_keys(keys, op):
+        expanded = set(keys)
+        for k in keys:
+            expanded.update(get_related_words(k))
+        return {k: op for k in expanded}
+
+    opmap = {}
+    opmap.update(expand_keys(['add', 'plus', 'sum', 'increment', 'increase', 'raise'], '+='))
+    opmap.update(expand_keys(['subtract', 'minus', 'decrement', 'decrease', 'reduce'], '-='))
+    opmap.update(expand_keys(['multiply', 'times', 'product', 'double', 'triple'], '*='))
+    opmap.update(expand_keys(['divide', 'quotient', 'halve'], '/='))
+    opmap.update(expand_keys(['modulo', 'mod', 'remainder', '%'], '%='))
+    opmap.update(expand_keys(['power', 'raise_to', '**', '^'], '**='))
+    opmap.update(expand_keys(['//'], '//='))
+    opmap.update(expand_keys(['set', 'assign', 'initialize', 'make'], '='))
     # Synonym/related word mapping for normalization
     synonym_map = {
         'increase': 'add', 'raise': 'add', 'sum': 'add',
@@ -432,12 +642,21 @@ def parse_loops_and_ops_v2(prompt, depth=0, default_var='i'):
 
 def parse_loops_and_ops(prompt, depth=0, default_var='i'):
     # Recursively parse for loop/operation/conditional patterns
-    opmap = {'add': '+=', 'plus': '+=', 'sum': '+=', 'increment': '+=',
-             'subtract': '-=', 'minus': '-=', 'decrement': '-=',
-             'multiply': '*=', 'times': '*=', 'product': '*=',
-             'divide': '/=', 'quotient': '/=',
-             'modulo': '%=', 'mod': '%=', 'remainder': '%=', '%': '%=',
-             'power': '**=', 'raise': '**=', '**': '**=', '^': '**=', '//': '//='}
+    def expand_keys(keys, op):
+        expanded = set(keys)
+        for k in keys:
+            expanded.update(get_related_words(k))
+        return {k: op for k in expanded}
+
+    opmap = {}
+    opmap.update(expand_keys(['add', 'plus', 'sum', 'increment', 'increase', 'raise'], '+='))
+    opmap.update(expand_keys(['subtract', 'minus', 'decrement', 'decrease', 'reduce'], '-='))
+    opmap.update(expand_keys(['multiply', 'times', 'product', 'double', 'triple'], '*='))
+    opmap.update(expand_keys(['divide', 'quotient', 'halve'], '/='))
+    opmap.update(expand_keys(['modulo', 'mod', 'remainder', '%'], '%='))
+    opmap.update(expand_keys(['power', 'raise_to', '**', '^'], '**='))
+    opmap.update(expand_keys(['//'], '//='))
+    opmap.update(expand_keys(['set', 'assign', 'initialize', 'make'], '='))
     # Pattern for: operation, value, variable, inner loop, optional condition, outer loop, optional between-loop condition
     pattern = re.compile(
         r"(?P<op_word>add|plus|sum|increment|subtract|minus|decrement|multiply|times|product|divide|quotient|modulo|mod|remainder|power|raise|\*\*|\^|//|%) "
@@ -526,7 +745,44 @@ def generate_code(prompt: str):
         code = f"def {func}({var}):\n    if {var} == {base_case}:\n        return {base_val}\n    else:\n        return {recur_var} * {func}({var} - {minus_val})"
         return code
 
+    # --- NEW: If prompt contains no code-like elements, return dictionary reference if available ---
+    pieces = extract_prompt_pieces(prompt)
+    has_numbers = bool(pieces['numbers'])
+    has_loops = bool(pieces['loops'])
+    has_vars = bool(pieces['variables'])
+    has_print = bool(pieces['print_actions'])
+    function_keywords = ["function", "define", "create", "make", "build", "write", "implement", "procedure", "method", "routine", "module", "program"]
+    has_func_kw = any(kw in prompt.lower() for kw in function_keywords)
+    if not (has_numbers or has_loops or has_vars or has_print or has_func_kw):
+        # Try to find a reference in the dictionary
+        tokens = pieces['tokens']
+        found = []
+        for t in tokens:
+            entry = CODE_DICTIONARY.get(t.lower())
+            if entry:
+                desc = entry.get('description')
+                if desc:
+                    found.append(f"{t}: {desc}")
+                elif entry.get('synonyms') or entry.get('antonyms'):
+                    found.append(f"{t}: synonyms={entry.get('synonyms', [])}, antonyms={entry.get('antonyms', [])}")
+        if found:
+            return '\n'.join(found)
+        # If nothing found, just return the prompt as a reference
+        return f"Reference: {prompt.strip()}"
+
+    # --- PATCH: If prompt contains no code-like elements, return AI-style answer and skip all brute-force logic ---
+    pieces = extract_prompt_pieces(prompt)
+    has_numbers = bool(pieces['numbers'])
+    has_loops = bool(pieces['loops'])
+    has_vars = bool(pieces['variables'])
+    has_print = bool(pieces['print_actions'])
+    function_keywords = ["function", "define", "create", "make", "build", "write", "implement", "procedure", "method", "routine", "module", "program"]
+    has_func_kw = any(kw in prompt.lower() for kw in function_keywords)
+    if not (has_numbers or has_loops or has_vars or has_print or has_func_kw):
+        return f"AI Answer: {prompt.strip()}"
+
     # ...existing code for combining masterkeys and function wrapping...
+    # (Brute-force NLTK logic is only reached if the prompt is code-like)
     def make_func_name(prompt):
         match = re.search(r'(?:function|define|create|make|build|write|implement) (\w+)', prompt.lower())
         if match:
@@ -542,6 +798,13 @@ def generate_code(prompt: str):
         code_lines = code.splitlines()
         indented = '\n'.join('    ' + line if line.strip() else '' for line in code_lines)
         return f"def {func_name}():\n{indented}\n"
+
+    # --- PATCH: If no variables, invent one only if needed ---
+    def get_or_invent_variable(pieces, default='i'):
+        if pieces['variables']:
+            return pieces['variables'][0]
+        # Only invent if needed for code structure (e.g., for loop)
+        return default
 
     code_blocks = []
     comments = []
@@ -564,7 +827,75 @@ def generate_code(prompt: str):
         print(comment)
         print(combined_code)
         return f"{comment}\n{wrap_in_function(combined_code, func_name)}"
-    return "# No matching loop/operation pattern found."
+
+    # If no code was generated, try to use extracted prompt pieces to generate something simple
+    pieces = extract_prompt_pieces(prompt)
+    # Look for increment, variable, print, and number
+
+    # If increment and number are present, allow code generation even if variable is missing
+    if pieces['increments'] and pieces['numbers']:
+        store_var = None
+        var = get_or_invent_variable(pieces, default='i')
+        if any(word in prompt.lower() for word in ['store', 'stores']):
+            import re
+            m = re.search(r"in variable ([a-zA-Z_][a-zA-Z0-9_]*)", prompt)
+            if m:
+                store_var = m.group(1)
+            elif pieces['variables']:
+                store_var = pieces['variables'][-1]
+        count = pieces['numbers'][0]
+        func_name = make_func_name(prompt)
+        code = f"{var} = 0\nfor _ in range({count}):\n    {var} += 1"
+        if store_var and store_var != var:
+            code += f"\n{store_var} = {var}"
+        else:
+            code += f"\n# result is in {var}"
+        comment = f"# AUTO: This program was generated from extracted prompt pieces."
+        return f"{comment}\n{wrap_in_function(code, func_name)}"
+
+    # If print actions and numbers are present, generate print code even if no variable
+    if pieces['print_actions'] and pieces['numbers']:
+        count = pieces['numbers'][0]
+        func_name = make_func_name(prompt)
+        code = f"for _ in range({count}):\n    print('...')"
+        comment = f"# AUTO: This program was generated from print actions and numbers."
+        return f"{comment}\n{wrap_in_function(code, func_name)}"
+
+    # If only numbers are present, generate a simple loop
+    if pieces['numbers']:
+        count = pieces['numbers'][0]
+        func_name = make_func_name(prompt)
+        code = f"for _ in range({count}):\n    pass"
+        comment = f"# AUTO: This program was generated from a number-only prompt."
+        return f"{comment}\n{wrap_in_function(code, func_name)}"
+
+    # Brute-force rewrite logic removed: no NLTK punkt/tokenizer/tagger usage.
+    # Try normal code generation first
+    code = None
+    code1 = universal_masterkey(prompt)
+    if code1 and not code1.startswith('# No'):
+        code = code1
+    if not code:
+        code2 = parse_loops_and_ops_v2(prompt)
+        if code2 and not code2.startswith('# No'):
+            code = code2
+    if not code:
+        code3 = parse_loops_and_ops(prompt)
+        if code3 and not code3.startswith('# No'):
+            code = code3
+    if not code:
+        # Fallback: Try to use extracted prompt pieces
+        if pieces['increments'] and pieces['variables'] and pieces['numbers']:
+            var = pieces['variables'][0]
+            count = pieces['numbers'][0]
+            func_name = make_func_name(prompt)
+            code = f"{var} = 0\nfor _ in range({count}):\n    {var} += 1\n# result is in {var}"
+            comment = f"# AUTO: This program was generated from extracted prompt pieces."
+            code = f"{comment}\n{wrap_in_function(code, func_name)}"
+    if code and not code.startswith('# No'):
+        return code
+    # If still no code, return fallback message
+    return "# No actionable code structure detected from prompt."
 def make_func_name(prompt):
     # Try to extract a function name from the prompt, fallback to 'generated_function'
     match = re.search(r'(?:function|define|create|make|build|write|implement) (\w+)', prompt.lower())

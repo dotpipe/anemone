@@ -242,6 +242,16 @@ class NaturalCodeEngine:
             return json.load(f)
 
     def generate_code(self, prompt: str):
+        # DEBUG: Extract and print prompt pieces for analysis
+        import importlib.util, sys, os
+        gct_path = os.path.join(os.path.dirname(__file__), 'generate_code_templates.py')
+        if os.path.exists(gct_path):
+            spec = importlib.util.spec_from_file_location('generate_code_templates', gct_path)
+            gct = importlib.util.module_from_spec(spec)
+            sys.modules['generate_code_templates'] = gct
+            spec.loader.exec_module(gct)
+            if hasattr(gct, 'extract_prompt_pieces'):
+                gct.extract_prompt_pieces(prompt)
         """
         Answers coding prompts using definitions.json for general answers and math.json for math code, with a verbal cue for the math operation. Now supports inequalities and code comments.
         Uses the masterkey logic from generate_code_templates.py for loop/operation prompts.
@@ -280,6 +290,7 @@ class NaturalCodeEngine:
                     code = f"def {func_name}({params}):\n{indented_code}\n"
                 return code
         # Fallback to original logic if masterkey doesn't match
+        import re
         words = re.findall(r'\w+', lower_prompt)
         for word in words:
             self.start_inquiry_thread(word)

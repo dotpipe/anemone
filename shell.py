@@ -2,12 +2,11 @@
 
 
 from prompt_toolkit import prompt
-from eng1neer import load_definitions, respond
+from eng1neer import load_all_definitions, respond
 from new_natural_code_engine import NaturalCodeEngine
 
 def main():
-
-    defs = load_definitions()
+    defs = load_all_definitions()
     code_engine = NaturalCodeEngine('data')
 
     while True:
