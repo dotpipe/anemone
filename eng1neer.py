@@ -4,14 +4,19 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
     Load only those files, gather definitions for the term, and build a subject-specific response.
     """
     import json, os, re
-    # Helper for normalization
+    # --- Normalization helper ---
+    # Ensures consistent, lowercase, alphanumeric term matching
     def normalize(term):
+        """Normalize a term to lowercase alphanumeric for consistent matching."""
         return re.sub(r'[^a-z0-9]', '', term.lower())
 
-    # Load associations
+    # --- Association loading ---
+    # Loads the main subject association file for fast lookup
     with open(assoc_path, 'r', encoding='utf-8') as f:
         assoc = json.load(f)
-    # Extract terms from prompt
+
+    # --- Term extraction and similarity import ---
+    # Extracts candidate terms from the prompt and prepares Levenshtein similarity
     import sys
     sys.path.append(os.path.dirname(__file__))
     try:
@@ -19,16 +24,24 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
     except ImportError:
         similarity = None
     terms = extract_terms(prompt)
-    # 1. Check thesaurus_assoc.json for direct match
+
+    # --- Prioritized lookup order for subject association ---
+    # 1. Direct match in thesaurus_assoc.json
+    # 2. Fuzzy match in word_freq.txt (Levenshtein)
+    # 3. Direct match in any data/*.json file
+    # 4. Direct match in code_dictionary.json
+    # 5. Direct match in definitions.json
+    # This order ensures the most relevant, subject-specific, and expressive definitions are used first.
     with open(assoc_path, 'r', encoding='utf-8') as f:
         assoc = json.load(f)
     filtered_terms = []
     for term in terms:
         term_l = term.lower().strip()
+        # --- 1. Direct subject association ---
         if term_l in assoc:
             filtered_terms.append(term_l)
             continue
-        # 2. Check word_freq.txt with Levenshtein
+        # --- 2. Fuzzy word match (Levenshtein) ---
         word_freq_path = os.path.join(os.path.dirname(__file__), 'word_freq.txt')
         with open(word_freq_path, 'r', encoding='utf-8') as wf:
             word_freq = [line.strip().lower() for line in wf if line.strip()]
@@ -45,7 +58,7 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
             if best_match in assoc:
                 filtered_terms.append(best_match)
                 continue
-        # 3. Check data/*.jsons for match
+        # --- 3. Direct match in any data/*.json file ---
         found_in_data = False
         for fname in os.listdir(data_dir):
             if fname.endswith('.json'):
@@ -61,7 +74,7 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
                     continue
         if found_in_data:
             continue
-        # 4. Check code_dictionary.json
+        # --- 4. code_dictionary.json ---
         code_dict_path = os.path.join(data_dir, 'code_dictionary.json')
         if os.path.exists(code_dict_path):
             with open(code_dict_path, 'r', encoding='utf-8') as fcd:
@@ -69,7 +82,7 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
             if term_l in code_dict:
                 filtered_terms.append(term_l)
                 continue
-        # 5. Check definitions.json
+        # --- 5. definitions.json ---
         definitions_path = os.path.join(data_dir, 'definitions.json')
         if os.path.exists(definitions_path):
             with open(definitions_path, 'r', encoding='utf-8') as fd:
@@ -77,7 +90,7 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
             if term_l in definitions:
                 filtered_terms.append(term_l)
                 continue
-        # If not found anywhere, skip
+        # --- If not found anywhere, skip this term ---
     if not filtered_terms:
         return "No subject-specific definitions found for your query."
     terms = filtered_terms
@@ -87,7 +100,8 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
     # Helper: blend multiple definitions with staleness detection
     def blend_definitions(def_list, subject=None):
         """
-        Blend a list of definition strings. If a definition is stale (does not mention the subject or drifts off-topic), close it off.
+        Blend a list of definition strings into a single output.
+        If a definition is stale (does not mention the subject or drifts off-topic), close it off early.
         """
         if not def_list:
             return ""
