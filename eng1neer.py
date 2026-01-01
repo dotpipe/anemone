@@ -577,26 +577,53 @@ def load_all_definitions() -> Dict[str, List[Dict[str, Any]]]:
 # Math helpers
 # ---------------------------------------------------------------------
 
-def try_eval_expression(text: str) -> Optional[float]:
+
+import ast
+import operator as op
+
+def try_eval_expression(text: str, variables: dict = None) -> Optional[float]:
     """
-    Try to evaluate a simple numeric expression like:
-    1+1, 2*3, (5+5)/2, 3^2
-
-    Allowed characters: digits, decimal point, + - * / ^ ( ) and spaces.
+    Evaluate a math expression with variables and correct order of operations.
+    Supports: +, -, *, /, **, %, parentheses, and variables.
+    Example: '2*x + 3*y', variables={'x': 4, 'y': 5}
     """
-    expr = text.strip()
-    if not expr:
+    if not text or not isinstance(text, str):
         return None
-
-    if not re.fullmatch(r"[0-9\.\+\-\*/\^\(\) ]+", expr):
-        return None
-
-    expr = expr.replace("^", "**")
+    expr = text.strip().replace('^', '**')
+    variables = variables or {}
+    # Supported operators
+    allowed_operators = {
+        ast.Add: op.add,
+        ast.Sub: op.sub,
+        ast.Mult: op.mul,
+        ast.Div: op.truediv,
+        ast.Pow: op.pow,
+        ast.Mod: op.mod,
+        ast.USub: op.neg,
+        ast.UAdd: op.pos
+    }
+    def eval_node(node):
+        if isinstance(node, ast.Num):
+            return node.n
+        elif isinstance(node, ast.BinOp):
+            left = eval_node(node.left)
+            right = eval_node(node.right)
+            return allowed_operators[type(node.op)](left, right)
+        elif isinstance(node, ast.UnaryOp):
+            operand = eval_node(node.operand)
+            return allowed_operators[type(node.op)](operand)
+        elif isinstance(node, ast.Name):
+            if node.id in variables:
+                return variables[node.id]
+            else:
+                raise ValueError(f"Unknown variable: {node.id}")
+        else:
+            raise TypeError(f"Unsupported expression: {ast.dump(node)}")
     try:
-        value = eval(expr, SAFE_GLOBALS, {})
+        parsed = ast.parse(expr, mode='eval')
+        return eval_node(parsed.body)
     except Exception:
         return None
-    return value
 
 
 def parse_math_exec(defs: Dict[str, List[Dict[str, Any]]], term: str, *args: float) -> Optional[Any]:
