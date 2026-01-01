@@ -5,3 +5,4 @@ numpy
 nltk
 prompt_toolkit
 wordfreq
+sympy
