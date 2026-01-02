@@ -8,7 +8,7 @@ import sys
 class ChatFrontend:
     def __init__(self, master):
         self.master = master
-        master.title("Ollama NLP Chat")
+        master.title("Anemone Chat")
         master.geometry("600x500")
         master.minsize(400, 300)
 
@@ -49,7 +49,7 @@ class ChatFrontend:
                 output = result.stdout.decode('utf-8').strip()
             except Exception as e:
                 output = f"[Error] {e}"
-            self.master.after(0, self.append_chat, f"Ollama: {output}\n")
+            self.master.after(0, self.append_chat, f"Anemone: {output}\n")
 
 if __name__ == "__main__":
     root = tk.Tk()
