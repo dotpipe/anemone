@@ -670,12 +670,16 @@ def pipeline_response(prompt, data_dir='data', settings=None):
     elif file_counts:
         top_file = max(file_counts.items(), key=lambda x: x[1])[0]
 
-    # collect clarifiers from that dictionary
+    # collect clarifiers from that dictionary (deduplicate by key)
     clarifiers = []
     if top_file and top_file in data_map:
         data = data_map[top_file]
-        keys_seen = set([m[2] for m in all_matches if m[1] == top_file])
+        keys_seen = list(dict.fromkeys([m[2] for m in all_matches if m[1] == top_file]))
+        seen_clarifier_keys = set()
         for k in keys_seen:
+            if k in seen_clarifier_keys:
+                continue
+            seen_clarifier_keys.add(k)
             val = data.get(k)
             if isinstance(val, list) and val:
                 for o in val:
@@ -719,11 +723,21 @@ def pipeline_response(prompt, data_dir='data', settings=None):
         temp_result = {'prompt': prompt, 'fragments': temp_fragments}
         try:
             texts = generate_variations_conditional(temp_result, steps=steps, positivity=positivity, minimal=minimal, reverse=settings.get('reverse', False), anchor_level='family', temperature=temperature, verbosity=settings.get('verbosity','long'))
-            related_texts = texts
+            # deduplicate while preserving order
+            seen_related = set()
+            uniques = []
+            for t in texts:
+                s = t if isinstance(t, str) else str(t)
+                if s not in seen_related:
+                    seen_related.add(s)
+                    uniques.append(t)
+            related_texts = uniques
         except Exception:
             related_texts = []
 
     # connect fragment with responses (before/after)
+    # deduplicate fragment responses across fragments
+    seen_fragment_responses = set()
     for frag in out['fragments']:
         best = None
         best_score = -1
@@ -736,7 +750,20 @@ def pipeline_response(prompt, data_dir='data', settings=None):
             resp = _render_from_taxons([best], positivity=positivity)
         else:
             resp = "(no clear match)"
-        frag['response_fragment'] = {'before': frag.get('fragment'), 'response': resp, 'after': ''}
+        # ensure response isn't a repeat; if it is, append a minimal disambiguator
+        resp_s = resp.strip()
+        if resp_s in seen_fragment_responses:
+            # try to make it unique by appending fragment keywords or a short suffix
+            kw = ','.join(frag.get('keywords',[])[:3])
+            suffix = f" ({kw})" if kw else ''
+            resp_s = resp_s + suffix
+            # if still duplicate, add index
+            idx = 1
+            while resp_s in seen_fragment_responses:
+                resp_s = resp_s + f" [{idx}]"
+                idx += 1
+        seen_fragment_responses.add(resp_s)
+        frag['response_fragment'] = {'before': frag.get('fragment'), 'response': resp_s, 'after': ''}
 
     # final textual response: smoother narrative from kingdom->type, include clarifiers and related texts
     def _smooth_value_text(v):
@@ -759,20 +786,29 @@ def pipeline_response(prompt, data_dir='data', settings=None):
         val = _smooth_value_text(main_taxon.get('value'))
 
         parts = []
-        parts.append(f"Focusing on {k} → {p} → {f},")
-        parts.append(f"the concept '{v}' resolves to {typ}.")
+        seen_parts = set()
+        def add_part(s):
+            if not s:
+                return
+            if s in seen_parts:
+                return
+            seen_parts.add(s)
+            parts.append(s)
+
+        add_part(f"Focusing on {k} → {p} → {f},")
+        add_part(f"the concept '{v}' resolves to {typ}.")
         if val:
-            parts.append(val)
+            add_part(val)
         if clarifiers:
             cl_lines = []
             for c in clarifiers[:4]:
                 syns = c.get('synonyms') or []
                 cl_lines.append(f"{c.get('key')}: {c.get('gloss') or '(no gloss)'}" + (f" (synonyms: {', '.join(syns)})" if syns else ""))
-            parts.append("Clarifiers: " + '; '.join(cl_lines))
+            add_part("Clarifiers: " + '; '.join(cl_lines))
         if related_texts:
-            parts.append("Related perspectives:")
+            add_part("Related perspectives:")
             for t in related_texts[:4]:
-                parts.append(str(t))
+                add_part(str(t))
         return '\n\n'.join(parts)
 
     text_narrative = _smooth_narrative(main_taxon, clarifiers, related_texts)
