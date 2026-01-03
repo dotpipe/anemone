@@ -6,7 +6,6 @@
       "exec": "lambda value: value"
     }
   ],
-
   "scarcity": [
     {
       "gloss": "the condition of limited resources and unlimited wants",
@@ -14,7 +13,6 @@
       "exec": "lambda resources, wants: resources < wants"
     }
   ],
-
   "supply_function": [
     {
       "gloss": "the relationship showing how quantity supplied changes with price",
@@ -22,7 +20,6 @@
       "exec": "lambda a, b, P: a + b * P"
     }
   ],
-
   "demand_function": [
     {
       "gloss": "the relationship showing how quantity demanded changes with price",
@@ -30,7 +27,6 @@
       "exec": "lambda a, b, P: a - b * P"
     }
   ],
-
   "equilibrium_price": [
     {
       "gloss": "the price at which quantity supplied equals quantity demanded",
@@ -38,7 +34,6 @@
       "exec": "lambda a_s, b_s, a_d, b_d: (a_d - a_s) / (b_s + b_d)"
     }
   ],
-
   "equilibrium_quantity": [
     {
       "gloss": "the quantity exchanged at the equilibrium price",
@@ -46,7 +41,6 @@
       "exec": "lambda a_s, b_s, P_eq: a_s + b_s * P_eq"
     }
   ],
-
   "elasticity_price_demand": [
     {
       "gloss": "the responsiveness of quantity demanded to a change in price",
@@ -54,7 +48,6 @@
       "exec": "lambda pctQ, pctP: pctQ / pctP"
     }
   ],
-
   "elasticity_price_supply": [
     {
       "gloss": "the responsiveness of quantity supplied to a change in price",
@@ -62,7 +55,6 @@
       "exec": "lambda pctQ, pctP: pctQ / pctP"
     }
   ],
-
   "total_revenue": [
     {
       "gloss": "the total income from selling a good or service",
@@ -70,7 +62,6 @@
       "exec": "lambda P, Q: P * Q"
     }
   ],
-
   "marginal_revenue": [
     {
       "gloss": "the additional revenue from selling one more unit",
@@ -78,7 +69,6 @@
       "exec": "lambda dTR, dQ: dTR / dQ"
     }
   ],
-
   "total_cost": [
     {
       "gloss": "the total economic cost of production",
@@ -86,7 +76,6 @@
       "exec": "lambda FC, VC: FC + VC"
     }
   ],
-
   "average_cost": [
     {
       "gloss": "the cost per unit of output",
@@ -94,7 +83,6 @@
       "exec": "lambda TC, Q: TC / Q"
     }
   ],
-
   "marginal_cost": [
     {
       "gloss": "the additional cost of producing one more unit",
@@ -102,7 +90,6 @@
       "exec": "lambda dTC, dQ: dTC / dQ"
     }
   ],
-
   "profit": [
     {
       "gloss": "the difference between total revenue and total cost",
@@ -110,7 +97,6 @@
       "exec": "lambda TR, TC: TR - TC"
     }
   ],
-
   "gdp_expenditure": [
     {
       "gloss": "the total value of goods and services produced in an economy",
@@ -118,7 +104,6 @@
       "exec": "lambda C, I, G, NX: C + I + G + NX"
     }
   ],
-
   "gdp_income": [
     {
       "gloss": "the total income earned by factors of production",
@@ -126,7 +111,6 @@
       "exec": "lambda w, r, i, p: w + r + i + p"
     }
   ],
-
   "inflation_rate": [
     {
       "gloss": "the percentage increase in the general price level",
@@ -134,7 +118,6 @@
       "exec": "lambda CPI_new, CPI_old: (CPI_new - CPI_old) / CPI_old"
     }
   ],
-
   "unemployment_rate": [
     {
       "gloss": "the percentage of the labor force that is unemployed",
@@ -142,7 +125,6 @@
       "exec": "lambda unemployed, labor_force: unemployed / labor_force"
     }
   ],
-
   "money_multiplier": [
     {
       "gloss": "the factor by which deposits expand in the banking system",
@@ -150,7 +132,6 @@
       "exec": "lambda rr: 1 / rr"
     }
   ],
-
   "present_value": [
     {
       "gloss": "the current value of a future payment",
@@ -158,12 +139,62 @@
       "exec": "lambda FV, r, n: FV / ((1 + r)**n)"
     }
   ],
-
   "future_value": [
     {
       "gloss": "the value of a present amount after interest accumulates",
       "formula": "FV = PV * (1 + r)^n",
       "exec": "lambda PV, r, n: PV * ((1 + r)**n)"
     }
+  ],
+  "glossary": [
+    "accumulates",
+    "amount",
+    "banking",
+    "change",
+    "changes",
+    "condition",
+    "cost",
+    "demanded",
+    "deposits",
+    "difference",
+    "earned",
+    "economy",
+    "equals",
+    "equilibrium",
+    "exchanged",
+    "expand",
+    "factor",
+    "factors",
+    "force",
+    "given",
+    "goods",
+    "income",
+    "increase",
+    "interest",
+    "labor",
+    "level",
+    "output",
+    "payment",
+    "percentage",
+    "price",
+    "produced",
+    "producing",
+    "production",
+    "profit",
+    "quantity",
+    "relationship",
+    "resources",
+    "responsiveness",
+    "revenue",
+    "scarcity",
+    "selling",
+    "service",
+    "services",
+    "showing",
+    "supplied",
+    "system",
+    "unit",
+    "value",
+    "wants"
   ]
 }

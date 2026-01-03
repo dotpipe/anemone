@@ -303,5 +303,8 @@
         "entails": 1
       }
     }
-  }
+  },
+  "glossary": [
+    "topics"
+  ]
 }

@@ -12,6 +12,12 @@ def strip_participles_from_end(text):
     return ' '.join(words)
 
 def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', data_dir='data') -> str:
+    # --- Context-aware answer splicing ---
+    # If previous answer exists, use it as context for the next answer
+    if not hasattr(respond_subject_specific, '_last_answer'):
+        respond_subject_specific._last_answer = ''
+    previous_answer = respond_subject_specific._last_answer
+
     """
     For each extracted term in the prompt, find all subject files (classifications) it appears in using thesaurus_assoc.json.
     Load only those files, gather definitions for the term, and build a subject-specific response.
@@ -36,7 +42,52 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
         from util_word_topic_lookup import similarity
     except ImportError:
         similarity = None
+    # --- Persistent subject memory ---
+    if not hasattr(respond_subject_specific, "_last_subject"):
+        respond_subject_specific._last_subject = None
     terms = extract_terms(prompt)
+    # Find the first noun (regular/proper) in the prompt
+    import string
+    prompt_tokens = re.findall(r"\b\w+\b", prompt)
+    def is_noun_candidate(word):
+        return word and word[0].isalpha() and word.lower() not in {"i","me","my","mine","myself","you","your","yours","yourself","yourselves","he","him","his","himself","she","her","hers","herself","it","its","itself","we","us","our","ours","ourselves","they","them","their","theirs","themselves","this","that","these","those","who","whom","whose","which","what","where","when","why","how"}
+    noun_in_prompt = next((w for w in prompt_tokens if is_noun_candidate(w)), None)
+    if noun_in_prompt:
+        respond_subject_specific._last_subject = noun_in_prompt
+    current_subject = respond_subject_specific._last_subject
+
+    # --- Domain lineage and sibling/subspecies logic ---
+    # For each filtered term, find its subject (file), type (term), synonyms (subspecies), and siblings (other terms in file)
+    domain_info = {}
+    for fname in os.listdir(data_dir):
+        if not fname.endswith('.json'):
+            continue
+        fpath = os.path.join(data_dir, fname)
+        try:
+            with open(fpath, 'r', encoding='utf-8') as fjson:
+                data = json.load(fjson)
+        except Exception:
+            continue
+        for term in terms:
+            if term in data:
+                entry = data[term]
+                # Synonyms (subspecies)
+                subspecies = set()
+                if isinstance(entry, list):
+                    for e in entry:
+                        if isinstance(e, dict) and 'synonyms' in e:
+                            subspecies.update(e['synonyms'])
+                elif isinstance(entry, dict) and 'synonyms' in entry:
+                    subspecies.update(entry['synonyms'])
+                # Siblings (other types in the same file)
+                siblings = [k for k in data.keys() if k != term]
+                domain_info[term] = {
+                    'kingdom': fname.replace('.json',''),
+                    'type': term,
+                    'subspecies': sorted(list(subspecies)),
+                    'siblings': siblings[:10]  # limit to 10 for brevity
+                }
+
 
     # --- Prioritized lookup order for subject association ---
     # 1. Direct match in thesaurus_assoc.json
@@ -118,9 +169,102 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
         """
         if not def_list:
             return ""
+        import re
+        # 100+ function words that cannot end a sentence
+        forbidden_endings = set([
+            'about','above','across','after','against','along','amid','among','around','as','at','because','before','behind','below','beneath','beside','besides','between','beyond','but','by','concerning','considering','despite','down','during','except','following','for','from','in','including','inside','into','like','minus','near','of','off','on','onto','opposite','out','outside','over','past','per','plus','regarding','round','save','since','than','through','to','toward','towards','under','underneath','unlike','until','up','upon','versus','via','with','within','without','aboard','alongside','amidst','amongst','apropos','athwart','barring','circa','cum','excepting','excluding','failing','notwithstanding','pace','pending','pro','qua','re','sans','than','throughout','till','times','upon','vis-à-vis','whereas','whether','yet',
+            'and','or','nor','so','for','yet','although','because','since','unless','until','while','whereas','though','lest','once','provided','rather','than','that','though','till','unless','until','when','whenever','where','wherever','whether','while','both','either','neither','not','only','but','also','even','if','just','still','then','too','very','well','now','however','thus','therefore','hence','moreover','furthermore','meanwhile','otherwise','besides','indeed','instead','likewise','next','still','then','yet','again','already','always','anyway','anywhere','everywhere','nowhere','somewhere','here','there','where','why','how','whose','which','what','who','whom','whichever','whatever','whoever','whomever',
+            'a','an','the','this','that','these','those','my','your','his','her','its','our','their','whose','each','every','either','neither','some','any','no','other','another','such','much','many','more','most','several','few','fewer','least','less','own','same','enough','all','both','half','one','two','three','first','second','next','last','another','certain','various','which','what','whose','whichever','whatever','whoever','whomever','somebody','someone','something','anybody','anyone','anything','everybody','everyone','everything','nobody','noone','nothing','one','oneself','ones','myself','yourself','himself','herself','itself','ourselves','yourselves','themselves','who','whom','whose','which','that','whichever','whatever','whoever','whomever'
+        ])
+        determiners = ["this", "that", "these", "those", "the", "a", "an"]
+        third_person_pronouns = ["he", "she", "it", "they"]
+        used_pronoun = False
+        def ends_with_forbidden(s):
+            words = s.rstrip('.').split()
+            return words and words[-1].lower() in forbidden_endings
+        def ends_with_noun(s):
+            # Heuristic: ends with a word that is not forbidden or a participle
+            words = s.rstrip('.').split()
+            if not words:
+                return False
+            last = words[-1].lower()
+            if last in forbidden_endings or is_participle(last):
+                return False
+            return True
+        def clean_sentence(s):
+            # Remove trailing forbidden words and participles
+            words = s.rstrip('.').split()
+            while words and (words[-1].lower() in forbidden_endings or is_participle(words[-1])):
+                words.pop()
+            return ' '.join(words)
+        def noun_phrase(noun):
+            # Use a determiner for singular, 'the' for plural or known
+            if not noun:
+                return ''
+            if noun.endswith('s') and not noun.endswith('ss'):
+                return f"the {noun}"
+            return f"a {noun}"
+        def append_poignant_subject(s, subj):
+            # Add a new sentence with the subject for poignancy, only once
+            if not subj:
+                return s
+            return s.rstrip('.') + f". {subj.capitalize()}."
+        # --- Circular, non-hardcoded blend ---
+        import random
+        if not def_list:
+            return ""
+        # Clean and split all fragments
+        # Store and expose fragments for restoration
+        fragments = [clean_sentence(strip_participles_from_end(d.strip())) for d in def_list if d.strip()]
+        fragments = [f for f in fragments if f]
+        if not fragments:
+            blend_definitions._last_fragments = []
+            return ""
+        blend_definitions._last_fragments = fragments.copy()
+        # Use the remembered subject if not provided
+        if subject is None and hasattr(respond_subject_specific, "_last_subject"):
+            subject = respond_subject_specific._last_subject
+        # Find the fragment with the subject or noun phrase
+        anchor_idx = 0
+        if subject:
+            subj_l = subject.lower()
+            for i, frag in enumerate(fragments):
+                if subj_l in frag.lower():
+                    anchor_idx = i
+                    break
+        # Move anchor to front, wrap tail if needed
+        ordered = fragments[anchor_idx:] + fragments[:anchor_idx]
+        # Remove duplicate subject mentions in other fragments
+        if subject:
+            subj_l = subject.lower()
+            for i in range(1, len(ordered)):
+                if subj_l in ordered[i].lower():
+                    ordered[i] = ordered[i].replace(subject, '').replace(subject.capitalize(), '').strip(', .')
+        # Join with commas and conjunctions
+        if len(ordered) == 1:
+            s = ordered[0]
+        elif len(ordered) == 2:
+            s = f"{ordered[0]}, and {ordered[1]}"
+        else:
+            s = ', '.join(ordered[:-1]) + f", and {ordered[-1]}"
+        s = s.strip(', .')
+        # Capitalize and ensure subject is present
+        if subject and not s.lower().startswith(subject.lower()):
+            s = f"{subject.capitalize()} is {s[0].lower() + s[1:]}"
+        else:
+            s = s[0].upper() + s[1:]
+        # Final clean-up: avoid forbidden endings, add noun phrase if needed
+        if ends_with_forbidden(s) and subject:
+            s = s + ' ' + noun_phrase(subject)
+        if not ends_with_noun(s) and subject:
+            s = s + ' ' + noun_phrase(subject)
+        if not ends_with_noun(s) and subject:
+            s = append_poignant_subject(s, noun_phrase(subject))
+        return s.strip()
         if len(def_list) == 1:
-            return strip_participles_from_end(def_list[0])
-        # Simple blend: join sentences, but detect staleness
+            s = strip_participles_from_end(def_list[0])
+            s = clean_sentence(s)
+            return s
         output = []
         subject = subject.lower() if subject else None
         stale_phrase = " (definition ends here due to lack of subject relevance)"
@@ -129,11 +273,18 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
             # Staleness: if subject is not mentioned in the last 15 words, or definition is too generic
             last_words = d_stripped.lower().split()[-15:]
             if subject and subject not in last_words and (len(d_stripped) > 40):
+                d_stripped = clean_sentence(d_stripped)
                 output.append(d_stripped + stale_phrase)
                 break
+            d_stripped = clean_sentence(d_stripped)
             output.append(d_stripped)
+        # Join, then ensure the result ends on a noun/clarifier
         blended = ' '.join(output)
-        return strip_participles_from_end(blended)
+        blended = clean_sentence(blended)
+        # If the last word is not a noun, try to append a clarifier and the subject noun
+        if not ends_with_noun(blended) and subject:
+            blended = blended + f" {subject}"
+        return blended.strip()
 
     # Define file priority order (customize as needed)
     file_priority = [
@@ -241,11 +392,19 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
     # Replace each word in the prompt with its subject-specific definition tidbit
     prompt_tokens = re.findall(r"\b\w+\b", prompt)
     token_defs = {}
+    # --- Taxonomy-aware source selection ---
+    prompt_lower = prompt.lower()
+    prompt_domains = set()
+    # Heuristic: if a domain/subject file name is mentioned in the prompt, prefer it
+    for fname in ordered_files:
+        domain = fname.replace('.json','').lower()
+        if domain in prompt_lower:
+            prompt_domains.add(domain)
+
     for term in terms:
-        # Find the best subject-specific definition tidbit from all sources, always including definitions.json
         best_tidbit = None
         best_score = -1
-        prompt_lower = prompt.lower()
+        best_file = None
         for fname in ordered_files:
             entry = file_term_defs.get(fname, {}).get(term)
             if entry:
@@ -266,20 +425,25 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
                                 candidates.append(e['gloss'])
                         elif isinstance(e, str):
                             candidates.append(e)
-                # Score each candidate for contextual relevance
+                # Score each candidate for contextual/domain relevance
                 for cand in candidates:
                     cand_l = cand.lower()
-                    # Score: +2 if any prompt word in definition, -2 if unrelated domain (e.g., baseball, sport, etc.)
                     score = 0
-                    if any(w in cand_l for w in prompt_lower.split()):
-                        score += 2
+                    # Strongly prefer if the file's domain is mentioned in the prompt
+                    domain = fname.replace('.json','').lower()
+                    if domain in prompt_domains:
+                        score += 10
                     # Prefer longer, more descriptive definitions
                     score += min(len(cand_l) // 50, 2)
+                    # Prefer if any prompt word is in the definition
+                    if any(w in cand_l for w in prompt_lower.split()):
+                        score += 2
+                    # Prefer deeper taxonomy (subject file lower in file_priority list)
+                    score += (len(ordered_files) - ordered_files.index(fname))
                     if score > best_score:
                         best_score = score
                         best_tidbit = cand
-            if best_tidbit and best_score >= 0:
-                break
+                        best_file = fname
         if best_tidbit and best_score >= 0:
             token_defs[term] = best_tidbit
 
@@ -302,55 +466,53 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
     subject_terms = set(terms)
     referenced_later = any(t.lower() in subject_terms for t in prompt_tokens[1:])
 
-    # Compose a full sentence using the best definitions and context
-    # Always include at least one noun/noun phrase from the prompt as the subject
-    import re
-    def is_noun_like(word):
-        # Heuristic: not a pronoun, not a verb, not a stopword, not a number
-        return word.lower() not in personal_pronouns and word.isalpha() and len(word) > 1
-
-    used_terms = [t for t in terms if t in token_defs]
-    # If no used_terms, try to extract a noun/noun phrase from the prompt
-    if not used_terms:
-        # Try to extract a noun/noun phrase from the prompt using regex and stopword filtering
-        import re
-        prompt_tokens = re.findall(r"\b\w+\b", prompt)
-        stopwords = {
-            'what','which','who','whom','whose','when','where','why','how','is','are','was','were','do','does','did','can','could','will','would','should','has','have','had','be','am','being','been','get','got','gets','make','makes','made','go','goes','went','gone','see','seen','say','says','said','know','knows','knew','think','thinks','thought','want','wants','wanted','need','needs','needed','use','uses','used','like','likes','liked','give','gives','gave','find','finds','found','tell','tells','told','work','works','worked','call','calls','called','try','tries','tried','ask','asks','asked','feel','feels','felt','leave','leaves','left','put','puts','keep','keeps','kept','let','lets','begin','begins','began','begun','seem','seems','seemed','help','helps','helped','talk','talks','talked','turn','turns','turned','start','starts','started','show','shows','showed','hear','hears','heard','play','plays','played','run','runs','ran','move','moves','moved','live','lives','lived','believe','believes','believed','bring','brings','brought','happen','happens','happened','write','writes','wrote','written','provide','provides','provided','sit','sits','sat','stand','stands','stood','lose','loses','lost','pay','pays','paid','meet','meets','met','include','includes','included','continue','continues','continued','set','sets','learn','learns','learned','change','changes','changed','lead','leads','led','understand','understands','understood','watch','watches','watched','follow','follows','followed','stop','stops','stopped','create','creates','created','speak','speaks','spoke','spoken','read','reads','read','allow','allows','allowed','add','adds','added','spend','spends','spent','grow','grows','grew','grown','open','opens','opened','walk','walks','walked','win','wins','won','offer','offers','offered','remember','remembers','remembered','love','loves','loved','consider','considers','considered','appear','appears','appeared','buy','buys','bought','wait','waits','waited','serve','serves','served','die','dies','died','send','sends','sent','expect','expects','expected','build','builds','built','stay','stays','stayed','fall','falls','fell','fallen','cut','cuts','cut','reach','reaches','reached','kill','kills','killed','remain','remains','remained',"the","a","an","of","to","in","for","on","with","at","by","from","up","about","into","over","after","under","again","further","then","once","here","there","when","where","why","how","all","any","both","each","few","more","most","other","some","such","no","nor","not","only","own","same","so","than","too","very","s","t","can","will","just","don","should","now"
-        }
-        fallback_nouns = [w for w in prompt_tokens if w.lower() not in stopwords and w.isalpha() and len(w) > 1]
-        if fallback_nouns:
-            used_terms = [fallback_nouns[0]]
-            token_defs[used_terms[0]] = f"a concept or entity referenced in the prompt."
-        else:
-            # As a last resort, echo the whole prompt as a concept
-            used_terms = [prompt.strip() or "subject"]
-            token_defs[used_terms[0]] = f"a concept or entity referenced in the prompt."
-
-    # Affirmative/contextual phrases
+    # --- Compose response with domain lineage and siblings ---
+    import random
     affirmatives = [
         "Certainly.", "Of course.", "Here's what I found:", "Affirmative.", "Let me explain:", "Absolutely.", "Here's the information:", "Sure.", "Indeed.", "As requested:", "Here's a summary:", "Let me clarify:", "Here's what the data shows:", "According to the data:", "Based on available information:", "Here's what I know:"
     ]
-    import random
     response_lines = []
     if skip_first and not referenced_later:
-        # Skip the first pronoun in the output
         pass
     else:
         response_lines.append(random.choice(affirmatives))
 
-    for t in used_terms:
-        definition = token_defs[t]
-        # Compose a natural sentence
-        def_l = definition.lower()
-        t_l = t.lower()
-        if def_l.startswith(t_l):
-            sent = definition[0].upper() + definition[1:]
-        else:
-            sent = f"{t.capitalize()} is {definition.strip('. ')}."
-        response_lines.append(sent)
+    affirmations = [
+        "Absolutely!", "You got it!", "Here's something cool:", "Let's explore:", "For sure!", "Glad you asked!", "Here's a fun fact:", "Indeed!", "With pleasure!", "Let's dive in!"
+    ]
+    new_fragments = []
+    for t in terms:
+        info = domain_info.get(t)
+        definition = token_defs.get(t)
+        if info:
+            sentence = random.choice(affirmations) + " "
+            if info['subspecies']:
+                noun_taxonomy = f"In the world of {info['kingdom']}, '{info['type']}' (sometimes called {', '.join(info['subspecies'])})"
+            else:
+                noun_taxonomy = f"In the world of {info['kingdom']}, '{info['type']}'"
+            if definition:
+                sentence += f"{noun_taxonomy} means {definition.strip('. ')}."
+            else:
+                sentence += f"{noun_taxonomy} is a fascinating concept!"
+            new_fragments.append(sentence)
+        elif definition:
+            sentence = random.choice(affirmations) + f" {t.capitalize()} means {definition.strip('. ')}."
+            new_fragments.append(sentence)
 
+    # Remove from previous_answer any fragments not related to the new prompt's terms
+    import re
+    def fragment_related_to_terms(fragment, terms):
+        for t in terms:
+            if re.search(rf"\b{re.escape(t)}\b", fragment, re.IGNORECASE):
+                return True
+        return False
+    prev_fragments = re.split(r'(?<=[.!?])\s+', previous_answer.strip()) if previous_answer else []
+    kept_prev = [frag for frag in prev_fragments if fragment_related_to_terms(frag, terms)]
+    # Splice in new masterkey'd fragments
+    response_lines = kept_prev + new_fragments
     response = ' '.join(response_lines)
+    # Store this answer for next turn
+    respond_subject_specific._last_answer = response
     return response if response.strip() else "No subject-specific definitions found for your query."
 def extract_subject_modifier_pairs(text: str, defs: dict) -> list:
     """
@@ -1084,4 +1246,13 @@ def respond(defs: Dict[str, List[Dict[str, Any]]], text: str) -> str:
 # ---------------------------------------------------------------------
 # Simple CLI loop for manual testing
 # ---------------------------------------------------------------------
+
+def test_blend_fragments():
+    """Test and print the last sentence fragments used in blending."""
+    if hasattr(blend_definitions, '_last_fragments'):
+        print("Fragments used in last blend:")
+        for i, frag in enumerate(blend_definitions._last_fragments, 1):
+            print(f"Fragment {i}: {frag}")
+    else:
+        print("No fragments stored yet.")
 

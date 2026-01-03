@@ -118,7 +118,6 @@
       "exec": "lambda expr: eval(expr)"
     }
   ],
-
   "greater_than": [
     {
       "gloss": "a comparison showing one quantity exceeds another",
@@ -182,7 +181,6 @@
       "exec": "lambda x, a: abs(x) > a"
     }
   ],
-
   "equation": [
     {
       "gloss": "a statement showing that two mathematical expressions are equal",
@@ -232,7 +230,6 @@
       "exec": "lambda a1, b1, c1, a2, b2, c2: ((c1*b2 - c2*b1) / (a1*b2 - a2*b1), (a1*c2 - a2*c1) / (a1*b2 - a2*b1))"
     }
   ],
-
   "quadratic_equation": [
     {
       "gloss": "a second degree polynomial equation",
@@ -261,7 +258,6 @@
       "exec": "lambda a, b: -b / (2*a)"
     }
   ],
-
   "polynomial": [
     {
       "gloss": "an expression made of variables and coefficients combined by addition and multiplication",
@@ -269,7 +265,6 @@
       "exec": "lambda coeffs, x: sum(c * x**i for i, c in enumerate(coeffs))"
     }
   ],
-
   "sine": [
     {
       "gloss": "the ratio of the opposite side to the hypotenuse in a right triangle",
@@ -291,7 +286,6 @@
       "exec": "lambda math, theta: math.tan(theta)"
     }
   ],
-
   "radians_to_degrees": [
     {
       "gloss": "converting an angle from radians to degrees",
@@ -306,7 +300,6 @@
       "exec": "lambda math, deg: deg * math.pi / 180.0"
     }
   ],
-
   "distance_1d": [
     {
       "gloss": "the distance between two points on a line",
@@ -335,7 +328,6 @@
       "exec": "lambda x1, y1, x2, y2: (y2 - y1) / (x2 - x1)"
     }
   ],
-
   "area_rectangle": [
     {
       "gloss": "the measure of space enclosed by a rectangle",
@@ -371,7 +363,6 @@
       "exec": "lambda a, b: (a**2 + b**2)**0.5"
     }
   ],
-
   "volume_cube": [
     {
       "gloss": "the space contained within a cube",
@@ -400,7 +391,6 @@
       "exec": "lambda math, r: (4.0/3.0) * math.pi * r**3"
     }
   ],
-
   "mean": [
     {
       "gloss": "the average value of a data set",
@@ -463,6 +453,139 @@
       "formula": "P(A or B) = P(A) + P(B)",
       "exec": "lambda pA, pB: pA + pB"
     }
+  ],
+  "glossary": [
+    "addition",
+    "angle",
+    "appears",
+    "average",
+    "bound",
+    "bounds",
+    "box",
+    "chance",
+    "change",
+    "changing",
+    "circle",
+    "circumference",
+    "coefficients",
+    "combined",
+    "combining",
+    "comparison",
+    "compound",
+    "computing",
+    "contained",
+    "converting",
+    "coordinate",
+    "cosine",
+    "cube",
+    "cubed",
+    "cylinder",
+    "data",
+    "degree",
+    "degrees",
+    "determines",
+    "deviation",
+    "difference",
+    "discriminant",
+    "distance",
+    "divided",
+    "dividing",
+    "division",
+    "enclosed",
+    "equation",
+    "equations",
+    "evaluating",
+    "event",
+    "events",
+    "exceeds",
+    "exponent",
+    "expression",
+    "expressions",
+    "finding",
+    "given",
+    "graph",
+    "groups",
+    "halfway",
+    "hypotenuse",
+    "inequality",
+    "integer",
+    "inverse",
+    "isolating",
+    "kept",
+    "legs",
+    "lies",
+    "line",
+    "made",
+    "mean",
+    "measure",
+    "measuring",
+    "median",
+    "mode",
+    "modulus",
+    "multiplication",
+    "multiplied",
+    "multiplying",
+    "nature",
+    "negation",
+    "number",
+    "occurring",
+    "occurs",
+    "parabola",
+    "parentheses",
+    "part",
+    "parts",
+    "percent",
+    "percentage",
+    "plane",
+    "point",
+    "points",
+    "polynomial",
+    "population",
+    "probability",
+    "produce",
+    "produces",
+    "product",
+    "quantities",
+    "quantity",
+    "quotient",
+    "radians",
+    "raising",
+    "rate",
+    "ratio",
+    "rectangle",
+    "relationship",
+    "remainder",
+    "removing",
+    "repeated",
+    "requires",
+    "root",
+    "roots",
+    "rule",
+    "sequence",
+    "set",
+    "showing",
+    "side",
+    "sides",
+    "sine",
+    "slope",
+    "solving",
+    "space",
+    "splitting",
+    "square",
+    "squared",
+    "statement",
+    "subtraction",
+    "sum",
+    "system",
+    "tangent",
+    "total",
+    "triangle",
+    "undoing",
+    "value",
+    "values",
+    "variables",
+    "variance",
+    "vertex",
+    "zero"
   ]
 }
-

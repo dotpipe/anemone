@@ -6,7 +6,6 @@
       "exec": "lambda a, b: complex(a, b)"
     }
   ],
-
   "real_part": [
     {
       "gloss": "the real component of a complex number",
@@ -14,7 +13,6 @@
       "exec": "lambda z: z.real"
     }
   ],
-
   "imaginary_part": [
     {
       "gloss": "the imaginary component of a complex number",
@@ -22,7 +20,6 @@
       "exec": "lambda z: z.imag"
     }
   ],
-
   "complex_conjugate": [
     {
       "gloss": "a complex number with the sign of the imaginary part reversed",
@@ -30,7 +27,6 @@
       "exec": "lambda z: complex(z.real, -z.imag)"
     }
   ],
-
   "magnitude": [
     {
       "gloss": "the distance of a complex number from the origin",
@@ -38,7 +34,6 @@
       "exec": "lambda z: (z.real**2 + z.imag**2)**0.5"
     }
   ],
-
   "argument": [
     {
       "gloss": "the angle a complex number makes with the positive real axis",
@@ -46,7 +41,6 @@
       "exec": "lambda math, z: math.atan2(z.imag, z.real)"
     }
   ],
-
   "addition": [
     {
       "gloss": "adding two complex numbers componentwise",
@@ -54,7 +48,6 @@
       "exec": "lambda z1, z2: z1 + z2"
     }
   ],
-
   "subtraction": [
     {
       "gloss": "subtracting two complex numbers componentwise",
@@ -62,7 +55,6 @@
       "exec": "lambda z1, z2: z1 - z2"
     }
   ],
-
   "multiplication": [
     {
       "gloss": "multiplying two complex numbers using distributive property",
@@ -70,7 +62,6 @@
       "exec": "lambda z1, z2: z1 * z2"
     }
   ],
-
   "division": [
     {
       "gloss": "dividing two complex numbers using conjugates",
@@ -78,7 +69,6 @@
       "exec": "lambda z1, z2: z1 / z2"
     }
   ],
-
   "polar_form": [
     {
       "gloss": "representing a complex number using magnitude and angle",
@@ -86,7 +76,6 @@
       "exec": "lambda math, r, theta: complex(r*math.cos(theta), r*math.sin(theta))"
     }
   ],
-
   "euler_formula": [
     {
       "gloss": "the exponential representation of complex numbers",
@@ -94,7 +83,6 @@
       "exec": "lambda math, theta: complex(math.cos(theta), math.sin(theta))"
     }
   ],
-
   "power_polar": [
     {
       "gloss": "raising a complex number to an integer power using polar form",
@@ -102,12 +90,45 @@
       "exec": "lambda math, r, theta, n: complex((r**n)*math.cos(n*theta), (r**n)*math.sin(n*theta))"
     }
   ],
-
   "root_polar": [
     {
       "gloss": "the nth roots of a complex number using polar form",
       "formula": "z^(1/n) = r^(1/n) * (cos((theta + 2*pi*k)/n) + i*sin((theta + 2*pi*k)/n))",
       "exec": "lambda math, r, theta, n, k: complex((r**(1.0/n))*math.cos((theta + 2*math.pi*k)/n), (r**(1.0/n))*math.sin((theta + 2*math.pi*k)/n))"
     }
+  ],
+  "glossary": [
+    "adding",
+    "addition",
+    "angle",
+    "argument",
+    "axis",
+    "component",
+    "componentwise",
+    "conjugates",
+    "distance",
+    "dividing",
+    "division",
+    "form",
+    "integer",
+    "magnitude",
+    "makes",
+    "multiplication",
+    "multiplying",
+    "number",
+    "numbers",
+    "origin",
+    "part",
+    "power",
+    "property",
+    "raising",
+    "representation",
+    "representing",
+    "reversed",
+    "roots",
+    "sign",
+    "subtracting",
+    "subtraction",
+    "using"
   ]
 }

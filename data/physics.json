@@ -6,7 +6,6 @@
       "exec": "lambda d, t: d / t"
     }
   ],
-
   "velocity": [
     {
       "gloss": "the rate of change of displacement with respect to time",
@@ -14,7 +13,6 @@
       "exec": "lambda dx, t: dx / t"
     }
   ],
-
   "acceleration": [
     {
       "gloss": "the rate of change of velocity with respect to time",
@@ -22,7 +20,6 @@
       "exec": "lambda dv, t: dv / t"
     }
   ],
-
   "force": [
     {
       "gloss": "the product of mass and acceleration",
@@ -30,7 +27,6 @@
       "exec": "lambda m, a: m * a"
     }
   ],
-
   "weight": [
     {
       "gloss": "the force due to gravity on a mass",
@@ -38,7 +34,6 @@
       "exec": "lambda m, g: m * g"
     }
   ],
-
   "momentum": [
     {
       "gloss": "the product of mass and velocity",
@@ -46,7 +41,6 @@
       "exec": "lambda m, v: m * v"
     }
   ],
-
   "kinetic_energy": [
     {
       "gloss": "the energy of motion",
@@ -54,7 +48,6 @@
       "exec": "lambda m, v: 0.5 * m * (v ** 2)"
     }
   ],
-
   "potential_energy_gravitational": [
     {
       "gloss": "the energy stored due to height in a gravitational field",
@@ -62,7 +55,6 @@
       "exec": "lambda m, g, h: m * g * h"
     }
   ],
-
   "work": [
     {
       "gloss": "the product of force and displacement in the direction of the force",
@@ -70,7 +62,6 @@
       "exec": "lambda F, d: F * d"
     }
   ],
-
   "power": [
     {
       "gloss": "the rate at which work is done",
@@ -78,7 +69,6 @@
       "exec": "lambda W, t: W / t"
     }
   ],
-
   "ohms_law": [
     {
       "gloss": "the relationship between voltage, current, and resistance",
@@ -86,7 +76,6 @@
       "exec": "lambda I, R: I * R"
     }
   ],
-
   "electrical_power": [
     {
       "gloss": "the rate of electrical energy transfer",
@@ -94,7 +83,6 @@
       "exec": "lambda V, I: V * I"
     }
   ],
-
   "coulombs_law": [
     {
       "gloss": "the electrostatic force between two point charges",
@@ -102,7 +90,6 @@
       "exec": "lambda k, q1, q2, r: k * q1 * q2 / (r ** 2)"
     }
   ],
-
   "pressure": [
     {
       "gloss": "force applied per unit area",
@@ -110,7 +97,6 @@
       "exec": "lambda F, A: F / A"
     }
   ],
-
   "density": [
     {
       "gloss": "mass per unit volume",
@@ -118,7 +104,6 @@
       "exec": "lambda m, V: m / V"
     }
   ],
-
   "hookes_law": [
     {
       "gloss": "the restoring force of a spring is proportional to displacement",
@@ -126,7 +111,6 @@
       "exec": "lambda k, x: k * x"
     }
   ],
-
   "wave_speed": [
     {
       "gloss": "the speed of a wave",
@@ -134,7 +118,6 @@
       "exec": "lambda f, wavelength: f * wavelength"
     }
   ],
-
   "frequency": [
     {
       "gloss": "the number of cycles per unit time",
@@ -142,7 +125,6 @@
       "exec": "lambda T: 1 / T"
     }
   ],
-
   "period": [
     {
       "gloss": "the time required for one complete cycle",
@@ -150,7 +132,6 @@
       "exec": "lambda f: 1 / f"
     }
   ],
-
   "ideal_gas_law": [
     {
       "gloss": "the relationship between pressure, volume, temperature, and moles of gas",
@@ -158,7 +139,6 @@
       "exec": "lambda n, R, T, V: (n * R * T) / V"
     }
   ],
-
   "centripetal_force": [
     {
       "gloss": "the force required to keep an object moving in a circular path",
@@ -166,7 +146,6 @@
       "exec": "lambda m, v, r: m * (v ** 2) / r"
     }
   ],
-
   "centripetal_acceleration": [
     {
       "gloss": "the acceleration of an object moving in a circular path",
@@ -174,7 +153,6 @@
       "exec": "lambda v, r: (v ** 2) / r"
     }
   ],
-
   "mechanical_advantage_lever": [
     {
       "gloss": "the ratio of output force to input force for a lever",
@@ -182,12 +160,71 @@
       "exec": "lambda d_in, d_out: d_in / d_out"
     }
   ],
-
   "mechanical_advantage_pulley": [
     {
       "gloss": "the mechanical advantage of a pulley system",
       "formula": "MA = number_of_supporting_strings",
       "exec": "lambda n: n"
     }
+  ],
+  "glossary": [
+    "acceleration",
+    "advantage",
+    "applied",
+    "area",
+    "change",
+    "charges",
+    "cycle",
+    "cycles",
+    "density",
+    "direction",
+    "displacement",
+    "distance",
+    "done",
+    "energy",
+    "field",
+    "force",
+    "frequency",
+    "gas",
+    "gravity",
+    "height",
+    "input",
+    "keep",
+    "lever",
+    "mass",
+    "moles",
+    "momentum",
+    "motion",
+    "moving",
+    "number",
+    "output",
+    "path",
+    "period",
+    "point",
+    "power",
+    "pressure",
+    "product",
+    "pulley",
+    "rate",
+    "ratio",
+    "relationship",
+    "required",
+    "resistance",
+    "respect",
+    "restoring",
+    "speed",
+    "spring",
+    "stored",
+    "system",
+    "temperature",
+    "time",
+    "transfer",
+    "unit",
+    "velocity",
+    "voltage",
+    "volume",
+    "wave",
+    "weight",
+    "work"
   ]
 }

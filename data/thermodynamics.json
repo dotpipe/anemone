@@ -6,7 +6,6 @@
       "exec": "lambda C: (9.0/5.0)*C + 32"
     }
   ],
-
   "temperature_conversion_f_to_c": [
     {
       "gloss": "convert temperature from Fahrenheit to Celsius",
@@ -14,7 +13,6 @@
       "exec": "lambda F: (5.0/9.0)*(F - 32)"
     }
   ],
-
   "temperature_conversion_c_to_k": [
     {
       "gloss": "convert temperature from Celsius to Kelvin",
@@ -22,7 +20,6 @@
       "exec": "lambda C: C + 273.15"
     }
   ],
-
   "first_law_thermodynamics": [
     {
       "gloss": "the change in internal energy equals heat added minus work done",
@@ -30,7 +27,6 @@
       "exec": "lambda Q, W: Q - W"
     }
   ],
-
   "heat_transfer": [
     {
       "gloss": "heat transferred due to temperature change",
@@ -38,7 +34,6 @@
       "exec": "lambda m, c, dT: m * c * dT"
     }
   ],
-
   "heat_transfer_phase_change": [
     {
       "gloss": "heat required for a phase change at constant temperature",
@@ -46,7 +41,6 @@
       "exec": "lambda m, L: m * L"
     }
   ],
-
   "ideal_gas_law": [
     {
       "gloss": "relationship between pressure, volume, temperature, and moles of gas",
@@ -54,7 +48,6 @@
       "exec": "lambda P, V, n, R, T: P * V - n * R * T"
     }
   ],
-
   "work_isothermal_expansion": [
     {
       "gloss": "work done by an ideal gas during isothermal expansion",
@@ -62,7 +55,6 @@
       "exec": "lambda math, n, R, T, V1, V2: n * R * T * math.log(V2 / V1)"
     }
   ],
-
   "enthalpy_change": [
     {
       "gloss": "change in enthalpy for constant pressure processes",
@@ -70,7 +62,6 @@
       "exec": "lambda m, cp, dT: m * cp * dT"
     }
   ],
-
   "entropy_change_isothermal": [
     {
       "gloss": "entropy change for an isothermal process",
@@ -78,7 +69,6 @@
       "exec": "lambda Q, T: Q / T"
     }
   ],
-
   "entropy_change_temperature": [
     {
       "gloss": "entropy change for heating or cooling at constant heat capacity",
@@ -86,7 +76,6 @@
       "exec": "lambda math, m, c, T1, T2: m * c * math.log(T2 / T1)"
     }
   ],
-
   "thermal_efficiency_heat_engine": [
     {
       "gloss": "efficiency of a heat engine",
@@ -94,7 +83,6 @@
       "exec": "lambda W_out, Q_in: W_out / Q_in"
     }
   ],
-
   "carnot_efficiency": [
     {
       "gloss": "maximum theoretical efficiency of a heat engine",
@@ -102,7 +90,6 @@
       "exec": "lambda T_hot, T_cold: 1 - (T_cold / T_hot)"
     }
   ],
-
   "thermal_conduction": [
     {
       "gloss": "rate of heat transfer through a material",
@@ -110,7 +97,6 @@
       "exec": "lambda k, A, dT, L: k * A * dT / L"
     }
   ],
-
   "thermal_expansion_linear": [
     {
       "gloss": "change in length due to temperature change",
@@ -118,12 +104,48 @@
       "exec": "lambda alpha, L0, dT: alpha * L0 * dT"
     }
   ],
-
   "thermal_expansion_volume": [
     {
       "gloss": "change in volume due to temperature change",
       "formula": "delta_V = beta * V0 * delta_T",
       "exec": "lambda beta, V0, dT: beta * V0 * dT"
     }
+  ],
+  "glossary": [
+    "added",
+    "capacity",
+    "celsius",
+    "change",
+    "cooling",
+    "done",
+    "efficiency",
+    "energy",
+    "engine",
+    "enthalpy",
+    "entropy",
+    "equals",
+    "expansion",
+    "fahrenheit",
+    "gas",
+    "heat",
+    "heating",
+    "ideal",
+    "kelvin",
+    "length",
+    "material",
+    "minus",
+    "moles",
+    "phase",
+    "pressure",
+    "process",
+    "processes",
+    "rate",
+    "relationship",
+    "required",
+    "temperature",
+    "transfer",
+    "transferred",
+    "volume",
+    "work"
   ]
 }

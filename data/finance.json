@@ -6,7 +6,6 @@
       "exec": "lambda P, r, t: P * r * t"
     }
   ],
-
   "compound_interest": [
     {
       "gloss": "interest calculated on the principal and accumulated interest",
@@ -14,7 +13,6 @@
       "exec": "lambda P, r, n, t: P * ((1 + r/n)**(n*t))"
     }
   ],
-
   "future_value": [
     {
       "gloss": "the value of a present amount after interest accumulates",
@@ -22,7 +20,6 @@
       "exec": "lambda PV, r, n: PV * ((1 + r)**n)"
     }
   ],
-
   "present_value": [
     {
       "gloss": "the current value of a future payment",
@@ -30,7 +27,6 @@
       "exec": "lambda FV, r, n: FV / ((1 + r)**n)"
     }
   ],
-
   "discount_factor": [
     {
       "gloss": "the factor used to convert future value into present value",
@@ -38,7 +34,6 @@
       "exec": "lambda r, n: 1 / ((1 + r)**n)"
     }
   ],
-
   "annuity_future_value": [
     {
       "gloss": "the future value of equal payments made at regular intervals",
@@ -46,7 +41,6 @@
       "exec": "lambda PMT, r, n: PMT * (((1 + r)**n - 1) / r)"
     }
   ],
-
   "annuity_present_value": [
     {
       "gloss": "the present value of equal payments made at regular intervals",
@@ -54,7 +48,6 @@
       "exec": "lambda PMT, r, n: PMT * (1 - (1 + r)**(-n)) / r"
     }
   ],
-
   "loan_payment": [
     {
       "gloss": "the fixed payment required to amortize a loan",
@@ -62,7 +55,6 @@
       "exec": "lambda P, r, n: P * r * ((1 + r)**n) / (((1 + r)**n) - 1)"
     }
   ],
-
   "amortization_balance": [
     {
       "gloss": "the remaining balance on a loan after k payments",
@@ -70,7 +62,6 @@
       "exec": "lambda P, r, k, PMT: P*((1+r)**k) - PMT*(((1+r)**k - 1)/r)"
     }
   ],
-
   "return_rate": [
     {
       "gloss": "the percentage gain or loss on an investment",
@@ -78,7 +69,6 @@
       "exec": "lambda V_final, V_initial: (V_final - V_initial) / V_initial"
     }
   ],
-
   "expected_return": [
     {
       "gloss": "the weighted average return of possible outcomes",
@@ -86,7 +76,6 @@
       "exec": "lambda ps, rs: sum(ps[i] * rs[i] for i in range(len(ps)))"
     }
   ],
-
   "portfolio_return": [
     {
       "gloss": "the weighted average return of assets in a portfolio",
@@ -94,7 +83,6 @@
       "exec": "lambda ws, rs: sum(ws[i] * rs[i] for i in range(len(ws)))"
     }
   ],
-
   "portfolio_variance": [
     {
       "gloss": "the variance of a two asset portfolio",
@@ -102,7 +90,6 @@
       "exec": "lambda w1, w2, s1, s2, cov12: w1**2 * s1**2 + w2**2 * s2**2 + 2*w1*w2*cov12"
     }
   ],
-
   "capital_asset_pricing_model": [
     {
       "gloss": "the expected return of an asset based on risk",
@@ -110,7 +97,6 @@
       "exec": "lambda Rf, beta, Rm: Rf + beta*(Rm - Rf)"
     }
   ],
-
   "sharpe_ratio": [
     {
       "gloss": "a measure of risk adjusted return",
@@ -118,7 +104,6 @@
       "exec": "lambda Rp, Rf, sd: (Rp - Rf) / sd"
     }
   ],
-
   "beta": [
     {
       "gloss": "a measure of an asset's sensitivity to market movements",
@@ -126,7 +111,6 @@
       "exec": "lambda cov, var_m: cov / var_m"
     }
   ],
-
   "bond_price": [
     {
       "gloss": "the present value of a bond's coupon payments and face value",
@@ -134,12 +118,58 @@
       "exec": "lambda C, r, n, F: sum(C/((1+r)**t) for t in range(1, n+1)) + F/((1+r)**n)"
     }
   ],
-
   "bond_yield_to_maturity": [
     {
       "gloss": "the discount rate that sets the bond price equal to present value",
       "formula": "solve P = sum(C/(1+r)^t) + F/(1+r)^n",
       "exec": "lambda price, C, F, n: None"
     }
+  ],
+  "glossary": [
+    "accumulates",
+    "adjusted",
+    "amortize",
+    "amount",
+    "asset",
+    "assets",
+    "balance",
+    "based",
+    "beta",
+    "bond",
+    "calculated",
+    "convert",
+    "coupon",
+    "discount",
+    "face",
+    "factor",
+    "gain",
+    "interest",
+    "intervals",
+    "investment",
+    "k",
+    "loan",
+    "loss",
+    "made",
+    "market",
+    "measure",
+    "movements",
+    "outcomes",
+    "payment",
+    "payments",
+    "percentage",
+    "portfolio",
+    "present",
+    "price",
+    "principal",
+    "rate",
+    "remaining",
+    "required",
+    "return",
+    "risk",
+    "sensitivity",
+    "sets",
+    "used",
+    "value",
+    "variance"
   ]
 }

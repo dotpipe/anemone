@@ -34,3 +34,12 @@ temp/
 build/
 dist/
 shell.spec
+Python-3.10.13.tgz
+.git/
+Python-3.10.13/
+Python-3.10.19.tar.xz
+.buildozer/
+kivyenv/
+buildozer.spec
+jdk-25_linux-x64_bin.deb
+.venv/

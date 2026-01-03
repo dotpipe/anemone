@@ -6,7 +6,6 @@
       "exec": "lambda favorable, total: favorable / total"
     }
   ],
-
   "probability_complement": [
     {
       "gloss": "the probability that an event does not occur",
@@ -14,7 +13,6 @@
       "exec": "lambda p: 1 - p"
     }
   ],
-
   "probability_union_disjoint": [
     {
       "gloss": "the probability of one of two mutually exclusive events occurring",
@@ -22,7 +20,6 @@
       "exec": "lambda pA, pB: pA + pB"
     }
   ],
-
   "probability_union_general": [
     {
       "gloss": "the probability of one of two events occurring",
@@ -30,7 +27,6 @@
       "exec": "lambda pA, pB, pAB: pA + pB - pAB"
     }
   ],
-
   "probability_independent": [
     {
       "gloss": "the probability of two independent events both occurring",
@@ -38,7 +34,6 @@
       "exec": "lambda pA, pB: pA * pB"
     }
   ],
-
   "probability_conditional": [
     {
       "gloss": "the probability of event A given that event B has occurred",
@@ -46,7 +41,6 @@
       "exec": "lambda pAB, pB: pAB / pB"
     }
   ],
-
   "bayes_theorem": [
     {
       "gloss": "a formula for updating probabilities based on new information",
@@ -54,7 +48,6 @@
       "exec": "lambda pBA, pA, pB: (pBA * pA) / pB"
     }
   ],
-
   "expected_value_discrete": [
     {
       "gloss": "the long term average value of a random variable",
@@ -62,7 +55,6 @@
       "exec": "lambda xs, ps: sum(xs[i] * ps[i] for i in range(len(xs)))"
     }
   ],
-
   "variance_discrete": [
     {
       "gloss": "the average squared deviation from the expected value",
@@ -70,7 +62,6 @@
       "exec": "lambda xs, ps: (lambda E: sum(((xs[i] - E)**2) * ps[i] for i in range(len(xs))))(sum(xs[i] * ps[i] for i in range(len(xs))))"
     }
   ],
-
   "standard_deviation_discrete": [
     {
       "gloss": "the square root of the variance",
@@ -78,7 +69,6 @@
       "exec": "lambda xs, ps: ((lambda E: sum(((xs[i] - E)**2) * ps[i] for i in range(len(xs))))(sum(xs[i] * ps[i] for i in range(len(xs)))))**0.5"
     }
   ],
-
   "binomial_probability": [
     {
       "gloss": "the probability of k successes in n independent trials",
@@ -86,7 +76,6 @@
       "exec": "lambda math, n, k, p: math.comb(n, k) * (p**k) * ((1-p)**(n-k))"
     }
   ],
-
   "geometric_probability": [
     {
       "gloss": "the probability that the first success occurs on trial k",
@@ -94,7 +83,6 @@
       "exec": "lambda p, k: ((1-p)**(k-1)) * p"
     }
   ],
-
   "poisson_probability": [
     {
       "gloss": "the probability of k events occurring in a fixed interval",
@@ -102,7 +90,6 @@
       "exec": "lambda math, lam, k: ((lam**k) * math.exp(-lam)) / math.factorial(k)"
     }
   ],
-
   "normal_pdf": [
     {
       "gloss": "the probability density function of the normal distribution",
@@ -110,12 +97,50 @@
       "exec": "lambda math, x, mean, sd: (1/(sd*((2*math.pi)**0.5))) * math.exp(-((x-mean)**2)/(2*(sd**2)))"
     }
   ],
-
   "normal_cdf_approx": [
     {
       "gloss": "an approximation of the cumulative distribution function of the normal distribution",
       "formula": "approximation using error function",
       "exec": "lambda math, x, mean, sd: 0.5*(1 + math.erf((x-mean)/(sd*(2**0.5))))"
     }
+  ],
+  "glossary": [
+    "approximation",
+    "average",
+    "b",
+    "based",
+    "chance",
+    "density",
+    "deviation",
+    "distribution",
+    "does",
+    "event",
+    "events",
+    "expected",
+    "formula",
+    "function",
+    "given",
+    "has",
+    "information",
+    "interval",
+    "k",
+    "occur",
+    "occurred",
+    "occurring",
+    "occurs",
+    "probabilities",
+    "probability",
+    "random",
+    "root",
+    "squared",
+    "success",
+    "successes",
+    "term",
+    "trial",
+    "trials",
+    "updating",
+    "value",
+    "variable",
+    "variance"
   ]
 }

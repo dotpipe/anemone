@@ -6,7 +6,6 @@
       "exec": "lambda values: sum(values) / len(values)"
     }
   ],
-
   "median": [
     {
       "gloss": "the middle value of an ordered data set",
@@ -14,7 +13,6 @@
       "exec": "lambda values: sorted(values)[len(values)//2] if len(values)%2==1 else 0.5*(sorted(values)[len(values)//2-1] + sorted(values)[len(values)//2])"
     }
   ],
-
   "mode": [
     {
       "gloss": "the most frequently occurring value in a data set",
@@ -22,7 +20,6 @@
       "exec": "lambda values: max(set(values), key=values.count)"
     }
   ],
-
   "range": [
     {
       "gloss": "the difference between the largest and smallest values",
@@ -30,7 +27,6 @@
       "exec": "lambda values: max(values) - min(values)"
     }
   ],
-
   "midrange": [
     {
       "gloss": "the average of the maximum and minimum values",
@@ -38,7 +34,6 @@
       "exec": "lambda values: (max(values) + min(values)) / 2.0"
     }
   ],
-
   "variance_population": [
     {
       "gloss": "the average squared deviation from the population mean",
@@ -46,7 +41,6 @@
       "exec": "lambda values: sum((x - (sum(values)/len(values)))**2 for x in values) / len(values)"
     }
   ],
-
   "standard_deviation_population": [
     {
       "gloss": "the square root of the population variance",
@@ -54,7 +48,6 @@
       "exec": "lambda values: (sum((x - (sum(values)/len(values)))**2 for x in values) / len(values))**0.5"
     }
   ],
-
   "variance_sample": [
     {
       "gloss": "the average squared deviation from the sample mean using n - 1",
@@ -62,7 +55,6 @@
       "exec": "lambda values: sum((x - (sum(values)/len(values)))**2 for x in values) / (len(values) - 1)"
     }
   ],
-
   "standard_deviation_sample": [
     {
       "gloss": "the square root of the sample variance",
@@ -70,7 +62,6 @@
       "exec": "lambda values: (sum((x - (sum(values)/len(values)))**2 for x in values) / (len(values) - 1))**0.5"
     }
   ],
-
   "z_score": [
     {
       "gloss": "the number of standard deviations a value is from the mean",
@@ -78,7 +69,6 @@
       "exec": "lambda x, mean, sd: (x - mean) / sd"
     }
   ],
-
   "covariance": [
     {
       "gloss": "a measure of how two variables change together",
@@ -86,7 +76,6 @@
       "exec": "lambda xs, ys: sum((xs[i] - sum(xs)/len(xs))*(ys[i] - sum(ys)/len(ys)) for i in range(len(xs))) / len(xs)"
     }
   ],
-
   "correlation": [
     {
       "gloss": "a standardized measure of linear relationship between two variables",
@@ -94,7 +83,6 @@
       "exec": "lambda xs, ys: (sum((xs[i] - sum(xs)/len(xs))*(ys[i] - sum(ys)/len(ys)) for i in range(len(xs))) / len(xs)) / (((sum((x - (sum(xs)/len(xs)))**2 for x in xs) / len(xs))**0.5) * ((sum((y - (sum(ys)/len(ys)))**2 for y in ys) / len(ys))**0.5))"
     }
   ],
-
   "linear_regression_slope": [
     {
       "gloss": "the slope of the least squares regression line",
@@ -102,7 +90,6 @@
       "exec": "lambda xs, ys: (sum((xs[i] - sum(xs)/len(xs))*(ys[i] - sum(ys)/len(ys)) for i in range(len(xs))) / len(xs)) / (sum((x - (sum(xs)/len(xs)))**2 for x in xs) / len(xs))"
     }
   ],
-
   "linear_regression_intercept": [
     {
       "gloss": "the intercept of the least squares regression line",
@@ -110,7 +97,6 @@
       "exec": "lambda xs, ys: (sum(ys)/len(ys)) - ((sum((xs[i] - sum(xs)/len(xs))*(ys[i] - sum(ys)/len(ys)) for i in range(len(xs))) / len(xs)) / (sum((x - (sum(xs)/len(xs)))**2 for x in xs) / len(xs))) * (sum(xs)/len(xs))"
     }
   ],
-
   "normal_pdf": [
     {
       "gloss": "the probability density function of the normal distribution",
@@ -118,7 +104,6 @@
       "exec": "lambda math, x, mean, sd: (1/(sd*((2*math.pi)**0.5))) * math.exp(-((x-mean)**2)/(2*(sd**2)))"
     }
   ],
-
   "normal_cdf_approx": [
     {
       "gloss": "an approximation of the cumulative distribution function of the normal distribution",
@@ -126,7 +111,6 @@
       "exec": "lambda math, x, mean, sd: 0.5*(1 + math.erf((x-mean)/(sd*(2**0.5))))"
     }
   ],
-
   "binomial_probability": [
     {
       "gloss": "the probability of k successes in n independent trials",
@@ -134,7 +118,6 @@
       "exec": "lambda math, n, k, p: (math.comb(n,k)) * (p**k) * ((1-p)**(n-k))"
     }
   ],
-
   "permutation": [
     {
       "gloss": "the number of ways to arrange k items from n distinct items",
@@ -142,12 +125,61 @@
       "exec": "lambda math, n, k: math.factorial(n) / math.factorial(n-k)"
     }
   ],
-
   "combination": [
     {
       "gloss": "the number of ways to choose k items from n distinct items",
       "formula": "C(n,k) = n! / (k!(n-k)!)",
       "exec": "lambda math, n, k: math.comb(n, k)"
     }
+  ],
+  "glossary": [
+    "approximation",
+    "arrange",
+    "average",
+    "change",
+    "choose",
+    "combination",
+    "correlation",
+    "covariance",
+    "data",
+    "density",
+    "deviation",
+    "deviations",
+    "difference",
+    "distribution",
+    "function",
+    "intercept",
+    "items",
+    "k",
+    "line",
+    "maximum",
+    "mean",
+    "measure",
+    "median",
+    "midrange",
+    "minimum",
+    "mode",
+    "number",
+    "occurring",
+    "permutation",
+    "population",
+    "probability",
+    "range",
+    "regression",
+    "relationship",
+    "root",
+    "sample",
+    "set",
+    "slope",
+    "squared",
+    "squares",
+    "successes",
+    "trials",
+    "using",
+    "value",
+    "values",
+    "variables",
+    "variance",
+    "ways"
   ]
 }
