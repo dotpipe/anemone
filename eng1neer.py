@@ -1256,3 +1256,86 @@ def test_blend_fragments():
     else:
         print("No fragments stored yet.")
 
+
+# ---------------------------------------------------------------------
+# Taxonomic grammar demo helper
+# ---------------------------------------------------------------------
+try:
+    from taxonomic_grammar import analyze as _tg_analyze, render_response as _tg_render, generate_variations as _tg_variations
+except Exception:
+    _tg_analyze = None
+    _tg_render = None
+    _tg_variations = None
+try:
+    from nerve_center import nerve as _nerve
+except Exception:
+    _nerve = None
+
+def taxonomy_demo(prompt=None, variations_steps=0):
+    """Run taxonomic analysis on `prompt`. If `prompt` is None, read from stdin.
+
+    If `variations_steps` > 0 and the variation generator is available, also print
+    a sequence of alternative rendered summaries that traverse genus (`variable`) via a sine wave.
+    """
+    if _tg_analyze is None:
+        print("taxonomic_grammar module not available")
+        return None
+    if prompt is None:
+        prompt = input('Enter prompt for taxonomy analysis: ')
+    import json
+    out = _tg_analyze(prompt)
+    # Print structured JSON and a friendly rendered response if available
+    print(json.dumps(out, indent=2, ensure_ascii=False))
+    if _tg_render:
+        print('\n--- Friendly taxonomy summary ---')
+        print(_tg_render(out, max_items=6, positivity=True))
+
+    if variations_steps and _tg_variations:
+        print('\n--- Variations (sine-wave genus traversal) ---')
+        variations = _tg_variations(out, steps=variations_steps, positivity=True)
+        for v in variations:
+            print('\n' + v)
+
+    return out
+
+
+def nerve_demo(prompt=None, variations_steps=0, top_n=5):
+    """Create a nerve session from a prompt and show top items.
+
+    - Runs taxonomy analysis (prints structured JSON and friendly summary).
+    - Creates a persisted session in `data/nerve_sessions` via `nerve_center.NerveCenter`.
+    - Prints top `top_n` items and expands the first variable found.
+    Returns the session id (or None).
+    """
+    if _tg_analyze is None:
+        print('taxonomic_grammar module not available')
+        return None
+    if prompt is None:
+        prompt = input('Enter prompt for nerve demo: ')
+
+    # Run taxonomy demo (it prints JSON + summary)
+    result = taxonomy_demo(prompt, variations_steps=variations_steps)
+    if result is None:
+        return None
+
+    if _nerve is None:
+        print('nerve_center not available')
+        return None
+
+    sid = _nerve.create_session(result)
+    print(f'Created nerve session: {sid}')
+
+    tops = _nerve.get_top_items(sid, n=top_n)
+    print('\nTop items:')
+    import json
+    print(json.dumps(tops, indent=2, ensure_ascii=False))
+
+    if tops:
+        first_var = tops[0].get('variable')
+        if first_var:
+            print('\nExpanding first variable:\n')
+            print(_nerve.expand_variable(sid, first_var))
+
+    print('\nUse nerve_center.nerve to inspect or load sessions programmatically.')
+    return sid
+

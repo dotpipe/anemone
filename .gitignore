@@ -43,3 +43,5 @@ kivyenv/
 buildozer.spec
 jdk-25_linux-x64_bin.deb
 .venv/
+statsbomb_open/
+data/nerve_sessions/
