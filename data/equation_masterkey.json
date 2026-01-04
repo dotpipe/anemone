@@ -1,0 +1,46 @@
+[
+  {
+    "name": "First Law of Thermodynamics",
+    "pattern": "\\bDelta\\s*U\\s*=\\s*Q\\s*-\\s*W\\b",
+    "aliases": [
+      "ΔU = Q - W",
+      "delta U = Q - W"
+    ]
+  },
+  {
+    "name": "Ideal Gas Law",
+    "pattern": "\\bP\\s*V\\s*=\\s*n\\s*R\\s*T\\b",
+    "aliases": [
+      "PV = nRT"
+    ]
+  },
+  {
+    "name": "Newton's Second Law",
+    "pattern": "\\bF\\s*=\\s*m\\s*a\\b",
+    "aliases": [
+      "F = ma"
+    ]
+  },
+  {
+    "name": "Ohm's Law",
+    "pattern": "\\bV\\s*=\\s*I\\s*R\\b",
+    "aliases": [
+      "V = IR"
+    ]
+  },
+  {
+    "name": "Second Law of Thermodynamics (entropy)",
+    "pattern": "\\bDelta\\s*S\\s*\\u2265\\s*0\\b",
+    "aliases": [
+      "ΔS >= 0",
+      "delta S >= 0"
+    ]
+  },
+  {
+    "name": "Energy-Mass Equivalence",
+    "pattern": "\\bE\\s*=\\s*m\\s*c\\^2\\b",
+    "aliases": [
+      "E = mc^2"
+    ]
+  }
+]

@@ -45,3 +45,7 @@ jdk-25_linux-x64_bin.deb
 .venv/
 statsbomb_open/
 data/nerve_sessions/
+test_evaluator.py
+data/_backup*
+scripts/
+data/wikipedia_defs.json.bak

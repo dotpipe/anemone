@@ -16,7 +16,7 @@ def similarity(a, b):
 def lookup_word_topics(word, word_freq_path='word_freq.txt',
                       assoc_path='thesaurus_assoc.json',
                       code_dict_path='data/code_dictionary.json',
-                      definitions_path='data/definitions.json',
+                      definitions_path='data/wikipedia_defs.json',
                       min_similarity=0.8):
     word = word.lower().strip()
     word_freq = load_word_freq(word_freq_path)
@@ -40,11 +40,11 @@ def lookup_word_topics(word, word_freq_path='word_freq.txt',
         code_dict = load_json(code_dict_path)
         if best_match in code_dict:
             return {'word': best_match, 'topics': ['code'], 'source': 'code_dictionary'}
-    # Check for definition in definitions.json
+    # Check for definition in the derived Wikipedia definitions
     if os.path.exists(definitions_path):
         definitions = load_json(definitions_path)
         if best_match in definitions:
-            return {'word': best_match, 'topics': ['definition'], 'source': 'definitions'}
+            return {'word': best_match, 'topics': ['definition'], 'source': 'wikipedia_defs'}
     # If word is in word_freq.txt but not in any files, leave it alone
     return None
 

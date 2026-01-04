@@ -1,6 +1,6 @@
 import json
 
-def lookup_coding_word(word, definitions_path='data/definitions.json', depth=1, seen=None):
+def lookup_coding_word(word, definitions_path='data/wikipedia_defs.json', depth=1, seen=None):
     """
     Look up a coding word in definitions.json, returning its type, definition, and related concepts.
     Optionally, follow related concepts recursively up to 'depth' levels.
@@ -38,4 +38,4 @@ if __name__ == '__main__':
     if info:
         print(json.dumps(info, indent=2, ensure_ascii=False))
     else:
-        print('Word not found in definitions.json')
+        print('Word not found in wikipedia_defs.json')

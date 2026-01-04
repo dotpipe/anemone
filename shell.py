@@ -22,6 +22,28 @@ if __name__ == "__main__":
         if line.lower() in {"quit", "exit"}:
             break
 
+        # If the user asks for date operations, forward to date_calculator
+        if line.lower().startswith('date '):
+            # format: date <subcmd> [args...]
+            parts = line.split()[1:]
+            try:
+                from date_calculator import cli as date_cli
+                ret = date_cli(parts)
+                # cli prints output; return code printed as needed
+            except Exception as e:
+                print('Date command failed:', e)
+            continue
+
+        # verify <termA> <termB> -- compare definitions across dictionaries
+        if line.lower().startswith('verify '):
+            parts = line.split()[1:]
+            try:
+                from equality_verifier import cli as verify_cli
+                verify_cli(parts)
+            except Exception as e:
+                print('Verify command failed:', e)
+            continue
+
         # If the prompt looks like a code generation request, use the code engine
         if any(word in line.lower() for word in ["code", "generate", "python", "loop", "function", "print", "if", "while", "for", "define", "create"]):
             # Lazy-load code engine only if needed

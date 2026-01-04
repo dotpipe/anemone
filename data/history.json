@@ -1,0 +1,253 @@
+{
+  "industrial_revolution": [
+    {
+      "gloss": "A period of major industrialization beginning in the late 18th century, marked by mechanization, steam power, and the growth of factories.",
+      "period": "c.1760-1840",
+      "start_year": 1760,
+      "end_year": 1840,
+      "date": "18th-19th century",
+      "details": "Originating in Britain, the Industrial Revolution spread to Europe and North America and transformed agriculture, manufacturing, transportation, and social structures.",
+      "sources": [
+        "public domain: economic histories"
+      ]
+    }
+  ],
+  "french_revolution": [
+    {
+      "gloss": "A period of radical social and political upheaval in France that ended absolute monarchy and led to the rise of modern democratic institutions.",
+      "period": "1789-1799",
+      "start_year": 1789,
+      "end_year": 1799,
+      "date": "1789-1799",
+      "details": "Key events include the Estates-General, the Storming of the Bastille, the Reign of Terror, and the rise of Napoleon Bonaparte.",
+      "sources": [
+        "public domain: historical summaries"
+      ]
+    }
+  ],
+  "american_revolution": [
+    {
+      "gloss": "Colonial revolt against British rule resulting in the independence of the United States.",
+      "period": "1765-1783",
+      "start_year": 1765,
+      "end_year": 1783,
+      "details": "Includes the Declaration of Independence (1776) and the Treaty of Paris (1783).",
+      "sources": [
+        "public domain: historical summaries"
+      ]
+    }
+  ],
+  "world_war_i": [
+    {
+      "gloss": "A global war originating in Europe that lasted from 1914 to 1918.",
+      "period": "1914-1918",
+      "start_year": 1914,
+      "end_year": 1918,
+      "details": "Major cause: complex alliances and imperial rivalries; consequences included major political changes and redrawn borders.",
+      "sources": [
+        "public domain: historical accounts"
+      ]
+    }
+  ],
+  "world_war_ii": [
+    {
+      "gloss": "A global conflict lasting from 1939 to 1945 involving most of the world's nations, organised into the Allies and the Axis powers.",
+      "period": "1939-1945",
+      "start_year": 1939,
+      "end_year": 1945,
+      "date": "1939-09-01 to 1945-09-02",
+      "details": "Major theatres included Europe, the Pacific, North Africa, and Asia; consequences included geopolitical realignment, the United Nations' founding, and decolonization.",
+      "sources": [
+        "public domain: widely documented historical sources"
+      ]
+    }
+  ],
+  "renaissance": [
+    {
+      "gloss": "A cultural movement originating in Italy in the 14th century that spread across Europe, reviving interest in classical learning and the arts.",
+      "period": "c.1300-1600",
+      "start_year": 1300,
+      "end_year": 1600,
+      "details": "Notable figures include Leonardo da Vinci, Michelangelo, and Erasmus.",
+      "sources": [
+        "public domain: cultural histories"
+      ]
+    }
+  ],
+  "black_death": [
+    {
+      "gloss": "A devastating pandemic (bubonic plague) that struck Europe in the mid-14th century, killing a large fraction of the population.",
+      "period": "1347-1351",
+      "start_year": 1347,
+      "end_year": 1351,
+      "details": "Caused widespread social and economic disruption and had long-term demographic effects.",
+      "sources": [
+        "public domain: epidemiological histories"
+      ]
+    }
+  ],
+  "neolithic_revolution": [
+    {
+      "gloss": "The transition from nomadic hunter-gatherer societies to agriculture and settled communities.",
+      "period": "c.10000-4000 BCE",
+      "start_year": -10000,
+      "end_year": -4000,
+      "details": "Independent developments in the Fertile Crescent, China, Mesoamerica, and elsewhere.",
+      "sources": [
+        "public domain: archaeological summaries"
+      ]
+    }
+  ],
+  "scientific_revolution": [
+    {
+      "gloss": "Period of advances in scientific thought and method (16th–18th centuries",
+      "period": "c.1543-1687",
+      "start_year": 1543,
+      "end_year": 1687,
+      "details": "Key figures: Copernicus, Galileo, Kepler, Newton.",
+      "sources": [
+        "public domain: scientific histories"
+      ]
+    }
+  ],
+  "protestant_reformation": [
+    {
+      "gloss": "Religious movement in 16th-century Europe that challenged Catholic practices and led to the formation of Protestant churches.",
+      "period": "1517-1648",
+      "start_year": 1517,
+      "end_year": 1648,
+      "details": "Begins with Martin Luther's 95 Theses (1517); the Peace of Westphalia (1648) marks a political settlement in Europe.",
+      "sources": [
+        "public domain: religious histories"
+      ]
+    }
+  ],
+  "age_of_discovery": [
+    {
+      "gloss": "European exploration and maritime expansion from the 15th to the 17th centuries, connecting distant regions and starting global trade networks.",
+      "period": "c.1400-1700",
+      "start_year": 1400,
+      "end_year": 1700,
+      "details": "Includes voyages by Columbus, Vasco da Gama, and Magellan's circumnavigation.",
+      "sources": [
+        "public domain: exploration histories"
+      ]
+    }
+  ],
+  "mongol_expansion": [
+    {
+      "gloss": "Rapid territorial expansion of the Mongol Empire across Eurasia in the 13th century under Genghis Khan and his successors.",
+      "period": "1206-1368",
+      "start_year": 1206,
+      "end_year": 1368,
+      "details": "Created the largest contiguous land empire in history and altered trade across the Silk Road.",
+      "sources": [
+        "public domain: imperial histories"
+      ]
+    }
+  ],
+  "cold_war": [
+    {
+      "gloss": "An ideological, political, and military rivalry between the United States and the Soviet Union after World War II.",
+      "period": "1947-1991",
+      "start_year": 1947,
+      "end_year": 1991,
+      "details": "Features proxy wars, nuclear arms race, and political competition leading to the Soviet Union's dissolution.",
+      "sources": [
+        "public domain: 20th century histories"
+      ]
+    }
+  ],
+  "russian_revolution": [
+    {
+      "gloss": "Revolution in 1917 that overthrew imperial rule and led to the establishment of the Soviet state.",
+      "period": "1917-1923",
+      "start_year": 1917,
+      "end_year": 1923,
+      "details": "Includes the February and October Revolutions and the subsequent civil war.",
+      "sources": [
+        "public domain: historical surveys"
+      ]
+    }
+  ],
+  "meiji_restoration": [
+    {
+      "gloss": "A period in late 19th-century Japan when imperial rule and modernization reforms rapidly transformed the country.",
+      "period": "1868-1912",
+      "start_year": 1868,
+      "end_year": 1912,
+      "details": "Modernization, industrialization, and centralization under the Meiji emperor.",
+      "sources": [
+        "public domain: national histories"
+      ]
+    }
+  ],
+  "chinese_cultural_revolution": [
+    {
+      "gloss": "A sociopolitical movement in China from 1966 to 1976 launched by Mao Zedong, causing upheaval and widespread reprisals.",
+      "period": "1966-1976",
+      "start_year": 1966,
+      "end_year": 1976,
+      "details": "Marked by mass mobilization, Red Guards, and social disruption.",
+      "sources": [
+        "public domain: modern histories"
+      ]
+    }
+  ],
+  "history_of_thermodynamics": [
+    {
+      "gloss": "Historical development of thermodynamics as a scientific discipline, from early heat studies to formal laws in the 19th century.",
+      "period": "17th-19th century",
+      "start_year": 1600,
+      "end_year": 1900,
+      "date": "17th-19th century",
+      "details": "Key figures include Sadi Carnot, James Joule, Rudolf Clausius, and William Thomson (Lord Kelvin). Developments include the Carnot cycle, conservation of energy, and formalization of entropy.",
+      "sources": [
+        "public domain: scientific histories"
+      ]
+    }
+  ],
+  "history_of_mathematics": [
+    {
+      "gloss": "A broad account of major developments in mathematics, from ancient arithmetic and geometry through calculus and modern abstract algebra.",
+      "period": "Antiquity to present",
+      "start_year": -3000,
+      "end_year": 2026,
+      "date": "various",
+      "details": "Milestones include Euclidean geometry, the Hindu–Arabic numeral system, the invention of calculus by Newton and Leibniz, and 19th–20th century developments in analysis, algebra, and topology.",
+      "sources": [
+        "public domain: historical surveys"
+      ]
+    }
+  ],
+  "timeline_examples": {
+    "thermodynamics_key_events": [
+      {
+        "year": 1824,
+        "event": "Sadi Carnot publishes work on heat engines (Carnot cycle)."
+      },
+      {
+        "year": 1843,
+        "event": "James Joule demonstrates mechanical equivalent of heat."
+      },
+      {
+        "year": 1850,
+        "event": "Rudolf Clausius formulates early statements of the second law (entropy)."
+      }
+    ],
+    "mathematics_key_events": [
+      {
+        "year": -300,
+        "event": "Euclid composes Elements (approx.)."
+      },
+      {
+        "year": 1687,
+        "event": "Isaac Newton publishes Principia (calculus foundations)."
+      },
+      {
+        "year": 1870,
+        "event": "Foundations of abstract algebra and group theory advance."
+      }
+    ]
+  }
+}

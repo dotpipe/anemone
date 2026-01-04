@@ -168,7 +168,10 @@ class NaturalCodeEngine:
     def __init__(self, data_dir='data', template_path='python_command_templates.json', code_rel_path='code_relationships.json'):
         self.data_dir = data_dir
         self.knowledge = self._load_english_concepts()
-        self.definitions = self._load_json_file('definitions.json')
+        # Prefer the derived Wikipedia definitions as the primary source for natural-language concepts
+        wiki_defs = self._load_json_file('wikipedia_defs.json')
+        # Use wikipedia-derived definitions only; do not fall back to legacy definitions.json
+        self.definitions = wiki_defs or {}
         self.math = self._load_json_file('math.json')
         self.templates = self._load_templates(template_path)
         self.code_relationships = self._load_code_relationships(code_rel_path)

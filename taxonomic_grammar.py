@@ -3,6 +3,7 @@ import re
 import json
 from collections import Counter
 import math
+import ast
 
 STOPWORDS = {
     'the','and','or','is','a','an','of','in','on','for','to','with','by','as','at','from','that','which','who','whom','where','when','why','how','be','been','are','was','were','it','its','this','these','those','but','if','then','so'
@@ -121,7 +122,7 @@ GROUP_MAP = {
     'math': {'algebra.json','linear_algebra.json','calculus.json','math.json','geometry.json','complex_numbers.json','probability.json','statistics.json','trigonometry.json','vectors.json'},
     'science': {'biology.json','chemistry.json','physics.json','thermodynamics.json'},
     'code': {'code_dictionary.json'},
-    'definitions': {'definitions.json'},
+    'definitions': {'wikipedia_defs.json'},
     'other': set()
 }
 
@@ -711,6 +712,41 @@ def pipeline_response(prompt, data_dir='data', settings=None):
     if main_taxon:
         path = {k: main_taxon.get(k) for k in ('kingdom','phylum','family','order','variable','type','value')}
 
+    # If caller provided variable values, try to evaluate any templated 'exec' on the original entry
+    computed = None
+    graph = None
+    if main_taxon and settings.get('variables'):
+        vars_map = settings.get('variables') or {}
+        # find the original entry from all_matches
+        orig_entry = None
+        for m in all_matches:
+            _, fname, entry_key, entry_val, _ = m
+            if normalize(entry_key) == (main_taxon.get('variable') or ''):
+                # prefer entries from same phylum/file
+                if fname.replace('.json','') == main_taxon.get('phylum'):
+                    orig_entry = entry_val
+                    break
+                if not orig_entry:
+                    orig_entry = entry_val
+        if orig_entry:
+            # if the entry is a list, pick the first dict
+            if isinstance(orig_entry, list) and orig_entry:
+                candidate = orig_entry[0] if isinstance(orig_entry[0], dict) else None
+            elif isinstance(orig_entry, dict):
+                candidate = orig_entry
+            else:
+                candidate = None
+            if candidate and ('exec' in candidate or any(isinstance(v, str) and v.strip().startswith('lambda') for v in candidate.values())):
+                graph_spec = settings.get('graph')
+                pts = settings.get('graph_points', 50)
+                eval_res = evaluate_taxon_with_values(candidate, vars_map, graph_spec=graph_spec, points=pts)
+                computed = eval_res.get('value')
+                if eval_res.get('graph'):
+                    graph = eval_res.get('graph')
+                # attach detail to clarifiers for transparency
+                clarifiers.insert(0, {'key': main_taxon.get('variable'), 'gloss': eval_res.get('detail',''), 'synonyms': []})
+
+
     # find related items in the same family via cosine sampling
     related_texts = []
     if main_taxon:
@@ -818,4 +854,98 @@ def pipeline_response(prompt, data_dir='data', settings=None):
     out['clarifiers'] = clarifiers
     out['related'] = related_texts
     out['text_response'] = text_narrative
+    # include any computed numeric result or generated graph points
+    out['computed'] = computed
+    out['graph'] = graph
     return out
+
+
+def _parse_exec_callable(exec_str):
+    """Parse an exec string from the data files into a callable.
+
+    Accepts simple lambda strings like "lambda a, b: a + b" and returns a Python callable.
+    We restrict globals to provide only the math module to limit side effects.
+    """
+    if not exec_str or not isinstance(exec_str, str):
+        return None
+    try:
+        node = ast.parse(exec_str, mode='eval')
+        if not isinstance(node.body, ast.Lambda):
+            return None
+        func = eval(exec_str, {'math': math}, {})
+        return func
+    except Exception:
+        return None
+
+
+def evaluate_taxon_with_values(taxon, variables: dict, graph_spec: dict = None, points: int = 50):
+    """Evaluate a taxon entry which contains an 'exec' field.
+
+    variables: mapping of variable name -> numeric value. For graph_spec provide {'x':'V1','from':1,'to':10}
+    Returns dict with 'value' (computed), 'detail' and optional 'graph' with points list.
+    """
+    result = {'value': None, 'detail': '', 'graph': None}
+    if not taxon or not isinstance(taxon, dict):
+        return result
+    # find exec string in taxon structure
+    exec_str = None
+    if 'exec' in taxon:
+        exec_str = taxon['exec']
+    else:
+        for v in taxon.values() if isinstance(taxon, dict) else []:
+            if isinstance(v, str) and v.strip().startswith('lambda'):
+                exec_str = v
+                break
+    if not exec_str:
+        return result
+
+    func = _parse_exec_callable(exec_str)
+    if not func:
+        result['detail'] = 'Could not parse exec callable.'
+        return result
+
+    try:
+        code = func.__code__
+        argnames = list(code.co_varnames[:code.co_argcount])
+    except Exception:
+        argnames = []
+
+    args = []
+    for name in argnames:
+        if name == 'math':
+            args.append(math)
+        elif name in variables:
+            args.append(variables[name])
+        else:
+            found = False
+            for k, v in variables.items():
+                if k.lower() == name.lower():
+                    args.append(v)
+                    found = True
+                    break
+            if not found:
+                result['detail'] = f"Missing variable: {name}"
+                return result
+    try:
+        val = func(*args)
+        result['value'] = val
+        result['detail'] = f"Computed using {argnames}"
+    except Exception as e:
+        result['detail'] = f"Execution error: {e}"
+
+    if graph_spec and isinstance(graph_spec, dict):
+        xname = graph_spec.get('x')
+        if xname and xname in argnames:
+            start = graph_spec.get('from', 0)
+            end = graph_spec.get('to', 1)
+            pts = points
+            xs = [start + (end - start) * (i / (pts - 1)) for i in range(pts)]
+            points_list = []
+            for x in xs:
+                vars_copy = dict(variables)
+                vars_copy[xname] = x
+                ev = evaluate_taxon_with_values(taxon, vars_copy, graph_spec=None, points=points)
+                points_list.append({'x': x, 'y': ev.get('value')})
+            result['graph'] = points_list
+
+    return result

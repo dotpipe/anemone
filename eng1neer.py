@@ -18,6 +18,147 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
         respond_subject_specific._last_answer = ''
     previous_answer = respond_subject_specific._last_answer
 
+    # Quick detection: natural-language equality/inclusion questions
+    try:
+        # common patterns: "is X the same as Y", "are X and Y the same", "does X include Y", "is X a type of Y"
+        _q = prompt.strip()
+        _ql = _q.lower()
+        # Quick date/range queries: if user asks about a year or range, use history lookup
+        try:
+            from history_lookup import find_entries_covering_year, query_period_coverage, find_entries_within_range
+            m = re.search(r'between\s+(-?\d{1,4})\s+(?:and|to)\s+(-?\d{1,4})', _ql)
+            if m:
+                s = int(m.group(1))
+                e = int(m.group(2))
+                return query_period_coverage(s, e)
+            m2 = re.search(r'\bin\s+(-?\d{1,4})\b', _ql)
+            if m2 and not re.search(r'\bcompare\b|\bequal\b|\bsame\b', _ql):
+                year = int(m2.group(1))
+                entries = find_entries_covering_year(year)
+                if not entries:
+                    return f'No historical entries recorded for {year}.'
+                lines = [f'Historical entries covering {year}:']
+                for key, rec in entries[:10]:
+                    sy = rec.get('start_year') or rec.get('year') or 'N/A'
+                    ey = rec.get('end_year') or rec.get('year') or 'N/A'
+                    lines.append(f"- {key}: {sy}–{ey} — {rec.get('gloss','')}")
+                return '\n'.join(lines)
+        except Exception:
+            pass
+        eq_patterns = [
+            r"^is\s+(.+?)\s+(?:the same as|equal to|equal|equivalent to)\s+(.+?)\??$",
+            r"^are\s+(.+?)\s+and\s+(.+?)\s+(?:the same|equivalent)\??$",
+            r"^does\s+(.+?)\s+(?:include|contain|cover|mean|imply|subsume)\s+(.+?)\??$",
+            r"^is\s+(.+?)\s+a\s+(?:type|kind|form)\s+of\s+(.+?)\??$",
+            r"^what(?:'s| is) the difference between\s+(.+?)\s+and\s+(.+?)\??$",
+            r"^how does\s+(.+?)\s+differ from\s+(.+?)\??$",
+            r"^are\s+(.+?)\s+and\s+(.+?)\s+equivalent\??$",
+            r"^is\s+(.+?)\s+part of\s+(.+?)\??$",
+            r"^is\s+(.+?)\s+included in\s+(.+?)\??$",
+            r"^is\s+(.+?)\s+a\s+subset\s+of\s+(.+?)\??$",
+            r"^do(es)?\s+(.+?)\s+imply\s+(.+?)\??$",
+            r"^is\s+(.+?)\s+(?:greater than|larger than|more than)\s+(.+?)\??$",
+            r"^is\s+(.+?)\s+(?:less than|smaller than)\s+(.+?)\??$",
+            r"^which\s+is\s+(?:bigger|larger):\s*(.+?)\s+or\s+(.+?)\??$",
+            r"^which\s+is\s+(?:smaller|less):\s*(.+?)\s+or\s+(.+?)\??$",
+            r"^compare\s+(.+?)\s+and\s+(.+?)\??$",
+            r"^compare\s+(.+?)\s+to\s+(.+?)\??$",
+            r"^are\s+(.+?)\s+synonyms\??$",
+            r"^is\s+(.+?)\s+analogous\s+to\s+(.+?)\??$",
+            r"^are\s+(.+?)\s+related\s+to\s+(.+?)\??$",
+        ]
+        for pat in eq_patterns:
+            m = re.search(pat, _ql)
+            if not m:
+                continue
+            # Different patterns capture groups differently; take last two groups as terms
+            groups = [g for g in m.groups() if g]
+            if len(groups) >= 2:
+                a = groups[-2].strip(' ?.,')
+                b = groups[-1].strip(' ?.,')
+            else:
+                continue
+            # Detect predicate-style queries like "do A and B VERB ...?"
+            pred_m = re.search(r"^do\s+(.+?)\s+and\s+(.+?)\s+(.+?)\??$", _ql)
+            if pred_m:
+                pa = pred_m.group(1).strip()
+                pb = pred_m.group(2).strip()
+                predicate = pred_m.group(3).strip(' ?.,')
+                # ensure terms match extracted a/b
+                # fall back to earlier parsed a/b otherwise
+                a_term = pa or a
+                b_term = pb or b
+                try:
+                    from equality_verifier import find_entries, tokenize, entry_keywords, relation_between_terms
+                    data_map = load_all_data('data')
+                except Exception:
+                    data_map = None
+
+                def _predicate_overlap(term, predicate_text):
+                    # return max token overlap between predicate tokens and any entry keywords for term
+                    try:
+                        preds = []
+                        if data_map is None:
+                            return 0.0
+                        found = find_entries(term, data_map)
+                        pred_toks = set(tokenize(predicate_text))
+                        best = 0.0
+                        for _, _, ent in found:
+                            kws = set(entry_keywords(ent))
+                            if not kws or not pred_toks:
+                                continue
+                            inter = len(kws & pred_toks)
+                            frac = inter / max(1, len(pred_toks))
+                            best = max(best, frac)
+                        return best
+                    except Exception:
+                        return 0.0
+
+                a_pred = _predicate_overlap(a_term, predicate)
+                b_pred = _predicate_overlap(b_term, predicate)
+                # similarity between a and b
+                try:
+                    relv = relation_between_terms(a_term, b_term)
+                except Exception:
+                    relv = {}
+                reltype = relv.get('relation')
+                # decide phrasing
+                thresh = 0.35
+                if a_pred < thresh and b_pred < thresh and reltype in ('overlap', 'equal'):
+                    out = f"Neither {a_term} nor {b_term} {predicate} (no indication either does)."
+                    respond_subject_specific._last_answer = out
+                    return out
+                if a_pred >= thresh and b_pred < thresh:
+                    out = f"{a_term.capitalize()} {predicate}, whereas {b_term} does not appear to {predicate}."
+                    respond_subject_specific._last_answer = out
+                    return out
+                if b_pred >= thresh and a_pred < thresh:
+                    out = f"{b_term.capitalize()} {predicate}, whereas {a_term} does not appear to {predicate}."
+                    respond_subject_specific._last_answer = out
+                    return out
+                # fall through to normal equal/inclusion logic if ambiguous
+            try:
+                from equality_verifier import relation_between_terms
+                verdict = relation_between_terms(a, b)
+                rel = verdict.get('relation')
+                if rel == 'equal':
+                    out = f"Yes — '{a}' and '{b}' are equivalent. ({verdict.get('reason')})"
+                elif rel == 'a_includes_b':
+                    out = f"'{a}' broadly includes '{b}' (score {verdict.get('score'):.2f})."
+                elif rel == 'b_includes_a':
+                    out = f"'{b}' broadly includes '{a}' (score {verdict.get('score'):.2f})."
+                elif rel == 'overlap':
+                    out = f"'{a}' and '{b}' overlap (score {verdict.get('score'):.2f})."
+                else:
+                    out = f"'{a}' and '{b}' appear distinct. ({verdict.get('reason')})"
+                respond_subject_specific._last_answer = out
+                return out
+            except Exception:
+                # fall back to normal processing if verifier fails
+                break
+    except Exception:
+        pass
+
     """
     For each extracted term in the prompt, find all subject files (classifications) it appears in using thesaurus_assoc.json.
     Load only those files, gather definitions for the term, and build a subject-specific response.
@@ -101,6 +242,16 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
     filtered_terms = []
     for term in terms:
         term_l = term.lower().strip()
+        # Handle special multi-word aliases (map to canonical keys)
+        SPECIAL_EQUIV = {
+            'american football': 'football'
+        }
+        mapped = SPECIAL_EQUIV.get(term_l)
+        if mapped:
+            # if mapped term has an association, prefer that
+            if mapped in assoc:
+                filtered_terms.append(mapped)
+                continue
         # --- 1. Direct subject association ---
         if term_l in assoc:
             filtered_terms.append(term_l)
@@ -124,6 +275,22 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
                 continue
         # --- 3. Direct match in any data/*.json file ---
         found_in_data = False
+        # If term has a special mapping, prefer checking the mapped key in data files
+        if mapped:
+            for fname in os.listdir(data_dir):
+                if fname.endswith('.json'):
+                    fpath = os.path.join(data_dir, fname)
+                    try:
+                        with open(fpath, 'r', encoding='utf-8') as fjson:
+                            data = json.load(fjson)
+                        if mapped in data:
+                            filtered_terms.append(mapped)
+                            found_in_data = True
+                            break
+                    except Exception:
+                        continue
+        if found_in_data:
+            continue
         for fname in os.listdir(data_dir):
             if fname.endswith('.json'):
                 fpath = os.path.join(data_dir, fname)
@@ -146,145 +313,67 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
             if term_l in code_dict:
                 filtered_terms.append(term_l)
                 continue
-        # --- 5. definitions.json ---
+        # --- 5. wikipedia_defs.json (preferred over legacy definitions.json) ---
+        wiki_defs_path = os.path.join(data_dir, 'wikipedia_defs.json')
+        if os.path.exists(wiki_defs_path):
+            try:
+                with open(wiki_defs_path, 'r', encoding='utf-8') as fd:
+                    wiki_defs = json.load(fd)
+                if term_l in wiki_defs:
+                    filtered_terms.append(term_l)
+                    continue
+            except Exception:
+                pass
+        # legacy fallback: definitions.json (kept only for compatibility)
         definitions_path = os.path.join(data_dir, 'definitions.json')
         if os.path.exists(definitions_path):
-            with open(definitions_path, 'r', encoding='utf-8') as fd:
-                definitions = json.load(fd)
-            if term_l in definitions:
-                filtered_terms.append(term_l)
-                continue
+            try:
+                with open(definitions_path, 'r', encoding='utf-8') as fd:
+                    definitions = json.load(fd)
+                if term_l in definitions:
+                    filtered_terms.append(term_l)
+                    continue
+            except Exception:
+                pass
         # --- If not found anywhere, skip this term ---
     if not filtered_terms:
+        # Attempt a robust fallback: use wikipedia_defs.json lead-summary if available
+        try:
+            wiki_defs_path = os.path.join(data_dir, 'wikipedia_defs.json')
+            if os.path.exists(wiki_defs_path):
+                with open(wiki_defs_path, 'r', encoding='utf-8') as fw:
+                    wiki_defs = json.load(fw)
+                # Prefer the noun_in_prompt if we detected one earlier
+                candidates = []
+                if noun_in_prompt:
+                    candidates.append(noun_in_prompt.lower())
+                # also try original extracted terms as a fallback
+                candidates.extend([t.lower() for t in terms])
+                for cand in candidates:
+                    if not cand:
+                        continue
+                    if cand in wiki_defs:
+                        ent = wiki_defs[cand]
+                        # Try 'summary' or 'definition' or 'gloss' fields
+                        summary = None
+                        if isinstance(ent, dict):
+                            summary = ent.get('summary') or ent.get('definition') or ent.get('gloss')
+                        elif isinstance(ent, str):
+                            summary = ent
+                        if summary:
+                            # Return the first sentence for clarity
+                            s = re.split(r'(?<=[.!?])\s+', summary.strip())
+                            lead = s[0] if s else summary.strip()
+                            return f"{cand.capitalize()}: {lead}"
+        except Exception:
+            pass
         return "No subject-specific definitions found for your query."
     terms = filtered_terms
     alt_terms = set(terms)
     responses = []
     import collections
-    # Helper: blend multiple definitions with staleness detection
-    def blend_definitions(def_list, subject=None):
-        """
-        Blend a list of definition strings into a single output.
-        If a definition is stale (does not mention the subject or drifts off-topic), close it off early.
-        """
-        if not def_list:
-            return ""
-        import re
-        # 100+ function words that cannot end a sentence
-        forbidden_endings = set([
-            'about','above','across','after','against','along','amid','among','around','as','at','because','before','behind','below','beneath','beside','besides','between','beyond','but','by','concerning','considering','despite','down','during','except','following','for','from','in','including','inside','into','like','minus','near','of','off','on','onto','opposite','out','outside','over','past','per','plus','regarding','round','save','since','than','through','to','toward','towards','under','underneath','unlike','until','up','upon','versus','via','with','within','without','aboard','alongside','amidst','amongst','apropos','athwart','barring','circa','cum','excepting','excluding','failing','notwithstanding','pace','pending','pro','qua','re','sans','than','throughout','till','times','upon','vis-à-vis','whereas','whether','yet',
-            'and','or','nor','so','for','yet','although','because','since','unless','until','while','whereas','though','lest','once','provided','rather','than','that','though','till','unless','until','when','whenever','where','wherever','whether','while','both','either','neither','not','only','but','also','even','if','just','still','then','too','very','well','now','however','thus','therefore','hence','moreover','furthermore','meanwhile','otherwise','besides','indeed','instead','likewise','next','still','then','yet','again','already','always','anyway','anywhere','everywhere','nowhere','somewhere','here','there','where','why','how','whose','which','what','who','whom','whichever','whatever','whoever','whomever',
-            'a','an','the','this','that','these','those','my','your','his','her','its','our','their','whose','each','every','either','neither','some','any','no','other','another','such','much','many','more','most','several','few','fewer','least','less','own','same','enough','all','both','half','one','two','three','first','second','next','last','another','certain','various','which','what','whose','whichever','whatever','whoever','whomever','somebody','someone','something','anybody','anyone','anything','everybody','everyone','everything','nobody','noone','nothing','one','oneself','ones','myself','yourself','himself','herself','itself','ourselves','yourselves','themselves','who','whom','whose','which','that','whichever','whatever','whoever','whomever'
-        ])
-        determiners = ["this", "that", "these", "those", "the", "a", "an"]
-        third_person_pronouns = ["he", "she", "it", "they"]
-        used_pronoun = False
-        def ends_with_forbidden(s):
-            words = s.rstrip('.').split()
-            return words and words[-1].lower() in forbidden_endings
-        def ends_with_noun(s):
-            # Heuristic: ends with a word that is not forbidden or a participle
-            words = s.rstrip('.').split()
-            if not words:
-                return False
-            last = words[-1].lower()
-            if last in forbidden_endings or is_participle(last):
-                return False
-            return True
-        def clean_sentence(s):
-            # Remove trailing forbidden words and participles
-            words = s.rstrip('.').split()
-            while words and (words[-1].lower() in forbidden_endings or is_participle(words[-1])):
-                words.pop()
-            return ' '.join(words)
-        def noun_phrase(noun):
-            # Use a determiner for singular, 'the' for plural or known
-            if not noun:
-                return ''
-            if noun.endswith('s') and not noun.endswith('ss'):
-                return f"the {noun}"
-            return f"a {noun}"
-        def append_poignant_subject(s, subj):
-            # Add a new sentence with the subject for poignancy, only once
-            if not subj:
-                return s
-            return s.rstrip('.') + f". {subj.capitalize()}."
-        # --- Circular, non-hardcoded blend ---
-        import random
-        if not def_list:
-            return ""
-        # Clean and split all fragments
-        # Store and expose fragments for restoration
-        fragments = [clean_sentence(strip_participles_from_end(d.strip())) for d in def_list if d.strip()]
-        fragments = [f for f in fragments if f]
-        if not fragments:
-            blend_definitions._last_fragments = []
-            return ""
-        blend_definitions._last_fragments = fragments.copy()
-        # Use the remembered subject if not provided
-        if subject is None and hasattr(respond_subject_specific, "_last_subject"):
-            subject = respond_subject_specific._last_subject
-        # Find the fragment with the subject or noun phrase
-        anchor_idx = 0
-        if subject:
-            subj_l = subject.lower()
-            for i, frag in enumerate(fragments):
-                if subj_l in frag.lower():
-                    anchor_idx = i
-                    break
-        # Move anchor to front, wrap tail if needed
-        ordered = fragments[anchor_idx:] + fragments[:anchor_idx]
-        # Remove duplicate subject mentions in other fragments
-        if subject:
-            subj_l = subject.lower()
-            for i in range(1, len(ordered)):
-                if subj_l in ordered[i].lower():
-                    ordered[i] = ordered[i].replace(subject, '').replace(subject.capitalize(), '').strip(', .')
-        # Join with commas and conjunctions
-        if len(ordered) == 1:
-            s = ordered[0]
-        elif len(ordered) == 2:
-            s = f"{ordered[0]}, and {ordered[1]}"
-        else:
-            s = ', '.join(ordered[:-1]) + f", and {ordered[-1]}"
-        s = s.strip(', .')
-        # Capitalize and ensure subject is present
-        if subject and not s.lower().startswith(subject.lower()):
-            s = f"{subject.capitalize()} is {s[0].lower() + s[1:]}"
-        else:
-            s = s[0].upper() + s[1:]
-        # Final clean-up: avoid forbidden endings, add noun phrase if needed
-        if ends_with_forbidden(s) and subject:
-            s = s + ' ' + noun_phrase(subject)
-        if not ends_with_noun(s) and subject:
-            s = s + ' ' + noun_phrase(subject)
-        if not ends_with_noun(s) and subject:
-            s = append_poignant_subject(s, noun_phrase(subject))
-        return s.strip()
-        if len(def_list) == 1:
-            s = strip_participles_from_end(def_list[0])
-            s = clean_sentence(s)
-            return s
-        output = []
-        subject = subject.lower() if subject else None
-        stale_phrase = " (definition ends here due to lack of subject relevance)"
-        for d in def_list:
-            d_stripped = d.strip()
-            # Staleness: if subject is not mentioned in the last 15 words, or definition is too generic
-            last_words = d_stripped.lower().split()[-15:]
-            if subject and subject not in last_words and (len(d_stripped) > 40):
-                d_stripped = clean_sentence(d_stripped)
-                output.append(d_stripped + stale_phrase)
-                break
-            d_stripped = clean_sentence(d_stripped)
-            output.append(d_stripped)
-        # Join, then ensure the result ends on a noun/clarifier
-        blended = ' '.join(output)
-        blended = clean_sentence(blended)
-        # If the last word is not a noun, try to append a clarifier and the subject noun
-        if not ends_with_noun(blended) and subject:
-            blended = blended + f" {subject}"
-        return blended.strip()
+    # Use module-level blending implementation for portability and testing
+    blend_definitions = None  # assigned to module-level `blend_fragments` at import time
 
     # Define file priority order (customize as needed)
     file_priority = [
@@ -297,14 +386,18 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
         'economics.json', 'finance.json', 'user_drift.json',
         # Code just before definitions
         'code_dictionary.json',
-        # Always last
-        'definitions.json'
+        # Prefer the derived Wikipedia definitions file as the canonical last-resort source
+        'wikipedia_defs.json'
     ]
-    # Always include definitions.json last, even if not in file_priority
+    # Build list of files present, preferring file_priority and wikipedia_defs.json
     files_in_dir = set(f for f in os.listdir(data_dir) if f.endswith('.json'))
+    # Exclude legacy `definitions.json` entirely — use wikipedia-derived sources only
+    if 'definitions.json' in files_in_dir:
+        files_in_dir.remove('definitions.json')
     ordered_files = [f for f in file_priority if f in files_in_dir]
-    if 'definitions.json' in files_in_dir and 'definitions.json' not in ordered_files:
-        ordered_files.append('definitions.json')
+    # Ensure wikipedia_defs.json is present as canonical fallback
+    if 'wikipedia_defs.json' in files_in_dir and 'wikipedia_defs.json' not in ordered_files:
+        ordered_files.append('wikipedia_defs.json')
 
     # Build a mapping: term -> [files that define it]
     term_to_files = {term: [] for term in terms}
@@ -317,10 +410,56 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
                 data = json.load(fjson)
             for term in terms:
                 entry = data.get(term)
-                if entry:
-                    term_to_files[term].append(fname)
-                    file_to_terms[fname].add(term)
-                    file_term_defs[fname][term] = entry
+                if not entry:
+                    continue
+
+                def _clean_text_examples(text: str) -> str:
+                    if not text or not isinstance(text, str):
+                        return text
+                    low = text
+                    # Remove common example clauses that start with these markers
+                    markers = [" e.g.", " e.g ", " for example", " such as", " including:", " including ", " (e.g.", " (for example"]
+                    idx = None
+                    for m in markers:
+                        i = low.find(m)
+                        if i != -1:
+                            if idx is None or i < idx:
+                                idx = i
+                    if idx is not None:
+                        return text[:idx].strip(' ,;:()')
+                    return text
+
+                # Clean up definitions/gloss strings to remove embedded example lists
+                cleaned_entry = entry
+                try:
+                    if isinstance(entry, str):
+                        cleaned_entry = _clean_text_examples(entry)
+                    elif isinstance(entry, dict):
+                        ce = dict(entry)
+                        if 'definition' in ce and isinstance(ce['definition'], str):
+                            ce['definition'] = _clean_text_examples(ce['definition'])
+                        if 'gloss' in ce and isinstance(ce['gloss'], str):
+                            ce['gloss'] = _clean_text_examples(ce['gloss'])
+                        cleaned_entry = ce
+                    elif isinstance(entry, list):
+                        new_list = []
+                        for it in entry:
+                            if isinstance(it, str):
+                                new_list.append(_clean_text_examples(it))
+                            elif isinstance(it, dict):
+                                it2 = dict(it)
+                                if 'definition' in it2 and isinstance(it2['definition'], str):
+                                    it2['definition'] = _clean_text_examples(it2['definition'])
+                                if 'gloss' in it2 and isinstance(it2['gloss'], str):
+                                    it2['gloss'] = _clean_text_examples(it2['gloss'])
+                                new_list.append(it2)
+                        cleaned_entry = new_list
+                except Exception:
+                    cleaned_entry = entry
+
+                term_to_files[term].append(fname)
+                file_to_terms[fname].add(term)
+                file_term_defs[fname][term] = cleaned_entry
         except Exception:
             continue
 
@@ -380,7 +519,7 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
         'math': {'algebra.json', 'linear_algebra.json', 'calculus.json', 'math.json', 'geometry.json', 'complex_numbers.json', 'probability.json', 'statistics.json', 'trigonometry.json', 'vectors.json'},
         'science': {'biology.json', 'chemistry.json', 'physics.json', 'thermodynamics.json'},
         'code': {'code_dictionary.json'},
-        'definitions': {'definitions.json'},
+        'definitions': {'wikipedia_defs.json'},
         'other': {'economics.json', 'finance.json', 'user_drift.json'}
     }
     def get_group(fname):
@@ -425,27 +564,151 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
                                 candidates.append(e['gloss'])
                         elif isinstance(e, str):
                             candidates.append(e)
-                # Score each candidate for contextual/domain relevance
-                for cand in candidates:
+                # Blend candidates into a single tidbit (ensures consistent blending even for definitions.json)
+                blended = None
+                try:
+                    blended = blend_definitions(candidates, subject=term) if candidates else None
+                except Exception:
+                    blended = None
+                # If blending produced something, score that single combined tidbit; otherwise fall back to best single candidate
+                if blended:
+                    cand = blended
                     cand_l = cand.lower()
                     score = 0
-                    # Strongly prefer if the file's domain is mentioned in the prompt
                     domain = fname.replace('.json','').lower()
                     if domain in prompt_domains:
                         score += 10
-                    # Prefer longer, more descriptive definitions
                     score += min(len(cand_l) // 50, 2)
-                    # Prefer if any prompt word is in the definition
                     if any(w in cand_l for w in prompt_lower.split()):
                         score += 2
-                    # Prefer deeper taxonomy (subject file lower in file_priority list)
                     score += (len(ordered_files) - ordered_files.index(fname))
                     if score > best_score:
                         best_score = score
                         best_tidbit = cand
                         best_file = fname
+                else:
+                    for cand in candidates:
+                        cand_l = cand.lower()
+                        score = 0
+                        domain = fname.replace('.json','').lower()
+                        if domain in prompt_domains:
+                            score += 10
+                        score += min(len(cand_l) // 50, 2)
+                        if any(w in cand_l for w in prompt_lower.split()):
+                            score += 2
+                        score += (len(ordered_files) - ordered_files.index(fname))
+                        if score > best_score:
+                            best_score = score
+                            best_tidbit = cand
+                            best_file = fname
         if best_tidbit and best_score >= 0:
             token_defs[term] = best_tidbit
+
+    # If no token-level definitions were found, fall back to wikipedia lead summaries
+    if not token_defs:
+        try:
+            wiki_defs_path = os.path.join(data_dir, 'wikipedia_defs.json')
+            if os.path.exists(wiki_defs_path):
+                with open(wiki_defs_path, 'r', encoding='utf-8') as fw:
+                    wiki_defs = json.load(fw)
+                # prefer noun_in_prompt, then extracted terms
+                candidates = []
+                if noun_in_prompt:
+                    candidates.append(noun_in_prompt.lower())
+                candidates.extend([t.lower() for t in terms])
+                for cand in candidates:
+                    if not cand:
+                        continue
+                    if cand in wiki_defs:
+                        ent = wiki_defs[cand]
+                        summary = None
+                        if isinstance(ent, dict):
+                            summary = ent.get('summary') or ent.get('definition') or ent.get('gloss')
+                        elif isinstance(ent, str):
+                            summary = ent
+                        if summary:
+                            s = re.split(r'(?<=[.!?])\s+', summary.strip())
+                            lead = s[0] if s else summary.strip()
+                            return f"{cand.capitalize()}: {lead}"
+        except Exception:
+            pass
+
+    # Cross-file blending: if multiple files provide candidate definitions, blend their fragments
+    associations_map = {}
+    for term in list(token_defs.keys()):
+        # gather candidates from all files that define this term
+        candidates_all = []
+        for fname in ordered_files:
+            entry = file_term_defs.get(fname, {}).get(term)
+            if not entry:
+                continue
+            if isinstance(entry, dict):
+                if entry.get('definition'):
+                    candidates_all.append(entry.get('definition'))
+                if entry.get('gloss'):
+                    candidates_all.append(entry.get('gloss'))
+            elif isinstance(entry, list):
+                for e in entry:
+                    if isinstance(e, dict):
+                        if e.get('definition'):
+                            candidates_all.append(e.get('definition'))
+                        if e.get('gloss'):
+                            candidates_all.append(e.get('gloss'))
+                    elif isinstance(e, str):
+                        candidates_all.append(e)
+        # collect synonyms across entries to help association extraction
+        synonyms_all = []
+        for fname in ordered_files:
+            entry = file_term_defs.get(fname, {}).get(term)
+            if not entry:
+                continue
+            # gather synonyms if present
+            if isinstance(entry, dict):
+                synonyms_all.extend(entry.get('synonyms', []))
+            elif isinstance(entry, list):
+                for e in entry:
+                    if isinstance(e, dict):
+                        synonyms_all.extend(e.get('synonyms', []))
+
+        # if we have multiple candidates, use blend_definitions to merge fragments
+        if len(candidates_all) > 1:
+            try:
+                blended = blend_definitions(candidates_all, subject=term)
+            except Exception:
+                blended = None
+            if blended:
+                token_defs[term] = blended
+                # extract associations from last fragments (if available)
+                frags = getattr(blend_definitions, '_last_fragments', [])
+                assoc_counter = {}
+                stop_local = set(["the","and","of","in","on","for","to","a","an","is","are","was","were","this","that"])
+                for frag in frags:
+                    frag_tokens = [w for w in re.findall(r"\b\w+\b", frag.lower())]
+                    for w in frag_tokens:
+                        if len(w) <= 3 or w in stop_local or w == term.lower():
+                            continue
+                        assoc_counter[w] = assoc_counter.get(w, 0) + 1
+                    # consider synonyms: count a synonym if it closely matches any fragment token
+                    if synonyms_all:
+                        from difflib import SequenceMatcher
+                        for syn in synonyms_all:
+                            if not isinstance(syn, str):
+                                continue
+                            syn_norm = re.sub(r'[^a-z0-9]', '', syn.lower())
+                            if len(syn_norm) <= 3 or syn_norm in stop_local or syn_norm == term.lower():
+                                continue
+                            # compute similarity to fragment tokens
+                            best = 0.0
+                            for tok in frag_tokens:
+                                r = SequenceMatcher(None, syn_norm, tok.lower()).ratio()
+                                if r > best:
+                                    best = r
+                            # require reasonably high similarity to count (avoid homophones/near-matches)
+                            if best >= 0.80:
+                                assoc_counter[syn_norm] = assoc_counter.get(syn_norm, 0) + 1
+                # pick top 5 associated words
+                assoc_sorted = sorted(assoc_counter.items(), key=lambda x: -x[1])[:5]
+                associations_map[term] = [w for w, _ in assoc_sorted]
 
     # Handle personal pronoun logic: skip initial pronoun unless subject is referenced later
     personal_pronouns = {
@@ -484,6 +747,7 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
     for t in terms:
         info = domain_info.get(t)
         definition = token_defs.get(t)
+        assoc_words = associations_map.get(t, []) if 'associations_map' in locals() else []
         if info:
             sentence = random.choice(affirmations) + " "
             if info['subspecies']:
@@ -497,6 +761,8 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
             new_fragments.append(sentence)
         elif definition:
             sentence = random.choice(affirmations) + f" {t.capitalize()} means {definition.strip('. ')}."
+            if assoc_words:
+                sentence += " Associated concepts: " + ', '.join(assoc_words) + '.'
             new_fragments.append(sentence)
 
     # Remove from previous_answer any fragments not related to the new prompt's terms
@@ -1041,26 +1307,76 @@ def extract_master_key(raw: str) -> Optional[str]:
     """Extract explicit master key from prompt (e.g. 'what is X', 'what does X mean')."""
     m = re.match(r"what is ([\w\-\_ ]+)[\?\.]?", raw.lower())
     if m:
-        return m.group(1).strip()
+        val = m.group(1).strip()
+        # strip leading determiners
+        val = re.sub(r'^(?:a|an|the)\s+', '', val, flags=re.IGNORECASE)
+        return val
     m = re.match(r"what does ([\w\-\_ ]+) mean[\?\.]?", raw.lower())
     if m:
-        return m.group(1).strip()
+        val = m.group(1).strip()
+        val = re.sub(r'^(?:a|an|the)\s+', '', val, flags=re.IGNORECASE)
+        return val
     return None
 
 def strip_punct(word: str) -> str:
     return word.rstrip(string.punctuation)
 
 def extract_terms(text: str) -> List[str]:
-    """Extract all relevant terms from prompt, using stopword and verb filtering."""
+    """Extract relevant terms from prompt.
+    Prioritize explicit question patterns ("what is X", "define X", "difference between X and Y", "how does X differ from Y").
+    Fall back to multi-word phrase matching (up to 4 words) and capitalized/non-stopword heuristics.
+    """
     import re
-    # Split on non-word boundaries to handle punctuation and concatenated forms
+    text = text.strip()
+    # Quick pattern matches for common question forms
+    patterns = [
+        r"what(?:'s| is) the difference between\s+(.+?)\s+and\s+(.+?)\??$",
+        r"how does\s+(.+?)\s+differ from\s+(.+?)\??$",
+        r"are\s+(.+?)\s+and\s+(.+?)\s+(?:the same|equivalent|equal)\??$",
+        r"give\s+(?:me\s+)?(?:a|the)?\s*(?:brief\s+|short\s+)?definition of\s+(.+?)\??$",
+        r"what(?:'s| is)\s+(.+?)\??$",
+        r"define\s+(.+?)\??$",
+        r"describe\s+(.+?)\??$",
+        r"give\s+(?:me\s+)?(?:a|the)?\s*(?:brief\s+|short\s+)?description of\s+(.+?)\??$",
+        r"what are\s+(.+?)\??$",
+        r"what\s+is\s+a\s+(.+?)\??$",
+        r"what\s+is\s+an\s+(.+?)\??$",
+        r"difference between\s+(.+?)\s+and\s+(.+?)\??$",
+        r"compare\s+(.+?)\s+and\s+(.+?)\??$",
+    ]
+    for pat in patterns:
+        m = re.search(pat, text, flags=re.IGNORECASE)
+        if m:
+            groups = [g for g in m.groups() if g]
+            # return each captured group as a term (normalize and singularize)
+            out = []
+            for g in groups:
+                phrase = re.sub(r"[^A-Za-z0-9\s'-]", "", g).strip()
+                # strip leading determiners like 'a', 'an', 'the'
+                phrase = re.sub(r'^(?:a|an|the)\s+', '', phrase, flags=re.IGNORECASE)
+                # remove trailing request-modifiers like 'in one sentence', 'in 10 words', 'briefly'
+                phrase = re.sub(r"\s+in\s+\d+\s+words$", "", phrase, flags=re.IGNORECASE)
+                phrase = re.sub(r"\s+in\s+one\s+sentence\.?$", "", phrase, flags=re.IGNORECASE)
+                phrase = re.sub(r"\s+in\s+one\s+paragraph\.?$", "", phrase, flags=re.IGNORECASE)
+                phrase = re.sub(r"\s+briefly\.?$", "", phrase, flags=re.IGNORECASE)
+                phrase = re.sub(r"\s+in\s+short\.?$", "", phrase, flags=re.IGNORECASE)
+                if not phrase:
+                    continue
+                # keep multi-word phrases up to 4 words
+                words = phrase.split()
+                if len(words) > 4:
+                    words = words[:4]
+                cand = ' '.join(words)
+                cand = cand.lower()
+                cand = ' '.join(singularize(w) for w in cand.split())
+                out.append(cand)
+            if out:
+                return out
+
+    # Otherwise, fall back to token heuristics (prefer multi-word phrases up to 4 words)
     tokens = re.findall(r"\b\w+\b", text)
     lower_tokens = [t.lower() for t in tokens]
-    interrogatives = {'what','which','who','whom','whose','when','where','why','how','is','are','was','were','do','does','did','can','could','will','would','should','has','have','had'}
-    affirmation_words = {'right', 'yes', 'yeah', 'yep', 'true', 'okay', 'ok', 'sure', 'certainly', 'absolutely', 'indeed', 'definitely', 'affirmative', 'correct'}
-    common_verbs = {'is','are','was','were','do','does','did','can','could','will','would','should','has','have','had','be','am','being','been','get','got','gets','make','makes','made','go','goes','went','gone','see','seen','say','says','said','know','knows','knew','think','thinks','thought','want','wants','wanted','need','needs','needed','use','uses','used','like','likes','liked','give','gives','gave','find','finds','found','tell','tells','told','work','works','worked','call','calls','called','try','tries','tried','ask','asks','asked','feel','feels','felt','leave','leaves','left','put','puts','keep','keeps','kept','let','lets','begin','begins','began','begun','seem','seems','seemed','help','helps','helped','talk','talks','talked','turn','turns','turned','start','starts','started','show','shows','showed','hear','hears','heard','play','plays','played','run','runs','ran','move','moves','moved','live','lives','lived','believe','believes','believed','bring','brings','brought','happen','happens','happened','write','writes','wrote','written','provide','provides','provided','sit','sits','sat','stand','stands','stood','lose','loses','lost','pay','pays','paid','meet','meets','met','include','includes','included','continue','continues','continued','set','sets','learn','learns','learned','change','changes','changed','lead','leads','led','understand','understands','understood','watch','watches','watched','follow','follows','followed','stop','stops','stopped','create','creates','created','speak','speaks','spoke','spoken','read','reads','read','allow','allows','allowed','add','adds','added','spend','spends','spent','grow','grows','grew','grown','open','opens','opened','walk','walks','walked','win','wins','won','offer','offers','offered','remember','remembers','remembered','love','loves','loved','consider','considers','considered','appear','appears','appeared','buy','buys','bought','wait','waits','waited','serve','serves','served','die','dies','died','send','sends','sent','expect','expects','expected','build','builds','built','stay','stays','stayed','fall','falls','fell','fallen','cut','cuts','cut','reach','reaches','reached','kill','kills','killed','remain','remains','remained'}
-    stopwords = interrogatives | affirmation_words | common_verbs | {"the","a","an","of","to","in","for","on","with","at","by","from","up","about","into","over","after","under","again","further","then","once","here","there","when","where","why","how","all","any","both","each","few","more","most","other","some","such","no","nor","not","only","own","same","so","than","too","very","s","t","can","will","just","don","should","now"}
-    # List of personal pronouns to skip
+    interrogatives = {'what','which','who','whom','whose','when','where','why','how'}
     personal_pronouns = {
         'i', 'me', 'my', 'mine', 'myself',
         'you', 'your', 'yours', 'yourself', 'yourselves',
@@ -1073,29 +1389,32 @@ def extract_terms(text: str) -> List[str]:
         'who', 'whom', 'whose', 'which', 'what', 'where', 'when', 'why', 'how'
     }
     seen = set()
-    original_tokens = text.split()
-    # Heuristic: treat capitalized or non-stopword/verb as noun, but skip personal pronouns
-    candidate_terms = []
-    for orig, low in zip(tokens, lower_tokens):
-        if (orig[0].isupper() or (low not in stopwords and low.isalpha())) and low not in RELATIONAL_EXCLUSIONS and low not in personal_pronouns:
-            norm = strip_punct(singularize(orig))
-            if norm and norm not in seen:
+    n = len(tokens)
+    candidates = []
+    # Try longest spans first (4,3,2,1)
+    for span in (4, 3, 2, 1):
+        for i in range(0, n - span + 1):
+            span_tokens = tokens[i:i+span]
+            low_span = [t.lower() for t in span_tokens]
+            # skip spans that are all stop/pronoun words
+            if all(w in personal_pronouns or not w.isalpha() for w in low_span):
+                continue
+            phrase = ' '.join(span_tokens).strip()
+            norm = ' '.join(singularize(w.lower()) for w in phrase.split())
+            norm = strip_punct(norm)
+            if norm and norm not in seen and not any(r in norm for r in RELATIONAL_EXCLUSIONS) and not any(w in interrogatives for w in low_span):
                 seen.add(norm)
-                candidate_terms.append(norm)
-    terms = candidate_terms
-    # If no terms remain, allow a relational word as fallback
-    if not terms:
-        for orig, low in zip(original_tokens, lower_tokens):
-            norm = strip_punct(singularize(orig))
-            if norm and norm not in seen:
-                terms.append(norm)
-                break
-    if not terms:
-        # fallback: treat the whole phrase as a single term
-        phrase = strip_punct(text.strip())
+                candidates.append(norm)
+    # If we found nothing, as a last resort, return the longest alphanumeric substring
+    if not candidates:
+        phrase = re.sub(r"[^A-Za-z0-9\s]", "", text).strip()
         if phrase:
-            terms = [phrase]
-    return terms
+            words = phrase.split()
+            if len(words) > 4:
+                words = words[:4]
+            cand = ' '.join(singularize(w.lower()) for w in words)
+            return [cand]
+    return candidates
 
 def lookup_definition(defs: Dict[str, Any], term: str) -> Optional[Any]:
     """Find the best-matching definition entry for a term (normalized)."""
@@ -1108,12 +1427,13 @@ def lookup_definition(defs: Dict[str, Any], term: str) -> Optional[Any]:
 
 
 def respond(defs: Dict[str, List[Dict[str, Any]]], text: str) -> str:
+    global _last_evidence
 
     raw = text.strip()
     if not raw:
         return "I need something to define."
 
-    # Context and pronoun resolution
+    # Context and pronoun resolution (preserve previous behavior)
     if not hasattr(respond, "_context"):
         respond._context = []
     context = respond._context
@@ -1122,122 +1442,416 @@ def respond(defs: Dict[str, List[Dict[str, Any]]], text: str) -> str:
     if len(context) > 10:
         context.pop(0)
 
-    # Extract subject(s)
-    master_key = extract_master_key(resolved_raw)
-    if master_key:
-        terms = [strip_punct(master_key)]
-    else:
-        terms = extract_terms(resolved_raw)
+    # Initialize spaCy (cached on the function to avoid repeated loads)
+    if not hasattr(respond, "_nlp"):
+        try:
+            import spacy
+            respond._nlp = spacy.load('en_core_web_sm')
+        except Exception:
+            respond._nlp = None
+    nlp = respond._nlp
 
-    subj_mod_pairs = extract_subject_modifier_pairs(resolved_raw, defs)
-    def build_fluent_subject(filtered_pairs):
-        phrases = [fp for fp, _, _ in filtered_pairs]
-        if not phrases:
-            return ''
-        if len(phrases) == 1:
-            return phrases[0]
-        if len(phrases) == 2:
-            return f"{phrases[0]} and {phrases[1]}"
-        return f"{', '.join(phrases[:-1])}, and {phrases[-1]}"
-
-    if subj_mod_pairs:
-        seen_subjects = set()
-        filtered_pairs = []
-        for full_phrase, subj, modifiers in subj_mod_pairs:
-            key = (full_phrase.lower(), subj.lower())
-            if key not in seen_subjects:
-                filtered_pairs.append((full_phrase, subj, modifiers))
-                seen_subjects.add(key)
-        subject_phrase = build_fluent_subject(filtered_pairs)
-        if subject_phrase:
-            subjects = [subject_phrase]
+    # Extract topics using spaCy noun chunks and nouns/proper nouns
+    topics = []
+    if nlp:
+        doc = nlp(resolved_raw)
+        seen = set()
+        for nc in doc.noun_chunks:
+            lem = nc.lemma_.lower().strip()
+            if lem and lem not in seen:
+                seen.add(lem)
+                topics.append(lem)
+        for tok in doc:
+            if tok.pos_ in ("NOUN", "PROPN"):
+                lem = tok.lemma_.lower().strip()
+                if lem and lem not in seen:
+                    seen.add(lem)
+                    topics.append(lem)
+    # Fallback to older extractor when spaCy not available or no topics found
+    if not topics:
+        master_key = extract_master_key(resolved_raw)
+        if master_key:
+            topics = [strip_punct(master_key)]
         else:
-            subjects = [t for t in terms if t.lower() not in RELATIONAL_EXCLUSIONS]
-    else:
-        subjects = [t for t in terms if t.lower() not in RELATIONAL_EXCLUSIONS]
+            topics = extract_terms(resolved_raw)
 
-    # --- Subject mirror and braided crescendo outward ---
-    # Improve subject extraction: prefer noun phrases, filter out auxiliary verbs
-    import random
-    # Define stopwords in this scope so is_noun can access it
-    verbs = {"is", "are", "was", "were", "be", "am", "being", "been", "do", "does", "did", "can", "could", "will", "would", "should", "has", "have", "had"}
-    generic = {"that", "which", "process", "chemical", "reactions", "about", "wrong"}
-    stopwords = {'what','which','who','whom','whose','when','where','why','how','is','are','was','were','do','does','did','can','could','will','would','should','has','have','had','be','am','being','been','get','got','gets','make','makes','made','go','goes','went','gone','see','seen','say','says','said','know','knows','knew','think','thinks','thought','want','wants','wanted','need','needs','needed','use','uses','used','like','likes','liked','give','gives','gave','find','finds','found','tell','tells','told','work','works','worked','call','calls','called','try','tries','tried','ask','asks','asked','feel','feels','felt','leave','leaves','left','put','puts','keep','keeps','kept','let','lets','begin','begins','began','begun','seem','seems','seemed','help','helps','helped','talk','talks','talked','turn','turns','turned','start','starts','started','show','shows','showed','hear','hears','heard','play','plays','played','run','runs','ran','move','moves','moved','live','lives','lived','believe','believes','believed','bring','brings','brought','happen','happens','happened','write','writes','wrote','written','provide','provides','provided','sit','sits','sat','stand','stands','stood','lose','loses','lost','pay','pays','paid','meet','meets','met','include','includes','included','continue','continues','continued','set','sets','learn','learns','learned','change','changes','changed','lead','leads','led','understand','understands','understood','watch','watches','watched','follow','follows','followed','stop','stops','stopped','create','creates','created','speak','speaks','spoke','spoken','read','reads','read','allow','allows','allowed','add','adds','added','spend','spends','spent','grow','grows','grew','grown','open','opens','opened','walk','walks','walked','win','wins','won','offer','offers','offered','remember','remembers','remembered','love','loves','loved','consider','considers','considered','appear','appears','appeared','buy','buys','bought','wait','waits','waited','serve','serves','served','die','dies','died','send','sends','sent','expect','expects','expected','build','builds','built','stay','stays','stayed','fall','falls','fell','fallen','cut','cuts','cut','reach','reaches','reached','kill','kills','killed','remain','remains','remained',"the","a","an","of","to","in","for","on","with","at","by","from","up","about","into","over","after","under","again","further","then","once","here","there","when","where","why","how","all","any","both","each","few","more","most","other","some","such","no","nor","not","only","own","same","so","than","too","very","s","t","can","will","just","don","should","now"}
-    def is_noun(word):
-        # Simple heuristic: not a verb, not a stopword, not a generic word
-        return word.lower() not in verbs and word.lower() not in generic and word.lower() not in stopwords
-    subject_words = [w for w in ' '.join(subjects).split() if is_noun(w)]
-    subject_str = ' '.join(subject_words) if subject_words else ', '.join(subjects)
-    # More varied and context-aware auxiliary phrasing
-    aux_phrases = [
-        f"Considering {subject_str}, we encounter a spectrum of associations.",
-        f"The topic of {subject_str} opens the door to a rich landscape of ideas.",
-        f"In the world of {subject_str}, many threads of meaning are woven together.",
-        f"Reflecting on {subject_str}, we find it linked to a variety of qualities and phenomena.",
-        f"{subject_str.capitalize()} stands at the intersection of multiple domains and concepts."
-    ]
-    response = random.choice(aux_phrases)
+    # Normalize topics: strip determiners, interrogatives, and relational exclusions
+    norm_topics = []
+    interrogatives_set = {'what','which','who','whom','whose','when','where','why','how'}
+    for t in topics:
+        if not t:
+            continue
+        tl = t.lower().strip()
+        tl = re.sub(r'^(?:a|an|the)\s+', '', tl)
+        tl = tl.strip()
+        if not tl:
+            continue
+        if tl in interrogatives_set:
+            continue
+        if any(r in tl for r in RELATIONAL_EXCLUSIONS):
+            # avoid generic relational words
+            continue
+        # singularize final token words
+        tl = ' '.join(singularize(w) for w in tl.split())
+        tl = strip_punct(tl)
+        if tl and tl not in norm_topics:
+            norm_topics.append(tl)
+    topics = norm_topics
 
-    # Braided crescendo: find most salient, high-frequency, or contextually associated concepts in all definitions
-    from collections import Counter, defaultdict
-    word_counter = Counter()
-    word_to_terms = defaultdict(set)
-    for term, senses in defs.items():
-        for sense in senses:
-            gloss = sense.get("gloss", "")
-            for w in re.findall(r"\b\w+\b", gloss.lower()):
-                word_counter[w] += 1
-                word_to_terms[w].add(term)
+    # Helper: detect whether the user's prompt is explicitly a comparison
+    def is_comparison_query(q: str) -> bool:
+        ql = q.lower()
+        # explicit comparison keywords/phrases that clearly indicate a comparison intent
+        explicit = [r"\bdifference between\b", r"\bdiffer from\b", r"\bcompare\b", r"\bversus\b", r"\b vs \b", r"\bvs\.\b"]
+        for p in explicit:
+            if re.search(p, ql):
+                return True
 
-    # Filter out generic/filler words from salient associations
-    filler = {"that", "which", "process", "chemical", "reactions", "about", "wrong", "pathways"}
-    filtered_words = [w for w, _ in word_counter.most_common(200) if w not in stopwords and w not in subject_words and w not in filler and len(w) > 2]
+        # handle 'are X and Y' / 'do X and Y' only when we can detect two noun-like topics
+        # use the already-extracted `topics` list (if available) or fall back to simple token scan
+        topic_count = 0
+        try:
+            topic_count = len([t for t in topics if t and isinstance(t, str)])
+        except Exception:
+            # fallback: count simple noun tokens separated by 'and' or ','
+            m = re.findall(r"\b(\w+)\b", ql)
+            topic_count = len(m)
 
-    associated_words = Counter()
-    for w in filtered_words:
-        for term in word_to_terms[w]:
-            for s in defs[term]:
-                gloss = s.get("gloss", "").lower()
-                if any(sw in gloss for sw in subject_words):
-                    associated_words[w] += 1
+        if topic_count >= 2 and (re.search(r"\bare\s+", ql) or re.search(r"\bdo\s+", ql) or re.search(r"\bcompare\b", ql)):
+            # ensure there is an 'and' or ',' or 'vs' connecting two topics
+            if re.search(r"\band\b", ql) or re.search(r",", ql) or re.search(r"\bvs\b|\bversus\b", ql):
+                return True
 
-    # Favor domain-relevant associations for common subjects
-    domain_map = {
-        "guitar": ["music", "instrument", "sound", "strings", "weight", "play", "tone"],
-        "marijuana": ["substance", "effect", "legal", "medical", "use", "plant", "psychoactive"],
-        "heroin": ["drug", "addiction", "opioid", "effect", "risk", "medical", "illegal"],
-        "cocaine": ["stimulant", "drug", "effect", "risk", "medical", "illegal"],
-        "football": ["sport", "ball", "team", "game", "field", "score", "play"],
-        "basketball": ["sport", "ball", "team", "game", "court", "score", "play"]
-    }
-    N = 5
-    salient_words = []
-    for key, domain_words in domain_map.items():
-        if key in subject_str.lower():
-            # Prefer domain words if present in associations
-            salient_words = [w for w in domain_words if w in associated_words or w in filtered_words][:N]
-            break
-    if not salient_words:
-        if associated_words:
-            salient_words = [w for w, _ in associated_words.most_common(N)]
-        else:
-            salient_words = filtered_words[:N]
+        # questions like 'which is bigger: X or Y' should be treated as comparison
+        if re.search(r"\bor\b", ql) and re.search(r"which\b", ql):
+            return True
 
-    if salient_words:
-        salient_list = ', '.join(salient_words)
-        braid_phrases = [
-            f"Among its many facets, {subject_str} is closely braided with concepts such as {salient_list}.",
-            f"The resonance of {subject_str} is amplified by its association with {salient_list}.",
-            f"One finds {subject_str} frequently braided together with {salient_list} in discourse and analysis.",
-            f"The interplay between {subject_str} and {salient_list} enriches its meaning and relevance.",
-            f"In the grand weave of ideas, {subject_str} and {salient_list} are often found side by side."
+        return False
+
+    # Helper: get fragments from a definition entry
+    def fragments_from_entry(entry):
+        frags = []
+        if isinstance(entry, list):
+            for e in entry:
+                if isinstance(e, dict):
+                    for k in ("definition", "text", "gloss", "desc"):
+                        if k in e and isinstance(e[k], str):
+                            frags.append(e[k])
+                            break
+                elif isinstance(e, str):
+                    frags.append(e)
+        elif isinstance(entry, dict):
+            for k in ("definition", "text", "gloss", "desc"):
+                if k in entry and isinstance(entry[k], str):
+                    frags.append(entry[k])
+                    break
+        elif isinstance(entry, str):
+            frags.append(entry)
+        return [f for f in frags if f and f.strip()]
+
+    # If the user explicitly asked for a definition ("define X", "give definition of X", "what is the definition of X"),
+    # return direct definition(s) rather than attempting a comparative narrative.
+    def parse_definition_request(q: str) -> list:
+        ql = q.strip()
+        patterns = [
+            r"^define\s+(.+?)\s*\??$",
+            r"^give(?: me| a| an| the)?(?: brief| short| one-sentence| concise)?\s+definition(?:s)?(?: of)?\s+(.+?)\s*\.?$",
+            r"what(?:'s| is) the definition of\s+(.+?)\s*\??$",
+            r"what(?:'s| is) definition of\s+(.+?)\s*\??$",
+            r"^definitions? of\s+(.+?)\s*\.?$",
         ]
-        response += " " + random.choice(braid_phrases)
-        response += f" This highlights a dimension of awareness and association in relation to {subject_str}."
-    else:
-        response += f" {subject_str} is a concept with many dimensions and associations, depending on context."
+        for p in patterns:
+            m = re.search(p, ql, flags=re.IGNORECASE)
+            if m:
+                part = m.group(1)
+                # strip trailing request modifiers like 'in one sentence', 'in 10 words', 'briefly'
+                part = re.sub(r"\s+in\s+\d+\s+words\.?$", "", part, flags=re.IGNORECASE)
+                part = re.sub(r"\s+in\s+one\s+sentence\.?$", "", part, flags=re.IGNORECASE)
+                part = re.sub(r"\s+in\s+one\s+paragraph\.?$", "", part, flags=re.IGNORECASE)
+                part = re.sub(r"\s+briefly\.?$", "", part, flags=re.IGNORECASE)
+                part = re.sub(r"\s+in\s+short\.?$", "", part, flags=re.IGNORECASE)
+                # split on ' and ' or commas to support multiple subjects
+                parts = re.split(r"\s*,\s*|\s+and\s+|\s+or\s+", part)
+                cleaned = []
+                for s in parts:
+                    s2 = re.sub(r"[^A-Za-z0-9\s'-]", '', s).strip()
+                    s2 = re.sub(r'^(?:a|an|the)\s+', '', s2, flags=re.IGNORECASE).strip()
+                    if not s2:
+                        continue
+                    # keep up to 4 words for multi-word subjects
+                    words = s2.split()[:4]
+                    words = [singularize(w.lower()) for w in words]
+                    cleaned.append(' '.join(words))
+                if cleaned:
+                    return cleaned
+        return []
 
-    return response
+    # Check for explicit definition requests and short-circuit to direct definitions
+    try:
+        def_reqs = parse_definition_request(resolved_raw)
+        if def_reqs:
+            lines = []
+            for subj in def_reqs:
+                # lookup in provided defs first
+                ent = lookup_definition(defs, subj)
+                frags = fragments_from_entry(ent) if ent else []
+                blended = None
+                try:
+                    if frags:
+                        blended = blend_definitions(frags, subject=subj)
+                except Exception:
+                    blended = None
+                if not blended:
+                    # try wikipedia fallback
+                    try:
+                        wiki_path = os.path.join(os.path.dirname(__file__), 'data', 'wikipedia_defs.json')
+                        if os.path.exists(wiki_path):
+                            with open(wiki_path, 'r', encoding='utf-8') as wf:
+                                wdefs = json.load(wf)
+                            ent2 = wdefs.get(subj) or wdefs.get(subj.lower())
+                            if ent2:
+                                blended = ent2.get('summary') if isinstance(ent2, dict) else (ent2 if isinstance(ent2, str) else None)
+                                if blended:
+                                    # take lead sentence
+                                    blended = re.split(r'(?<=[.!?])\s+', blended.strip())[0]
+                    except Exception:
+                        blended = blended
+                if blended:
+                    lines.append(f"{subj.capitalize()}: {blended}")
+                else:
+                    lines.append(f"{subj.capitalize()}: (no definition found)")
+            # expose minimal evidence for these direct-definition responses
+            try:
+                _last_evidence = {'direct_definition_request': True, 'subjects': def_reqs}
+            except Exception:
+                pass
+            return '\n'.join(lines)
+    except Exception:
+        pass
+
+    stop_small = set(["the","and","of","in","on","for","to","with","a","an","is","are","was","were","this","that"])
+
+    term_blends = {}
+    term_token_sets = {}
+    term_raw_fragments = {}
+    found_terms = []
+    for t in topics:
+        entry = lookup_definition(defs, t)
+        if not entry:
+            # try singular/plural variants
+            alt = singularize(t)
+            entry = lookup_definition(defs, alt) if alt != t else None
+        if not entry:
+            continue
+        frags = fragments_from_entry(entry)
+        if not frags:
+            continue
+        # Blend fragments for this term
+        blended = blend_definitions(frags, subject=t)
+        term_blends[t] = blended
+        found_terms.append(t)
+        # Use the last_fragments recorded by blend_definitions for token sets
+        raw_frags = []
+        try:
+            raw_frags = blend_definitions._last_fragments or []
+        except Exception:
+            raw_frags = frags
+        toks = set()
+        for s in raw_frags:
+            for w in re.findall(r"\b[a-zA-Z]+\b", s.lower()):
+                if w in stop_small:
+                    continue
+                toks.add(w)
+        term_token_sets[t] = toks
+        term_raw_fragments[t] = raw_frags
+
+    if not term_blends:
+        return "I couldn't find matching definitions for the topics in your prompt."
+
+    # If this is NOT a comparison query, prefer returning a concise single-term
+    # summary instead of attempting cross-term comparison even when multiple
+    # related entries are present.
+    try:
+        if not is_comparison_query(resolved_raw):
+            # choose primary term: prefer explicit master key, then first topic, then first found term
+            primary = None
+            try:
+                mk = extract_master_key(resolved_raw)
+            except Exception:
+                mk = None
+            if mk and mk in found_terms:
+                primary = mk
+            elif topics:
+                primary = topics[0]
+            elif found_terms:
+                primary = found_terms[0]
+            if primary:
+                blended_primary = term_blends.get(primary)
+                if blended_primary:
+                    return blended_primary
+                # fallback to wikipedia summary if available
+                try:
+                    wiki_path = os.path.join(os.path.dirname(__file__), 'data', 'wikipedia_defs.json')
+                    if os.path.exists(wiki_path):
+                        with open(wiki_path, 'r', encoding='utf-8') as wf:
+                            wdefs = json.load(wf)
+                        ent = wdefs.get(primary) or wdefs.get(primary.lower())
+                        if ent:
+                            summ = ent.get('summary') if isinstance(ent, dict) else (ent if isinstance(ent, str) else None)
+                            if summ:
+                                s = re.split(r'(?<=[.!?])\s+', summ.strip())
+                                return s[0] if s else summ
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+    # Build response: keep only comparison output (omit per-term blended lines)
+    out_lines = []
+
+    # Pairwise analysis: predicate-aware comparisons when possible, else token intersections
+    # Collect all predicate phrases (verb + prep + object) from the query
+    predicate_phrases = []
+    predicate_tokens = []
+    evidence_pair = None
+    pred_stop = {'do','does','did','move','moves','moved','be','is','are','have','has','by','with','using','use'}
+    if 'nlp' in locals() and nlp:
+        try:
+            docq = nlp(resolved_raw)
+            for tok in docq:
+                # prefer the ROOT verb or a real verb that isn't a light auxiliary
+                if tok.dep_ == 'ROOT' or (tok.pos_ == 'VERB' and tok.lemma_.lower() not in pred_stop):
+                    toks = [tok.lemma_.lower()]
+                    for child in tok.children:
+                        if child.dep_ == 'prep':
+                            toks.append(child.lemma_.lower())
+                            for g in child.children:
+                                if g.dep_ in ('pobj', 'dobj', 'obj'):
+                                    toks.append(g.lemma_.lower())
+                        if child.dep_ in ('dobj', 'pobj', 'obj'):
+                            toks.append(child.lemma_.lower())
+                    phrase = ' '.join(toks)
+                    predicate_phrases.append(phrase)
+                    predicate_tokens.append(set(toks))
+        except Exception:
+            predicate_phrases = []
+            predicate_tokens = []
+    else:
+        # simple regex fallback: capture only common predicate verbs + optional 'by X'
+        verb_whitelist = {'breathe','move','eat','contain','have','use','run','fly','swim','purr','contain','include'}
+        for m in re.finditer(r"\b(\w+)(?:\s+by\s+(\w+))?\b", resolved_raw, re.I):
+            verb = m.group(1).lower()
+            obj = m.group(2).lower() if m.group(2) else None
+            if verb in verb_whitelist:
+                toks = [verb]
+                if obj:
+                    toks.extend(['by', obj])
+                predicate_phrases.append(' '.join(toks))
+                predicate_tokens.append(set(toks))
+
+    if len(found_terms) >= 2:
+        a = found_terms[0]
+        b = found_terms[1]
+        ta = term_token_sets.get(a, set())
+        tb = term_token_sets.get(b, set())
+
+        if predicate_phrases:
+            # filter out generic predicate phrases that contain only stop words
+            filtered = []
+            for p_phrase, p_tokens in zip(predicate_phrases, predicate_tokens):
+                core = set([p for p in p_tokens if p not in pred_stop])
+                if core:
+                    filtered.append((p_phrase, p_tokens))
+            if not filtered:
+                # fall back to original list if filtering removed everything
+                filtered = list(zip(predicate_phrases, predicate_tokens))
+
+            matched_any = False
+            for p_phrase, p_tokens in filtered:
+                pred_stop = {'do','does','did','move','moves','moved','be','is','are','have','has','by','with','using','use'}
+                core = set([p for p in p_tokens if p not in pred_stop])
+
+                def tokens_match(tokset, core_tokens, all_tokens):
+                    if not tokset:
+                        return False
+                    if core_tokens:
+                        if core_tokens & tokset:
+                            return True
+                        for p in core_tokens:
+                            if p.rstrip('e') in tokset or (p + 's') in tokset:
+                                return True
+                        return False
+                    if all_tokens & tokset:
+                        return True
+                    for p in all_tokens:
+                        if p.rstrip('e') in tokset or (p + 's') in tokset:
+                            return True
+                    return False
+
+                has_a = tokens_match(ta, core, p_tokens)
+                has_b = tokens_match(tb, core, p_tokens)
+
+                # Collect supporting / unsupporting fragments for each term
+                def supporting_frags(term):
+                    frs = term_raw_fragments.get(term, [])
+                    sup = [f for f in frs if any((c in f.lower()) for c in (core or p_tokens))]
+                    return sup
+
+                def unsupporting_frags(term):
+                    frs = term_raw_fragments.get(term, [])
+                    neg_words = ('not', "n't", 'no', 'never', 'cannot', 'without')
+                    uns = [f for f in frs if any(n in f.lower() for n in neg_words) and any((p in f.lower()) for p in p_tokens)]
+                    return uns
+
+                sup_a = supporting_frags(a)
+                sup_b = supporting_frags(b)
+                uns_a = unsupporting_frags(a)
+                uns_b = unsupporting_frags(b)
+
+                # record evidence for external inspection
+                evidence_pair = {
+                    'a': a,
+                    'b': b,
+                    'predicate_phrase': p_phrase,
+                    'predicate_tokens': list(p_tokens),
+                    'supporting_a': list(sup_a),
+                    'supporting_b': list(sup_b),
+                    'unsupporting_a': list(uns_a),
+                    'unsupporting_b': list(uns_b),
+                    'has_a': bool(has_a),
+                    'has_b': bool(has_b),
+                }
+
+                if has_a and has_b:
+                    # include brief supporting fragments if available
+                    if sup_a or sup_b:
+                        sa = ("; ".join(sup_a[:2])) if sup_a else "(no direct supporting fragments)"
+                        sb = ("; ".join(sup_b[:2])) if sup_b else "(no direct supporting fragments)"
+                        out_lines.append(f"{a.capitalize()} and {b.capitalize()} both clearly {p_phrase}. Supporting: {a.capitalize()}: {sa}; {b.capitalize()}: {sb}.")
+                    else:
+                        out_lines.append(f"{a.capitalize()} and {b.capitalize()} both clearly {p_phrase}.")
+                    matched_any = True
+                    break
+            if not matched_any:
+                if len(predicate_phrases) == 1:
+                    out_lines.append(f"{a.capitalize()} and {b.capitalize()} do not clearly both {predicate_phrases[0]}.")
+                else:
+                    joined = ' or '.join(predicate_phrases)
+                    out_lines.append(f"{a.capitalize()} and {b.capitalize()} do not clearly both {joined}.")
+
+    # expose last evidence for inspection (supporting / unsupporting fragments)
+    try:
+        _last_evidence = {
+            'found_terms': found_terms,
+            'term_raw_fragments': term_raw_fragments,
+            'predicate_phrases': predicate_phrases,
+            'evidence_pair': evidence_pair,
+            'out_lines': out_lines,
+        }
+    except Exception:
+        _last_evidence = None
+
+    return "\n".join(out_lines)
 
 
 # ---------------------------------------------------------------------
@@ -1255,6 +1869,508 @@ def test_blend_fragments():
             print(f"Fragment {i}: {frag}")
     else:
         print("No fragments stored yet.")
+
+
+def respond_with_evidence(defs: Dict[str, List[Dict[str, Any]]], text: str, verbose: bool = False):
+    """Call `respond()` and return structured evidence.
+
+    - If `verbose` is True, return the sentence string (same as `respond`).
+    - If `verbose` is False, return a dict: `{'response': str, 'evidence': dict_or_None}`.
+    This keeps `respond()` unchanged while providing a non-breaking API.
+    """
+    # call existing responder (it populates module-level `_last_evidence`)
+    sentence = respond(defs, text)
+    evidence = globals().get('_last_evidence')
+    # If this was a direct definition request, and verbose requested, prefer the direct responder output
+    try:
+        if verbose and evidence and isinstance(evidence, dict) and evidence.get('direct_definition_request'):
+            return sentence
+    except Exception:
+        pass
+    if verbose:
+        # prefer returning the learner-oriented narrative when verbose is requested
+        try:
+            detailed = detailed_comparison(defs, text)
+            narrative = detailed.get('narrative') if isinstance(detailed, dict) else None
+            return narrative or sentence
+        except Exception:
+            return sentence
+    return {
+        'response': sentence,
+        'evidence': evidence,
+    }
+
+
+def detailed_comparison(defs: Dict[str, List[Dict[str, Any]]], text: str, predicate: Optional[str] = None) -> Dict[str, Any]:
+    """Produce a full description of supportive and unsupportive likenesses/unlikenesses for the predicate.
+
+    Returns a dict with keys:
+      - `response`: short sentence (same as `respond()` would return)
+      - `predicate`: predicate phrase used
+      - `terms`: list of found terms
+      - `supporting`: dict mapping term -> list of supporting fragments
+      - `unsupporting`: dict mapping term -> list of unsupporting fragments
+      - `shared_tokens`: tokens present in both term fragment token sets
+      - `unique_tokens`: dict mapping term -> tokens unique to that term
+      - `conclusion`: a short final judgement string
+
+    This focuses primarily on the predicate provided or the first predicate discovered
+    in the input. It highlights evidence (fragments) and lexical similarities/differences.
+    """
+    result = respond_with_evidence(defs, text, verbose=False)
+    evidence = result.get('evidence')
+    resp = result.get('response')
+
+    if not evidence:
+        return {'response': resp, 'predicate': predicate, 'terms': [], 'supporting': {}, 'unsupporting': {}, 'shared_tokens': set(), 'unique_tokens': {}, 'conclusion': resp}
+
+    # If this was a direct definition request, assemble a single-term-style evidence dict
+    if evidence and isinstance(evidence, dict) and evidence.get('direct_definition_request'):
+        try:
+            subjects = evidence.get('subjects', [])
+            lines = []
+            term_frags = {}
+            supporting = {}
+            unsupporting = {}
+            for subj in subjects:
+                # attempt to find local definition first
+                ent = lookup_definition(defs, subj)
+                frags = fragments_from_entry(ent) if ent else []
+                blended = None
+                try:
+                    if frags:
+                        blended = blend_definitions(frags, subject=subj)
+                except Exception:
+                    blended = None
+                # wikipedia fallback
+                if not blended:
+                    try:
+                        wiki_path = os.path.join(os.path.dirname(__file__), 'data', 'wikipedia_defs.json')
+                        if os.path.exists(wiki_path):
+                            with open(wiki_path, 'r', encoding='utf-8') as wf:
+                                wdefs = json.load(wf)
+                            ent2 = wdefs.get(subj) or wdefs.get(subj.lower())
+                            if ent2:
+                                blended = ent2.get('summary') if isinstance(ent2, dict) else (ent2 if isinstance(ent2, str) else None)
+                                if blended:
+                                    blended = re.split(r'(?<=[.!?])\s+', blended.strip())[0]
+                    except Exception:
+                        blended = blended
+                if blended:
+                    lines.append(f"{subj.capitalize()}: {blended}")
+                    term_frags[subj] = [blended]
+                    supporting[subj] = [blended]
+                    unsupporting[subj] = []
+                else:
+                    lines.append(f"{subj.capitalize()}: (no definition found)")
+                    term_frags[subj] = []
+                    supporting[subj] = []
+                    unsupporting[subj] = []
+            narrative = '\n'.join(lines)
+            return {
+                'response': narrative,
+                'predicate': predicate,
+                'terms': subjects,
+                'supporting': supporting,
+                'unsupporting': unsupporting,
+                'shared_tokens': set(),
+                'unique_tokens': {s: set() for s in subjects},
+                'conclusion': narrative,
+                'narrative': narrative,
+                'term_raw_fragments': term_frags
+            }
+        except Exception:
+            # on failure, fall back to existing behavior
+            pass
+
+    found = evidence.get('found_terms', [])
+    term_frags = evidence.get('term_raw_fragments', {})
+    p_phrases = evidence.get('predicate_phrases', [])
+
+    # choose predicate: explicit arg > first discovered > None
+    p_choice = predicate or (p_phrases[0] if p_phrases else None)
+
+    # predicates list to consider (explicit arg preferred, else discovered list)
+    predicates_list = []
+    if predicate:
+        predicates_list = [predicate]
+    elif p_phrases:
+        predicates_list = p_phrases
+    else:
+        predicates_list = []
+
+    predicate_count = len(predicates_list)
+
+    # build token sets from fragments (simple alpha words)
+    toksets = {}
+    stop_small_local = set(["the","and","of","in","on","for","to","with","a","an","is","are","was","were","this","that"])
+    # purely semantic tokens we do not want to treat as real-world evidence
+    semantic_tokens = set(['by','or','using','use','via','per','both','also','try'])
+    # numeric words to treat as modifiers (not standalone shared tokens)
+    numeric_words = set(['one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve'])
+    # auxiliaries to exclude unless used as nouns in context
+    aux_tokens = set(['do','does','did','be','is','are','was','were','have','has','had','can','could','will','would','shall','should','may','might','must','ought'])
+
+    def token_used_as_noun_in_frag(token: str, frag: str) -> bool:
+        # prefer the spaCy analyzer initialized by respond(); fall back to heuristic
+        nlp_local = globals().get('respond').__dict__.get('_nlp') if 'respond' in globals() else None
+        if nlp_local:
+            try:
+                doc = nlp_local(frag)
+                for tk in doc:
+                    if tk.text.lower() == token and tk.pos_ in ('NOUN', 'PROPN'):
+                        return True
+            except Exception:
+                pass
+        # fallback heuristic: check for patterns like 'a TOKEN' or 'the TOKEN' or TOKEN followed by noun markers
+        if re.search(r"\b(a|the|an)\s+" + re.escape(token) + r"\b", frag, re.I):
+            return True
+        return False
+
+    for t in found:
+        toks = set()
+        for s in term_frags.get(t, []):
+            for w in re.findall(r"\b[a-zA-Z]+\b", s.lower()):
+                if w in stop_small_local:
+                    continue
+                # skip auxiliaries unless they are actually used as nouns in this fragment
+                if w in aux_tokens and not token_used_as_noun_in_frag(w, s):
+                    continue
+                toks.add(w)
+        toksets[t] = toks
+
+    shared = set()
+    unique = {}
+    if len(found) >= 2:
+        a = found[0]
+        b = found[1]
+        shared = toksets.get(a, set()) & toksets.get(b, set())
+        unique[a] = toksets.get(a, set()) - shared
+        unique[b] = toksets.get(b, set()) - shared
+    else:
+        for t in found:
+            unique[t] = toksets.get(t, set())
+
+    # supporting/unsupporting fragments (from _last_evidence/evidence_pair if available)
+    supporting = {}
+    unsupporting = {}
+    ev_pair = evidence.get('evidence_pair')
+    if ev_pair:
+        for term_key in ('a','b'):
+            tname = ev_pair.get(term_key)
+            if tname:
+                supporting[tname] = ev_pair.get(f'supporting_{term_key}', [])
+                unsupporting[tname] = ev_pair.get(f'unsupporting_{term_key}', [])
+
+    # Count predicate occurrences in fragments per term
+    predicate_support_counts = {}
+    predicate_total_counts = {p: 0 for p in predicates_list}
+    for t in found:
+        predicate_support_counts[t] = {}
+        frlist = term_frags.get(t, [])
+        text_blob = "\n".join(frlist).lower()
+        for p in predicates_list:
+            cnt = text_blob.count(p.lower())
+            predicate_support_counts[t][p] = cnt
+            predicate_total_counts[p] = predicate_total_counts.get(p, 0) + cnt
+
+    # For each predicate, decide supportive status per term (count OR token match)
+    predicate_support_summary = {}
+    predicate_sentences = []
+    for p in predicates_list:
+        # derive meaningful core words for the predicate (exclude tiny/common words)
+        pred_words = [w for w in re.findall(r"\b[a-zA-Z]+\b", p.lower()) if w not in stop_small_local and len(w) > 2]
+        supportive_terms = []
+        for t in found:
+            # direct phrase count (exact predicate phrase)
+            cnt = predicate_support_counts.get(t, {}).get(p, 0)
+
+            # substring match: does any core predicate word appear in the term fragments?
+            frag_match = False
+            for fr in term_frags.get(t, []):
+                s = fr.lower()
+                for w in pred_words:
+                    if w and (w in s or w.rstrip('e') in s):
+                        frag_match = True
+                        break
+                if frag_match:
+                    break
+
+            if cnt > 0 or frag_match:
+                supportive_terms.append(t)
+        predicate_support_summary[p] = supportive_terms
+
+        # build sentence: if all main terms support -> "They do <p>." else "They do not both <p>."
+        # focus comparison on first two significant terms when available
+        main_terms = found[:2]
+        if main_terms and all(t in supportive_terms for t in main_terms):
+            predicate_sentences.append(f"They do {p}.")
+        else:
+            predicate_sentences.append(f"They do not both {p}.")
+
+    # Appraise shared tokens: counts, equality, and whether they appear in
+    # supportive or unsupportive fragments. Produce human-friendly sentences
+    # that keep the token observations together even if there's no predicate.
+    shared_token_appraisal = {}
+    shared_token_sentences = []
+    filtered_shared = []
+    # build a filtered shared list (exclude semantic and numeric tokens and action-like words)
+    # Also exclude tokens that are just the subject names or simple variants (to avoid trivial overlap like 'football').
+    def term_token_variants(term_name: str) -> set:
+        toks = set()
+        if not term_name:
+            return toks
+        for w in re.findall(r"\b\w+\b", term_name.lower()):
+            toks.add(w)
+            toks.add(singularize(w))
+            if w.endswith('s'):
+                toks.add(w.rstrip('s'))
+        return toks
+
+    term_norms = set()
+    if len(found) >= 2:
+        term_norms.update(term_token_variants(found[0]))
+        term_norms.update(term_token_variants(found[1]))
+
+    filtered_shared = [s for s in sorted(list(shared)) if s not in semantic_tokens and s not in numeric_words and s != 'try' and s not in term_norms]
+    if len(found) >= 2:
+        a = found[0]
+        b = found[1]
+        for token in filtered_shared:
+            # counts in fragments
+            a_count = sum(fr.lower().count(token) for fr in term_frags.get(a, []))
+            b_count = sum(fr.lower().count(token) for fr in term_frags.get(b, []))
+            if a_count == b_count:
+                equality = 'equal'
+            elif a_count > b_count:
+                equality = f'more_in_{a}'
+            else:
+                equality = f'more_in_{b}'
+
+            # supportive / unsupportive detection: check if token appears inside
+            # supporting or unsupporting fragments for either term
+            sup_in_a = any(token in s.lower() for s in supporting.get(a, []))
+            sup_in_b = any(token in s.lower() for s in supporting.get(b, []))
+            uns_in_a = any(token in s.lower() for s in unsupporting.get(a, []))
+            uns_in_b = any(token in s.lower() for s in unsupporting.get(b, []))
+
+            if (sup_in_a or sup_in_b) and not (uns_in_a or uns_in_b):
+                status = 'supportive'
+            elif (uns_in_a or uns_in_b) and not (sup_in_a or sup_in_b):
+                status = 'unsupportive'
+            elif (sup_in_a or sup_in_b) and (uns_in_a or uns_in_b):
+                status = 'mixed'
+            else:
+                status = 'neutral'
+
+            shared_token_appraisal[token] = {
+                'counts': {a: a_count, b: b_count},
+                'equality': equality,
+                'status': status,
+            }
+
+            # sentence building
+            if status == 'supportive':
+                sent = f"Both {a} and {b} reference '{token}', which supports similarity." 
+            elif status == 'unsupportive':
+                sent = f"Both mention '{token}', but it's used in an unsupportive/negating context in at least one term." 
+            elif status == 'mixed':
+                sent = f"Both mention '{token}', with supportive and unsupportive evidence across the terms." 
+            else:
+                sent = f"Both mention '{token}', but without explicit supporting/unsupporting context."
+
+            # append equality detail
+            if equality == 'equal':
+                sent += f" They appear equally often in both ({a_count} times)."
+            elif equality.startswith('more_in_'):
+                which = equality.split('_in_')[-1]
+                sent += f" It appears more often in {which} ({a_count if which==a else b_count} vs {b_count if which==a else a_count})."
+
+            shared_token_sentences.append(sent)
+
+    # final sentences: predicates first (if any), then token appraisals
+    final_sentences = []
+    if predicate_sentences:
+        final_sentences.extend(predicate_sentences)
+    if shared_token_sentences:
+        final_sentences.append('Additionally:')
+        final_sentences.extend(shared_token_sentences)
+
+    # Build a coherent narrative paragraph for learners
+    narrative_parts = []
+    # Predicates paragraph
+    if predicate_sentences:
+        # join predicate sentences into one smooth clause
+        pred_para = ' '.join(predicate_sentences)
+        narrative_parts.append(pred_para)
+
+    # Shared tokens paragraph (require at least two found terms)
+    if shared and len(found) >= 2:
+        # filter out purely semantic tokens and numeric tokens from shared observations
+        numeric_words = set(['one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve'])
+        digits = set(str(i) for i in range(0,101))
+        shared_list = [s for s in sorted(list(shared)) if s not in semantic_tokens and s not in numeric_words and s not in digits]
+        # format token list with commas and 'and'
+        if not shared_list:
+            tokens_text = ''
+        elif len(shared_list) == 1:
+            tokens_text = shared_list[0]
+        else:
+            tokens_text = ', '.join(shared_list[:-1]) + ' and ' + shared_list[-1]
+
+        # assess overall status from shared_token_appraisal
+        statuses = [v.get('status', 'neutral') for v in shared_token_appraisal.values()]
+        if all(s == 'supportive' for s in statuses):
+            status_summary = 'These shared words consistently support similarity.'
+        elif all(s == 'unsupportive' for s in statuses):
+            status_summary = 'These shared words, however, appear in unsupportive contexts for one or both terms.'
+        elif any(s == 'mixed' for s in statuses):
+            status_summary = 'These shared words show mixed evidence: some usages support similarity while others do not.'
+        else:
+            status_summary = 'These shared words appear without clear supporting or contradicting context.'
+
+        # group tokens into useful learner-oriented buckets
+        a = found[0]
+        b = found[1]
+        group_use_ball = [t for t in shared_list if t in ('ball', 'ball(s)')]
+        # exclude 'try' from game features (action-like verb)
+        group_game_features = [t for t in shared_list if t in ('game', 'goal', 'opponents', 'players', 'teams')]
+        others = [t for t in shared_list if t not in group_use_ball + group_game_features]
+
+        if group_use_ball:
+            # simple phrasing for ball usage
+            narrative_parts.append('They both use a ball.')
+
+        if group_game_features:
+            feat_list = [t for t in group_game_features if t != 'game']
+            # detect numeric mentions (words or digits) tied to tokens, per term
+            number_words = {
+                'one':'1','two':'2','three':'3','four':'4','five':'5','six':'6','seven':'7','eight':'8','nine':'9','ten':'10','eleven':'11','twelve':'12'
+            }
+
+            def find_number_for_token(term_name, token_name):
+                frs = term_frags.get(term_name, [])
+                for fr in frs:
+                    # look for digit before token, e.g. '11 players' or word 'two teams'
+                    m = re.search(r"\b(\d+|" + '|'.join(number_words.keys()) + r")\b\s+(?:of\s+)?" + re.escape(token_name) + r"s?\b", fr, re.I)
+                    if m:
+                        val = m.group(1).lower()
+                        return number_words.get(val, val)
+                return None
+
+            numeric_sentences = []
+            nonnumeric_feats = []
+            for tok in feat_list:
+                numa = find_number_for_token(a, tok)
+                numb = find_number_for_token(b, tok)
+                if numa or numb:
+                    # pluralize token label appropriately
+                    label = tok if (numa == '1' or numb == '1') else (tok if tok.endswith('s') else tok + 's')
+                    if numa and numb:
+                        if numa == numb:
+                            numeric_sentences.append(f"Both {a} and {b} have {numa} {label}.")
+                        else:
+                            numeric_sentences.append(f"{a.capitalize()} has {numa} {label} and {b.capitalize()} has {numb} {label}.")
+                    elif numa and not numb:
+                        numeric_sentences.append(f"{a.capitalize()} has {numa} {label}; {b.capitalize()} does not specify a number for {tok}.")
+                    elif numb and not numa:
+                        numeric_sentences.append(f"{b.capitalize()} has {numb} {label}; {a.capitalize()} does not specify a number for {tok}.")
+                else:
+                    nonnumeric_feats.append(tok)
+
+            # add numeric sentences first (they separate numeric token info)
+            narrative_parts.extend(numeric_sentences)
+
+            # then the general non-numeric summary
+            if nonnumeric_feats:
+                if len(nonnumeric_feats) == 1:
+                    narrative_parts.append(f"They're both games with {nonnumeric_feats[0]}.")
+                else:
+                    feats_text = ', '.join(nonnumeric_feats[:-1]) + ' and ' + nonnumeric_feats[-1]
+                    narrative_parts.append(f"They're both games with {feats_text}.")
+
+        if others:
+            # present remaining shared tokens compactly
+            if len(others) == 1:
+                narrative_parts.append(f"They also both mention {others[0]}.")
+            else:
+                if len(others) == 2:
+                    oth_text = ' and '.join(others)
+                else:
+                    oth_text = ', '.join(others[:-1]) + ' and ' + others[-1]
+                narrative_parts.append(f"They also both mention {oth_text}.")
+
+        # do not include parenthetical examples or counts per user request
+        narrative_parts = [p for p in narrative_parts if p]
+
+    # If there's no predicate and no shared tokens, give a gentle learning prompt
+    if not predicate_sentences and not shared:
+        narrative_parts.append('I could not find a clear shared predicate or strong lexical overlap; try asking about a specific characteristic (for example, "do they both X?").')
+
+    narrative = ' '.join(narrative_parts).strip()
+
+    # craft a human-friendly conclusion that reconciles predicate evidence and narrative
+    conclusion = None
+    if ev_pair:
+        ha = ev_pair.get('has_a')
+        hb = ev_pair.get('has_b')
+        ptext = ev_pair.get('predicate_phrase') or p_choice or ''
+        a_name = ev_pair.get('a')
+        b_name = ev_pair.get('b')
+
+        # build a short shared-features phrase if available
+        shared_features = [s for s in (filtered_shared if 'filtered_shared' in locals() else [])]
+        shared_phrase = ''
+        if shared_features:
+            if len(shared_features) == 1:
+                shared_phrase = f"They both mention {shared_features[0]}."
+            else:
+                sf_text = ', '.join(shared_features[:-1]) + ' and ' + shared_features[-1]
+                shared_phrase = f"They both mention {sf_text}."
+
+        # Cases
+        if ha and hb:
+            # both support predicate
+            conclusion = f"Both {a_name} and {b_name} show evidence for '{ptext}'."
+            if shared_phrase:
+                conclusion += ' ' + shared_phrase
+        elif ha and not hb:
+            conclusion = f"{a_name.capitalize()} shows evidence for '{ptext}', but {b_name} does not."
+            if shared_phrase:
+                conclusion += ' ' + shared_phrase
+        elif hb and not ha:
+            conclusion = f"{b_name.capitalize()} shows evidence for '{ptext}', but {a_name} does not."
+            if shared_phrase:
+                conclusion += ' ' + shared_phrase
+        else:
+            # neither shows predicate support — emphasize shared features if they exist
+            if shared_phrase:
+                conclusion = f"They do not clearly both {ptext}. {shared_phrase}"
+            else:
+                conclusion = resp
+    else:
+        conclusion = resp
+
+    return {
+        'response': resp,
+        'predicate': p_choice,
+        'terms': found,
+        'supporting': supporting,
+        'unsupporting': unsupporting,
+        'predicate_phrases': predicates_list,
+        'predicate_count': predicate_count,
+        'predicate_support_counts': predicate_support_counts,
+        'predicate_total_counts': predicate_total_counts,
+        'predicate_support_summary': predicate_support_summary,
+        'predicate_sentences': predicate_sentences,
+        'shared_token_appraisal': shared_token_appraisal,
+        'shared_token_sentences': shared_token_sentences,
+        'narrative': narrative,
+        'final_sentences': final_sentences,
+        'shared_tokens': sorted(list(filtered_shared)),
+        'unique_tokens': {k: sorted(list(v)) for k, v in unique.items()},
+        'conclusion': conclusion,
+    }
 
 
 # ---------------------------------------------------------------------
@@ -1297,6 +2413,375 @@ def taxonomy_demo(prompt=None, variations_steps=0):
             print('\n' + v)
 
     return out
+
+
+# ---------------------------------------------------------------------
+# Module-level blending function (exported for tests)
+# ---------------------------------------------------------------------
+def blend_fragments(def_list, subject=None):
+    """Blend a list of definition fragments into a concise combined string.
+
+    This is a module-level copy of the internal blending logic so tests and
+    other modules can reuse it. Sets `. _last_fragments` on the function.
+    """
+    if not def_list:
+        return ""
+    import re
+    # Forbidden endings and helper functions reused from nested implementation
+    forbidden_endings = set([
+        'about','above','across','after','against','along','amid','among','around','as','at','because','before','behind','below','beneath','beside','besides','between','beyond','but','by','concerning','considering','despite','down','during','except','following','for','from','in','including','inside','into','like','minus','near','of','off','on','onto','opposite','out','outside','over','past','per','plus','regarding','round','save','since','than','through','to','toward','towards','under','underneath','unlike','until','up','upon','versus','via','with','within','without','aboard','alongside','amidst','amongst','apropos','athwart','barring','circa','cum','excepting','excluding','failing','notwithstanding','pace','pending','pro','qua','re','sans','than','throughout','till','times','upon','vis-à-vis','whereas','whether','yet',
+        'and','or','nor','so','for','yet','although','because','since','unless','until','while','whereas','though','lest','once','provided','rather','than','that','though','till','unless','until','when','whenever','where','wherever','whether','while','both','either','neither','not','only','but','also','even','if','just','still','then','too','very','well','now','however','thus','therefore','hence','moreover','furthermore','meanwhile','otherwise','besides','indeed','instead','likewise','next','still','then','yet','again','already','always','anyway','anywhere','everywhere','nowhere','somewhere','here','there','where','why','how','whose','which','what','who','whom','whichever','whatever','whoever','whomever',
+        'a','an','the','this','that','these','those','my','your','his','her','its','our','their','whose','each','every','either','neither','some','any','no','other','another','such','much','many','more','most','several','few','fewer','least','less','own','same','enough','all','both','half','one','two','three','first','second','next','last','another','certain','various','which','what','whose','whichever','whatever','whoever','whomever','somebody','someone','something','anybody','anyone','anything','everybody','everyone','everything','nobody','noone','nothing','one','oneself','ones','myself','yourself','himself','herself','itself','ourselves','yourselves','themselves','who','whom','whose','which','that','whichever','whatever','whoever','whomever'
+    ])
+
+    def is_participle_local(word):
+        return is_participle(word)
+
+    def ends_with_forbidden(s):
+        words = s.rstrip('.').split()
+        return words and words[-1].lower() in forbidden_endings
+
+    def clean_sentence(s):
+        words = s.rstrip('.').split()
+        while words and (words[-1].lower() in forbidden_endings or is_participle_local(words[-1])):
+            words.pop()
+        return ' '.join(words)
+
+    # Clean fragments and remove duplicates while preserving order
+    frags = []
+    seen = set()
+    for d in def_list:
+        s = clean_sentence(strip_participles_from_end(d.strip()))
+        if not s:
+            continue
+        key = s.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        frags.append(s)
+    if not frags:
+        blend_fragments._last_fragments = []
+        return ""
+    blend_fragments._last_fragments = frags.copy()
+
+    # If a wikipedia-derived summary exists for the subject, prefer it when it's informative
+    try:
+        if subject and isinstance(subject, str):
+            wiki_path = os.path.join(os.path.dirname(__file__), 'data', 'wikipedia_defs.json')
+            if os.path.exists(wiki_path):
+                with open(wiki_path, 'r', encoding='utf-8') as wf:
+                    wdefs = json.load(wf)
+                ent = wdefs.get(subject) or wdefs.get(subject.lower())
+                if ent:
+                    summ = ent.get('summary') if isinstance(ent, dict) else (ent if isinstance(ent, str) else None)
+                    if summ and len(summ.split()) >= 6:
+                        # return the lead sentence
+                        lead = re.split(r'(?<=[.!?])\s+', summ.strip())[0]
+                        blend_fragments._last_fragments = [lead]
+                        return lead
+    except Exception:
+        pass
+
+    # Subject tokens for scoring
+    subj_tokens = set()
+    if subject and isinstance(subject, str):
+        subj_tokens = set(re.findall(r"\b\w+\b", subject.lower()))
+
+    # Score fragments by: subject-token overlap, presence of definitional verbs, sentence length, and completeness
+    scored = []
+    for s in frags:
+        score = 0.0
+        s_l = s.lower()
+        words = re.findall(r"\b\w+\b", s_l)
+        # completeness: ends with punctuation
+        if re.search(r'[.!?]\s*$', s):
+            score += 1.0
+        # length contributes modestly
+        score += min(len(words) / 20.0, 2.0)
+        # definitional cue words
+        for cue in (' is ', ' are ', ' means ', ' refers to ', ' defined as ', ' is called ', ' can be '):
+            if cue in s_l:
+                score += 2.0
+        # overlap with subject tokens
+        if subj_tokens:
+            common = subj_tokens & set(words)
+            score += len(common) * 1.5
+        # prefer fragments that contain alphabetic content beyond stop words
+        scored.append((score, s))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+    # choose top two fragments (if available) and join cleanly
+    chosen = [t for _, t in scored[:2]] if scored else []
+    # ensure chosen fragments are cleaned and distinct
+    out_parts = []
+    seen_parts = set()
+    for p in chosen:
+        cp = p.strip()
+        if not cp:
+            continue
+        if cp.lower() in seen_parts:
+            continue
+        seen_parts.add(cp.lower())
+        # ensure it ends with a period
+        if not re.search(r'[.!?]\s*$', cp):
+            cp = cp + '.'
+        out_parts.append(cp)
+    if out_parts:
+        blend_fragments._last_fragments = out_parts.copy()
+        return ' '.join(out_parts)
+
+    stop = set(["the","and","or","of","in","on","for","to","with","a","an","is"])
+
+    # Lightweight noun heuristic: prefer tokens that look like nouns by
+    # morphology (common noun suffixes), plural forms, or not matching common verb seeds.
+    noun_suffixes = ('tion','ment','ness','ity','ism','ology','ship','age','ery','hood','graphy','scope','ence','ance','ist')
+    verb_seed = set(["is","are","was","were","do","does","did","run","runs","move","moves","associate","associates","associated","involve","involves","contain","contains","include","includes","mean","means","use","uses","lead","leads","cause","causes","have","has","hold","held","form","forms","create","creates","convert","converts","breathe","emit","expel","draw"])
+
+    def is_noun_like(w: str) -> bool:
+        w = w.lower()
+        if not w.isalpha() or len(w) <= 2:
+            return False
+        if w in verb_seed:
+            return False
+        if w.endswith('s') and len(w) > 3:
+            return True
+        for suf in noun_suffixes:
+            if w.endswith(suf):
+                return True
+        # fallback: prefer words that are not clearly verbs (ending -ing/-ed) or adjectives
+        if w.endswith('ing') or w.endswith('ed') or w.endswith('ly'):
+            return False
+        return True
+
+        # final fallback: if spaCy is available use it
+    # If spaCy loaded successfully prefer it for single-token checks
+    def is_noun_final(w: str) -> bool:
+        if is_noun_spacy(w):
+            return True
+        return is_noun_like(w)
+
+    # Try to initialize spaCy for better POS tagging; if unavailable, fall back to heuristic
+    _spacy_nlp = None
+    try:
+        import spacy
+        try:
+            _spacy_nlp = spacy.load('en_core_web_sm')
+        except Exception:
+            # model not installed; attempt to load generic if available
+            try:
+                _spacy_nlp = spacy.load('en_core_web_sm')
+            except Exception:
+                _spacy_nlp = None
+    except Exception:
+        _spacy_nlp = None
+
+    def is_noun_spacy(w: str) -> bool:
+        if not _spacy_nlp:
+            return False
+        try:
+            doc = _spacy_nlp(w)
+            if not doc:
+                return False
+            tok = doc[0]
+            return tok.pos_ == 'NOUN' or tok.pos_ == 'PROPN'
+        except Exception:
+            return False
+
+    frag_tokens = []
+    for s in frags:
+        toks_all = [t.lower() for t in re.findall(r"\b\w+\b", s)]
+        toks = [t for t in toks_all if t not in stop and is_noun_final(t)]
+        frag_tokens.append((s, set(toks)))
+
+    ordered = []
+    covered = set()
+    if subj_tokens:
+        scored = []
+        for s, toks in frag_tokens:
+            rel = len(toks & subj_tokens) / max(1, len(toks))
+            scored.append((rel, len(toks), s, toks))
+        scored.sort(key=lambda x: (x[0], x[1]), reverse=True)
+        for rel, _, s, toks in scored:
+            novelty = len(toks - covered)
+            if novelty <= 0 and len(ordered) >= 1:
+                continue
+            ordered.append((s, toks))
+            covered.update(toks)
+    else:
+        scored = sorted(frag_tokens, key=lambda x: len(x[1]), reverse=True)
+        for s, toks in scored:
+            novelty = len(toks - covered)
+            if novelty <= 0 and len(ordered) >= 1:
+                continue
+            ordered.append((s, toks))
+            covered.update(toks)
+
+    ordered = ordered[:4]
+    texts = [s for s, _ in ordered]
+    if not texts:
+        return ""
+    # Attempt to build compact fragments per user spec:
+    # - Prefer 2-word fragments: [noun] [qualifier]
+    # - If fragment contains a predicate (verb), produce 3-word: [noun_plural] [predicate]
+    compact_phrases = []
+    compact_meta = []  # list of (noun_candidate, qualifier, predicate, source_text)
+    stop_small = set(["the","and","of","in","on","for","to","a","an","is","are","was","were","this","that"])
+    for s, toks in ordered:
+        toks_list = [w for w in re.findall(r"\b\w+\b", s.lower()) if w not in stop_small]
+        if not toks_list:
+            continue
+        # find predicate (simple verb seed) and a noun subject (noun-like token)
+        predicate = None
+        for w in reversed(toks_list):
+            if w in verb_seed:
+                predicate = w
+                break
+
+        # pick a subject noun from tokens that pass noun-like heuristic (prefer spaCy)
+        noun_candidate = None
+        for w in toks_list:
+            if is_noun_final(w):
+                noun_candidate = w
+                break
+        if noun_candidate is None:
+            # try any token as last resort
+            noun_candidate = toks_list[0]
+
+        # find a short noun-like qualifier adjacent to the noun (prefer next token)
+        qualifier = None
+        try:
+            idx = toks_list.index(noun_candidate)
+        except ValueError:
+            idx = 0
+        # prefer next token as qualifier (noun-like), then previous
+        if idx + 1 < len(toks_list) and is_noun_like(toks_list[idx+1]):
+            qualifier = toks_list[idx+1]
+        elif idx - 1 >= 0 and is_noun_like(toks_list[idx-1]):
+            qualifier = toks_list[idx-1]
+
+        if not qualifier:
+            # fallback generic qualifier to ensure 2-word fragment
+            qualifier = 'thing'
+
+        # plurality for predicate case
+        noun_plural = noun_candidate
+        if predicate or qualifier in ('both','these','they'):
+            if not noun_plural.endswith('s'):
+                if noun_plural.endswith('y'):
+                    noun_plural = noun_plural[:-1] + 'ies'
+                else:
+                    noun_plural = noun_plural + 's'
+
+        # build phrase: subject-first ordering (noun + qualifier)
+        if predicate:
+            compact_phrases.append(f"{noun_plural} {predicate}")
+            compact_meta.append((noun_candidate, predicate, predicate, s))
+        else:
+            compact_phrases.append(f"{noun_candidate} {qualifier}")
+            compact_meta.append((noun_candidate, qualifier, None, s))
+    # If we have at least two different fragments, synthesize explicit blends
+    # by taking the noun token from one fragment and qualifier from another.
+    if len(compact_meta) >= 2:
+        # prefer combining noun from first and qualifier from second
+        n1, q1, p1, s1 = compact_meta[0]
+        n2, q2, p2, s2 = compact_meta[1]
+        # create two blend candidates that explicitly borrow tokens across fragments
+        try:
+            if n1 and q2:
+                blend12 = f"{n1} {q2}"
+                compact_phrases.insert(0, blend12)
+            if n2 and q1:
+                blend21 = f"{n2} {q1}"
+                compact_phrases.insert(0, blend21)
+        except Exception:
+            pass
+    # Deduplicate while preserving order
+    seen_cp = set()
+    compact_final = [p for p in compact_phrases if not (p in seen_cp or seen_cp.add(p))]
+    if compact_final:
+        # If there are exactly two, prefer 'Both X and Y' style
+        if len(compact_final) == 2:
+            a = compact_final[0]
+            b = compact_final[1]
+            # extract noun phrases after qualifiers
+            return f"Both {a.split(' ',1)[1]} and {b.split(' ',1)[1]}"
+        # if many, join with commas
+        return '; '.join(compact_final[:4])
+
+    # Fallback: robust, simple extraction — pick the longest content word from each selected fragment
+    fallback_nouns = []
+    for s, _ in ordered[:2]:
+        toks = [w for w in re.findall(r"\b[a-zA-Z]+\b", s.lower()) if w not in stop_small]
+        if not toks:
+            continue
+        # pick the longest token as proxy noun
+        noun = max(toks, key=lambda w: len(w))
+        # pluralize heuristically
+        if not noun.endswith('s'):
+            if noun.endswith('y'):
+                noun_p = noun[:-1] + 'ies'
+            else:
+                noun_p = noun + 's'
+        else:
+            noun_p = noun
+        fallback_nouns.append(noun_p)
+    if len(fallback_nouns) == 2:
+        return f"Both {fallback_nouns[0]} and {fallback_nouns[1]}"
+    if len(fallback_nouns) == 1:
+        return fallback_nouns[0]
+    # Build token sets for selected fragments to detect overlap
+    frag_token_sets = []
+    for s, toks in ordered:
+        frag_token_sets.append(toks)
+    # If multiple fragments share a substantial fraction of tokens, summarize with a quantifier
+    if len(frag_token_sets) >= 2:
+        # compute pairwise overlap relative to smaller fragment
+        overlaps = []
+        for i in range(len(frag_token_sets)):
+            for j in range(i+1, len(frag_token_sets)):
+                a = frag_token_sets[i]
+                b = frag_token_sets[j]
+                if not a or not b:
+                    continue
+                inter = a & b
+                frac = len(inter) / max(1, min(len(a), len(b)))
+                overlaps.append((i, j, frac, inter))
+        # pick significant overlaps
+        significant = [t for t in overlaps if t[2] >= 0.4]
+        if significant:
+            # union the intersection tokens for all significant pairs
+            shared = set()
+            for _, _, _, inter in significant:
+                shared.update(inter)
+            if shared:
+                # build a short phrase from shared tokens (prefer longer tokens)
+                shared_list = sorted(shared, key=lambda w: (-len(w), w))[:4]
+                shared_phrase = ', '.join(shared_list[:-1]) + ('' if len(shared_list) == 1 else f', and {shared_list[-1]}') if len(shared_list) > 1 else shared_list[0]
+                if len(texts) == 2:
+                    out = f"Both concern {shared_phrase}."
+                else:
+                    out = f"These concern {shared_phrase}."
+                # ensure capitalization
+                out = out[0].upper() + out[1:]
+                return out
+    if len(texts) == 1:
+        out = texts[0]
+    elif len(texts) == 2:
+        out = f"{texts[0]}, and {texts[1]}"
+    else:
+        out = ', '.join(texts[:-1]) + f", and {texts[-1]}"
+
+    if subject and subject.lower() not in out.lower():
+        out = f"{subject.capitalize()} — {out[0].lower() + out[1:]}"
+    else:
+        out = out[0].upper() + out[1:]
+
+    if ends_with_forbidden(out) and subject:
+        out = out + ' ' + (f"the {subject}" if subject.endswith('s') else f"a {subject}")
+    return out.strip()
+
+# Provide a backward-compatible name for tests and other modules
+blend_definitions = blend_fragments
 
 
 def nerve_demo(prompt=None, variations_steps=0, top_n=5):

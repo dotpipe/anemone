@@ -7,3 +7,4 @@ prompt_toolkit
 wordfreq
 sympy
 tk
+spacy
