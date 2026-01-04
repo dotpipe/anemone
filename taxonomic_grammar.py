@@ -53,7 +53,15 @@ def find_matches(keywords, data_map):
     for kw in keywords:
         nk = normalize(kw)
         for fname, data in data_map.items():
-            for entry_key, entry_val in data.items():
+            # support files that load as dicts or as lists
+            if isinstance(data, dict):
+                iterator = data.items()
+            elif isinstance(data, list):
+                iterator = ((str(i), v) for i, v in enumerate(data))
+            else:
+                # unsupported structure
+                continue
+            for entry_key, entry_val in iterator:
                 ne = normalize(entry_key)
                 # match against entry key
                 if nk and nk in ne:
