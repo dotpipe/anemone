@@ -49,3 +49,8 @@ test_evaluator.py
 data/_backup*
 scripts/
 data/wikipedia_defs.json.bak
+data/chunk*
+data/*.*.bak*
+.gitignore
+data/removed_404_terms.txt
+data/tmp_wiki_terms.txt
