@@ -1,0 +1,115 @@
+{
+  "entry": "electron configuration",
+  "language": "python",
+  "layers": [
+    {
+      "name": "access",
+      "actions": [
+        [
+          "# Entry: electron configuration (layer: access)",
+          "# access: get/set",
+          "# getting",
+          "value = obj.get('key') if isinstance(obj, dict) else getattr(obj, 'attr', None)",
+          "# setting",
+          "obj['key'] = 42",
+          "setattr(obj, 'attr', 'x')"
+        ]
+      ]
+    },
+    {
+      "name": "variable",
+      "actions": [
+        [
+          "# Entry: electron configuration (layer: variable)",
+          "# variable: declarations / assignments",
+          "count = 0",
+          "name = 'electron'",
+          "config = {'shells': []}"
+        ]
+      ]
+    },
+    {
+      "name": "conditional",
+      "actions": [
+        [
+          "# Entry: electron configuration (layer: conditional)",
+          "# conditional: branching",
+          "if count > 0:",
+          "    print('nonzero')",
+          "elif name:",
+          "    print('has name')",
+          "else:",
+          "    print('none')"
+        ]
+      ]
+    },
+    {
+      "name": "loop",
+      "actions": [
+        [
+          "# Entry: electron configuration (layer: loop)",
+          "# loop: iterators",
+          "for i, s in enumerate(config.get('shells', [])):",
+          "    print(i, s)"
+        ],
+        [
+          "while count < 3:",
+          "    count += 1"
+        ]
+      ]
+    },
+    {
+      "name": "function",
+      "actions": [
+        [
+          "# Entry: electron configuration (layer: function)",
+          "# function: definition and docstring",
+          "def analyze_electron_configuration(cfg):",
+          "    '''Return structured summary of `cfg`'''",
+          "    # placeholder analysis",
+          "    return {'shells': cfg.get('shells', [])}"
+        ]
+      ]
+    },
+    {
+      "name": "global",
+      "actions": [
+        [
+          "# Entry: electron configuration (layer: global)",
+          "# global: module-level state",
+          "CACHE = {}"
+        ],
+        [
+          "def cache_set(key, value):",
+          "    CACHE[key] = value"
+        ]
+      ]
+    },
+    {
+      "name": "include",
+      "actions": [
+        [
+          "# Entry: electron configuration (layer: include)",
+          "# include: imports",
+          "import json",
+          "from typing import Any, Dict"
+        ]
+      ]
+    },
+    {
+      "name": "files",
+      "actions": [
+        [
+          "# Entry: electron configuration (layer: files)",
+          "# files: read/write examples",
+          "with open('example.txt', 'w', encoding='utf-8') as f:",
+          "    f.write('example')"
+        ],
+        [
+          "with open('example.txt', 'r', encoding='utf-8') as f:",
+          "    data = f.read()"
+        ]
+      ]
+    }
+  ]
+}

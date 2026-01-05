@@ -8,11 +8,17 @@ setup(
     packages=find_packages(),
     install_requires=[
         'sympy',
+        'fastapi',
+        'uvicorn[standard]',
+        'pydantic',
     ],
     python_requires='>=3.7',
     entry_points={
         'console_scripts': [
             'ollama-shell = shell:main',
+            'patch-kingdom-json = scripts.patch_kingdom_json:main',
+            'pending-patches = scripts.pending_patches_cli:main',
+            'kingdom-editor = scripts.kingdom_editor:main',
         ],
     },
     include_package_data=True,

@@ -297,7 +297,56 @@ class NaturalCodeEngine:
         words = re.findall(r'\w+', lower_prompt)
         for word in words:
             self.start_inquiry_thread(word)
-        return "# No actionable code structure detected from prompt."
+
+            # Fallback heuristic: try to synthesize simple loop/increment code when masterkey doesn't match
+            try:
+                import re
+                lp = lower_prompt
+                # find loop count (first integer that looks like a repeat count)
+                loop_match = re.search(r'(?:loop|loops|repeat|repetition|repetitions|times|rounds?)\s*(?:of|with|that|:)?\s*(\d+)', lp)
+                if not loop_match:
+                    loop_match = re.search(r'(\d+)\s*(?:times|repetitions|rounds)', lp)
+                count = int(loop_match.group(1)) if loop_match else None
+
+                # find variable to increment (e.g., 's' in 'increment s' or 'add 2 to s')
+                var_match = re.search(r'increment(?:s)?\s+([a-zA-Z_][a-zA-Z0-9_]*)', lp)
+                if not var_match:
+                    var_match = re.search(r'add\s+\d+\s+to\s+([a-zA-Z_][a-zA-Z0-9_]*)', lp)
+                var = var_match.group(1) if var_match else None
+
+                # find increment amount
+                inc_match = re.search(r'by\s+(\d+)', lp)
+                if not inc_match:
+                    # look for patterns like 'add 2 to s' or 'increment s by 2' handled above
+                    inc_match = re.search(r'add\s+(\d+)', lp)
+                inc = int(inc_match.group(1)) if inc_match else 1
+
+                # if we detected a loop count and an increment action, generate code
+                if count is not None and var is not None:
+                    # starter value default 0
+                    starter = 0
+                    func_name = 'generated_function'
+                    if wants_function:
+                        # attempt to pick a function name from prompt
+                        mfn = re.search(r'(?:function|define|create|write|make)\s+(?:a\s+)?([a-zA-Z_][a-zA-Z0-9_]*)', lp)
+                        if mfn:
+                            func_name = mfn.group(1)
+                    body = []
+                    body.append(f"{var} = {starter}")
+                    body.append(f"for _ in range({count}):")
+                    body.append(f"    {var} += {inc}")
+                    if wants_function:
+                        # wrap in function
+                        params = ''
+                        indented = '\n'.join('    ' + line for line in body)
+                        code = f"def {func_name}({params}):\n{indented}\n    return {var}\n"
+                    else:
+                        code = '\n'.join(body) + f"\nprint({var})\n"
+                    return code
+            except Exception:
+                pass
+
+            return "# No actionable code structure detected from prompt."
 
 # Example usage:
 

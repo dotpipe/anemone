@@ -2,9 +2,10 @@ nltk
 prompt_toolkit
 wordfreq
 numpy
-nltk
-prompt_toolkit
-wordfreq
 sympy
+# GUI / editor / web server deps for the kingdom editor
+fastapi
+uvicorn[standard]
+pydantic
 tk
 spacy

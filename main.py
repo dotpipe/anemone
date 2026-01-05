@@ -105,14 +105,40 @@ class ChatBox(BoxLayout):
             text = re.sub(r'\[/?(color|b)[^\]]*\]', '', text)
             self.append_history(text)
 
-        # Try the evidence-aware responder (verbose narrative)
-        try:
-            resp = respond_with_evidence(self.defs, prompt, verbose=True)
-        except Exception:
+        # If the prompt requests code, force the code engine to return code-only output
+        if prompt.lower().startswith('code:') or prompt.lower().startswith('generate code'):
+            raw = prompt.split(':', 1)[1].strip() if ':' in prompt else prompt
+            fname = None
+            rest = raw
             try:
-                resp = respond_subject_specific(prompt, assoc_path='thesaurus_assoc.json', data_dir='data')
+                import re
+                m = re.match(r'file[: ]+(\S+)\s*(.*)', raw, re.I)
+                if m:
+                    fname = m.group(1)
+                    rest = m.group(2) or ''
+            except Exception:
+                pass
+            directive = f"Generate only Python code, no explanation. {rest}".strip()
+            try:
+                from new_natural_code_engine import NaturalCodeEngine
+                eng = NaturalCodeEngine('data')
+                resp = eng.generate_code(directive)
+                if fname:
+                    from pathlib import Path
+                    p = Path('examples')
+                    p.mkdir(parents=True, exist_ok=True)
+                    (p / fname).write_text(resp, encoding='utf-8')
             except Exception as e:
-                resp = f'Error in responder: {e}'
+                resp = f'Code engine error: {e}'
+        else:
+            # Try the evidence-aware responder (verbose narrative)
+            try:
+                resp = respond_with_evidence(self.defs, prompt, verbose=True)
+            except Exception:
+                try:
+                    resp = respond_subject_specific(prompt, assoc_path='thesaurus_assoc.json', data_dir='data')
+                except Exception as e:
+                    resp = f'Error in responder: {e}'
 
         out = safe_format(resp)
         if not out:
@@ -496,7 +522,19 @@ class ChatBox(BoxLayout):
                 except Exception as e:
                     return f'Verify command failed: {e}'
 
-            if any(word in _ll for word in ["code", "generate", "python", "loop", "function", "print", "if", "while", "for", "define", "create"]):
+            if _ll.startswith('code:') or _ll.startswith('generate code'):
+                raw = line.split(':', 1)[1].strip() if ':' in line else line
+                fname = None
+                rest = raw
+                try:
+                    import re
+                    m = re.match(r'file[: ]+(\S+)\s*(.*)', raw, re.I)
+                    if m:
+                        fname = m.group(1)
+                        rest = m.group(2) or ''
+                except Exception:
+                    pass
+                directive = f"Generate only Python code, no explanation. {rest}".strip()
                 if 'code_engine' not in globals():
                     try:
                         from new_natural_code_engine import NaturalCodeEngine
@@ -504,7 +542,13 @@ class ChatBox(BoxLayout):
                     except Exception as e:
                         return f'Code engine load failed: {e}'
                 try:
-                    return globals()['code_engine'].generate_code(line)
+                    code = globals()['code_engine'].generate_code(directive)
+                    if fname:
+                        from pathlib import Path
+                        p = Path('examples')
+                        p.mkdir(parents=True, exist_ok=True)
+                        (p / fname).write_text(code, encoding='utf-8')
+                    return code
                 except Exception as e:
                     return f'Code generation failed: {e}'
 

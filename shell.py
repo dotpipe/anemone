@@ -44,14 +44,45 @@ if __name__ == "__main__":
                 print('Verify command failed:', e)
             continue
 
-        # If the prompt looks like a code generation request, use the code engine
-        if any(word in line.lower() for word in ["code", "generate", "python", "loop", "function", "print", "if", "while", "for", "define", "create"]):
+        # If the prompt starts with 'code:' force the code engine to return code-only output.
+        if line.lower().startswith('code:') or line.lower().startswith('generate code'):
+            raw = line.split(':', 1)[1].strip() if ':' in line else line
+            # support an optional leading file specification: "file <name.py> <rest of prompt>"
+            fname = None
+            rest = raw
+            try:
+                import re
+                m = re.match(r'file[: ]+(\S+)\s*(.*)', raw, re.I)
+                if m:
+                    fname = m.group(1)
+                    rest = m.group(2) or ''
+            except Exception:
+                pass
+
+            # Build a directive to the code engine to return code only
+            directive = f"Generate only Python code, no explanation. {rest}".strip()
             # Lazy-load code engine only if needed
             if 'code_engine' not in globals():
                 from new_natural_code_engine import NaturalCodeEngine
                 globals()['code_engine'] = NaturalCodeEngine('data')
-            code = globals()['code_engine'].generate_code(line)
+            try:
+                code = globals()['code_engine'].generate_code(directive)
+            except Exception as e:
+                print('Code engine error:', e)
+                continue
+            # print and optionally save to examples/<fname>
             print(code)
+            if fname:
+                try:
+                    from pathlib import Path
+                    p = Path('examples')
+                    p.mkdir(parents=True, exist_ok=True)
+                    outp = p / fname
+                    outp.write_text(code, encoding='utf-8')
+                    print('Wrote', str(outp))
+                except Exception as e:
+                    print('Failed to write file:', e)
+            continue
         # If the prompt looks like an algebraic equation, solve for variables
         elif '=' in line:
             try:

@@ -48,9 +48,15 @@ data/nerve_sessions/
 test_evaluator.py
 data/_backup*
 scripts/
+.venv/
+data/pending_patches.json
 data/wikipedia_defs.json.bak
 data/chunk*
 data/*.*.bak*
 .gitignore
 data/removed_404_terms.txt
 data/tmp_wiki_terms.txt
+*.egg-info
+examples/*
+tests/*
+tm_holding/*

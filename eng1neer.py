@@ -18,6 +18,138 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
         respond_subject_specific._last_answer = ''
     previous_answer = respond_subject_specific._last_answer
 
+    # Intercept patcher-related natural-language requests and handle them here.
+    # If a pending patch exists, interpret the user's reply as confirm/cancel/apply.
+    try:
+        from eng1neer_patch import (
+            detect_patch_intent,
+            patch_kingdom_json_chat,
+            prepare_patch_preview,
+            apply_selected_changes,
+            get_git_blame_for_lines,
+            find_line_numbers,
+            get_diff_for_change,
+            load_pending_patches,
+            get_pending_patch,
+            add_pending_patch,
+            remove_pending_patch,
+            apply_pending_patch,
+        )
+        # If there's a pending patch awaiting confirmation, check user response
+        pending = getattr(respond_subject_specific, '_pending_patch', None)
+        user_cmd = prompt.strip().lower()
+        import re
+
+        # Global pending commands: apply <id>, preview pending <id>, list pending, remove pending <id>
+        m_apply_id = re.search(r"\bapply(?:\s+pending)?\s+([0-9a-fA-F-]{6,})\b", user_cmd)
+        if m_apply_id:
+            pid = m_apply_id.group(1)
+            # default to inplace unless user said out=<path>
+            inplace_flag = 'inplace' in user_cmd or 'write' in user_cmd
+            out_m = re.search(r"out[:=]\s*([\w\-./\\]+\.json)", user_cmd)
+            out_path = out_m.group(1) if out_m else None
+            res = apply_pending_patch(pid, inplace=inplace_flag, out=out_path, dry_run=False)
+            if res.get('error'):
+                return f"Failed to apply pending {pid}: {res['error']}"
+            return f"Applied {res.get('applied',0)} changes. Wrote to: {res.get('written_to') or 'none'}"
+
+        m_preview_id = re.search(r"\bpreview(?:\s+pending)?\s+([0-9a-fA-F-]{6,})\b", user_cmd)
+        if m_preview_id:
+            pid = m_preview_id.group(1)
+            ent = get_pending_patch(pid)
+            if not ent:
+                return f'No pending patch with id {pid}'
+            parsed = ent.get('parsed', {})
+            return patch_kingdom_json_chat(parsed.get('path'), parsed.get('old'), parsed.get('new'), regex=parsed.get('regex_flag', False), layer=parsed.get('layer'), apply=False)
+
+        if re.search(r"\blist\s+pending\b|\bpending\s+list\b|\bshow\s+pending\b", user_cmd):
+            ents = load_pending_patches()
+            if not ents:
+                return 'No pending patches.'
+            lines = [f"Pending patches ({len(ents)}):"]
+            for e in ents:
+                pid = e.get('id')
+                p = e.get('parsed', {})
+                lines.append(f"- {pid}: {p.get('old')} -> {p.get('new')} (path: {p.get('path')})")
+            return '\n'.join(lines)
+
+        m_remove = re.search(r"\bremove\s+pending\s+([0-9a-fA-F-]{6,})\b", user_cmd)
+        if m_remove:
+            pid = m_remove.group(1)
+            ok = remove_pending_patch(pid)
+            return f'Removed pending {pid}.' if ok else f'No pending patch {pid} found.'
+        if pending:
+            # parse commands: apply, apply N, apply 1-3, apply all, cancel, preview, blame N, diff N
+            import re
+            if re.search(r"\b(cancel|no|abort)\b", user_cmd):
+                respond_subject_specific._pending_patch = None
+                return 'Patch cancelled.'
+
+            m_all = re.search(r"\bapply(?:\s+all)?(?:\s+inplace)?\b", user_cmd)
+            m_sel = re.search(r"\bapply\s+([0-9,\-\s]+)(?:\s+inplace)?\b", user_cmd)
+            if m_all and not m_sel:
+                # apply all
+                inplace_flag = 'inplace' in user_cmd or pending.get('apply_flag', False)
+                res = apply_selected_changes(pending['path'], pending['old'], pending['new'], regex=pending['regex_flag'], layer=pending['layer'], selected_indices=None, inplace=inplace_flag, dry_run=pending['dry_run'])
+                respond_subject_specific._pending_patch = None
+                return f"Applied {res['applied']} changes. Wrote to: {res['written_to']}" if res['written_to'] else f"Applied {res['applied']} changes. No file written."
+
+            if m_sel:
+                rng = m_sel.group(1)
+                # parse numbers and ranges
+                idxs = []
+                for part in re.split(r"[\s,]+", rng.strip()):
+                    if '-' in part:
+                        a, b = part.split('-', 1)
+                        try:
+                            a_i = int(a) - 1
+                            b_i = int(b) - 1
+                            idxs.extend(list(range(a_i, b_i + 1)))
+                        except Exception:
+                            continue
+                    else:
+                        try:
+                            idxs.append(int(part) - 1)
+                        except Exception:
+                            continue
+                inplace_flag = 'inplace' in user_cmd or pending.get('apply_flag', False)
+                res = apply_selected_changes(pending['path'], pending['old'], pending['new'], regex=pending['regex_flag'], layer=pending['layer'], selected_indices=idxs, inplace=inplace_flag, dry_run=pending['dry_run'])
+                respond_subject_specific._pending_patch = None
+                return f"Applied {res['applied']} changes. Wrote to: {res['written_to']}" if res['written_to'] else f"Applied {res['applied']} changes. No file written."
+
+            if re.search(r"\bpreview\b|\bshow\b|\bwhat\b", user_cmd):
+                return patch_kingdom_json_chat(pending['path'], pending['old'], pending['new'], regex=pending['regex_flag'], layer=pending['layer'], apply=False)
+
+            m_blame = re.search(r"\bblame\s+(\d+)\b", user_cmd)
+            if m_blame:
+                idx = int(m_blame.group(1)) - 1
+                details = prepare_patch_preview(pending['path'], pending['old'], pending['new'], pending['regex_flag'], pending['layer'])
+                if 0 <= idx < len(details):
+                    nums = find_line_numbers(pending['path'], details[idx][3])
+                    if nums:
+                        b = get_git_blame_for_lines(pending['path'], nums[0], nums[0])
+                        return b or 'No blame info available.'
+                return 'No matching change for blame.'
+
+            m_diff = re.search(r"\bdiff\s+(\d+)\b", user_cmd)
+            if m_diff:
+                idx = int(m_diff.group(1)) - 1
+                details = prepare_patch_preview(pending['path'], pending['old'], pending['new'], pending['regex_flag'], pending['layer'])
+                if 0 <= idx < len(details):
+                    d = get_diff_for_change(pending['path'], details[idx])
+                    return d
+                return 'No matching change for diff.'
+
+        # No pending patch: detect intent
+        intent = detect_patch_intent(prompt)
+        if intent:
+            # store pending intent and return preview with explicit confirmation instructions
+            respond_subject_specific._pending_patch = intent
+            preview = patch_kingdom_json_chat(intent['path'], intent['old'], intent['new'], regex=intent['regex_flag'], layer=intent['layer'], apply=False)
+            return preview + "\n\nIf you want to apply these changes, reply 'apply'. To cancel, reply 'cancel'. To apply and write the file, reply 'apply inplace'."
+    except Exception:
+        pass
+
     # Quick detection: natural-language equality/inclusion questions
     try:
         # common patterns: "is X the same as Y", "are X and Y the same", "does X include Y", "is X a type of Y"
@@ -398,6 +530,9 @@ def respond_subject_specific(prompt: str, assoc_path='thesaurus_assoc.json', dat
     # Ensure wikipedia_defs.json is present as canonical fallback
     if 'wikipedia_defs.json' in files_in_dir and 'wikipedia_defs.json' not in ordered_files:
         ordered_files.append('wikipedia_defs.json')
+
+
+    
 
     # Build a mapping: term -> [files that define it]
     term_to_files = {term: [] for term in terms}

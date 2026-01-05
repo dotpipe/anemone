@@ -1,0 +1,199 @@
+[
+  {
+    "i": 1,
+    "prompt": "write a function fibonacci(n) that returns the nth Fibonacci number",
+    "file": "examples\\gen_func_01.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": "8"
+  },
+  {
+    "i": 2,
+    "prompt": "write a function factorial(n) that returns n!",
+    "file": "examples\\gen_func_02.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": "120"
+  },
+  {
+    "i": 3,
+    "prompt": "write a function sum_list(lst) that returns the sum of a list of numbers",
+    "file": "examples\\gen_func_03.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": "12"
+  },
+  {
+    "i": 4,
+    "prompt": "write a function average_list(lst) that returns the mean of a list of numbers",
+    "file": "examples\\gen_func_04.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": "2.4"
+  },
+  {
+    "i": 5,
+    "prompt": "write a function max_in_list(lst) that returns the maximum element",
+    "file": "examples\\gen_func_05.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": "4"
+  },
+  {
+    "i": 6,
+    "prompt": "write a function sort_list_asc(lst) that returns a sorted list",
+    "file": "examples\\gen_func_06.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": "[1, 2, 2, 3, 4]"
+  },
+  {
+    "i": 7,
+    "prompt": "write a function count_occurrences(lst, item) that counts occurrences",
+    "file": "examples\\gen_func_07.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": false,
+    "call_error": "Traceback (most recent call last):\n  File \"E:\\anemone\\scripts\\gen_nlp_functions.py\", line 300, in main\n    sample_result = func(*args)\nTypeError: count_occurrences() missing 1 required positional argument: 'item'\n",
+    "sample_result": null
+  },
+  {
+    "i": 8,
+    "prompt": "write a function reverse_string(s) that returns s reversed",
+    "file": "examples\\gen_func_08.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": "'cba'"
+  },
+  {
+    "i": 9,
+    "prompt": "write a function is_prime(n) that returns True if n is prime",
+    "file": "examples\\gen_func_09.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": "True"
+  },
+  {
+    "i": 10,
+    "prompt": "write a function gcd(a, b) that returns the greatest common divisor",
+    "file": "examples\\gen_func_10.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": "6"
+  },
+  {
+    "i": 11,
+    "prompt": "write a function lcm(a, b) that returns the least common multiple",
+    "file": "examples\\gen_func_11.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": "36"
+  },
+  {
+    "i": 12,
+    "prompt": "write a function flatten_list(nested) that flattens a nested list one level",
+    "file": "examples\\gen_func_12.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": "[1, 3, 2, 4, 2]"
+  },
+  {
+    "i": 13,
+    "prompt": "write a function merge_dicts(a, b) that merges two dicts (b overrides a)",
+    "file": "examples\\gen_func_13.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": false,
+    "call_error": "Traceback (most recent call last):\n  File \"E:\\anemone\\scripts\\gen_nlp_functions.py\", line 300, in main\n    sample_result = func(*args)\nTypeError: merge_dicts() missing 1 required positional argument: 'b'\n",
+    "sample_result": null
+  },
+  {
+    "i": 14,
+    "prompt": "write a function read_lines(path) that returns a list of lines from a text file",
+    "file": "examples\\gen_func_14.py",
+    "status": "compile_error",
+    "error": "Traceback (most recent call last):\n  File \"E:\\anemone\\scripts\\gen_nlp_functions.py\", line 277, in main\n    compiled = compile(code, str(fname), 'exec')\n  File \"examples\\gen_func_14.py\", line 3\n    return [ln.rstrip('\n                      ^\nSyntaxError: unterminated string literal (detected at line 3)\n"
+  },
+  {
+    "i": 15,
+    "prompt": "write a function write_text(path, text) that writes text to a file",
+    "file": "examples\\gen_func_15.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": null
+  },
+  {
+    "i": 16,
+    "prompt": "write a function timer(func) decorator that prints elapsed time when called",
+    "file": "examples\\gen_func_16.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": false,
+    "call_error": null,
+    "sample_result": null
+  },
+  {
+    "i": 17,
+    "prompt": "write a function memoized_fib(n) that computes fibonacci with memoization",
+    "file": "examples\\gen_func_17.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": "8"
+  },
+  {
+    "i": 18,
+    "prompt": "write a function parse_json(s) that returns a Python object from a JSON string",
+    "file": "examples\\gen_func_18.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": false,
+    "call_error": "Traceback (most recent call last):\n  File \"E:\\anemone\\scripts\\gen_nlp_functions.py\", line 300, in main\n    sample_result = func(*args)\n  File \"examples\\gen_func_18.py\", line 3, in parse_json\n    return json.loads(s)\n           ~~~~~~~~~~^^^\n  File \"C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\\Lib\\json\\__init__.py\", line 346, in loads\n    return _default_decoder.decode(s)\n           ~~~~~~~~~~~~~~~~~~~~~~~^^^\n  File \"C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\\Lib\\json\\decoder.py\", line 345, in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\\Lib\\json\\decoder.py\", line 363, in raw_decode\n    raise JSONDecodeError(\"Expecting value\", s, err.value) from None\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n",
+    "sample_result": null
+  },
+  {
+    "i": 19,
+    "prompt": "write a function http_get_json(url) that fetches JSON from url using requests and returns parsed object",
+    "file": "examples\\gen_func_19.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": "{'slideshow': {'author': 'Yours Truly', 'date': 'date of publication', 'slides': [{'title': 'Wake up to WonderWidgets!', 'type': 'all'}, {'items': ['Why <em>WonderWidgets</em> are great', 'Who <em>buys</em> WonderWidgets'], 'title': 'Overview', 'type': 'all'}], 'title': 'Sample Slide Show'}}"
+  },
+  {
+    "i": 20,
+    "prompt": "write a function safe_eval(expr) that safely evaluates simple math expressions",
+    "file": "examples\\gen_func_20.py",
+    "status": "ok",
+    "compiled": true,
+    "call_attempted": true,
+    "call_error": null,
+    "sample_result": "8"
+  }
+]
