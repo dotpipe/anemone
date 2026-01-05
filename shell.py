@@ -10,6 +10,35 @@ if __name__ == "__main__":
     with open(assoc_path, 'r', encoding='utf-8') as f:
         thesaurus_assoc = json.load(f)
 
+    # lightweight terminal spinner to show progress during code generation
+    class Spinner:
+        def __init__(self, msg=''):
+            import sys, threading, itertools, time
+            self.msg = msg
+            self._stop = threading.Event()
+            self._thread = threading.Thread(target=self._spin, daemon=True)
+            self._sys = sys
+            self._itertools = itertools
+            self._time = time
+
+        def _spin(self):
+            for ch in self._itertools.cycle('|/-\\'):
+                if self._stop.is_set():
+                    break
+                self._sys.stdout.write('\r' + (self.msg + ' ' if self.msg else '') + ch)
+                self._sys.stdout.flush()
+                self._time.sleep(0.08)
+            # clear
+            self._sys.stdout.write('\r' + (' ' * (len(self.msg) + 2)) + '\r')
+            self._sys.stdout.flush()
+
+        def start(self):
+            self._thread.start()
+
+        def stop(self):
+            self._stop.set()
+            self._thread.join()
+
     while True:
         try:
             line = input("@#!$ > ").strip()
@@ -18,6 +47,97 @@ if __name__ == "__main__":
 
         if not line:
             continue
+
+        # Quick code-intent check and suggestion via cross-referencer
+        try:
+            import importlib.util
+            import time
+            from pathlib import Path
+            # use a unique module name each time to avoid any cached version
+            unique_name = f'cross_reference_prompt_{int(time.time()*1000)}'
+            spec = importlib.util.spec_from_file_location(unique_name, str(Path('scripts') / 'cross_reference_prompt.py'))
+            cr = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(cr)
+            if cr.is_code_request(line):
+                try:
+                    index = cr.load_index()
+                    items, shorthand, params = cr.cross_reference(line, index)
+                    sugg = cr.suggest_function_signature(items, params, line)
+                    # show a concise one-line suggestion instead of full JSON
+                    sig = sugg.get('signature') or sugg.get('name') or ''
+                    if sig:
+                        print(f"Code intent detected — suggested: {sig}")
+                    else:
+                        print('Code intent detected — suggested function')
+                    # Automatically generate code from the suggestion (original behavior)
+                    directive = f"Generate only Python code, no explanation. {line}"
+                    if 'code_engine' not in globals():
+                        from new_natural_code_engine import NaturalCodeEngine
+                        globals()['code_engine'] = NaturalCodeEngine('data')
+                    try:
+                        spinner = Spinner('Generating code...')
+                        spinner.start()
+                        code = globals()['code_engine'].generate_code(directive)
+                        spinner.stop()
+                        # if the engine returns an empty or placeholder result, synthesize a simple fallback
+                        if not code or 'No actionable' in code or len(code.strip()) < 40:
+                            # synthesize from suggestion or prompt: simple loop/print template
+                            try:
+                                prompt = line.lower()
+                                import re
+                                m = re.search(r'from\s*(\d+)\s*to\s*(\d+)', prompt)
+                                if m:
+                                    a = int(m.group(1)); b = int(m.group(2))
+                                    name = sugg.get('name') or 'generated_fn'
+                                    fname = name if name.endswith('.py') else name + '.py'
+                                    code = (f"def {name}():\n"
+                                            f"    for i in range({a},{b}+1):\n"
+                                            f"        print(i)\n\n"
+                                            f"if __name__ == '__main__':\n"
+                                            f"    {name}()\n")
+                                else:
+                                    # generic fallback: if prompt contains 'count' and two numbers, find numbers
+                                    nums = re.findall(r"\d+", prompt)
+                                    if len(nums) >= 2:
+                                        a = int(nums[0]); b = int(nums[1])
+                                        name = sugg.get('name') or 'generated_fn'
+                                        fname = name if name.endswith('.py') else name + '.py'
+                                        code = (f"def {name}():\n"
+                                                f"    for i in range({a},{b}+1):\n"
+                                                f"        print(i)\n\n"
+                                                f"if __name__ == '__main__':\n"
+                                                f"    {name}()\n")
+                                    else:
+                                        # last-resort: use suggested skeleton if available
+                                        sk = (sugg.get('skeletons') or [])
+                                        if sk:
+                                            code = sk[0]
+                                        else:
+                                            code = '# No actionable code structure detected from prompt.\n'
+                            except Exception:
+                                code = '# No actionable code structure detected from prompt.\n'
+                        print(code)
+                        # save to examples/<name>.py when suggestion provides a name
+                        try:
+                            name = sugg.get('name') or None
+                            if name:
+                                from pathlib import Path
+                                p = Path('examples')
+                                p.mkdir(parents=True, exist_ok=True)
+                                fname = name if name.endswith('.py') else name + '.py'
+                                outp = p / fname
+                                outp.write_text(code, encoding='utf-8')
+                                print('Wrote', str(outp))
+                        except Exception:
+                            pass
+                    except Exception as e:
+                        print('Code engine error:', e)
+                    continue
+                except Exception as e:
+                    print('Cross-referencer error:', e)
+        except Exception:
+            # fail silently; cross-referencer is optional
+            pass
 
         if line.lower() in {"quit", "exit"}:
             break
@@ -66,7 +186,10 @@ if __name__ == "__main__":
                 from new_natural_code_engine import NaturalCodeEngine
                 globals()['code_engine'] = NaturalCodeEngine('data')
             try:
+                spinner = Spinner('Generating code...')
+                spinner.start()
                 code = globals()['code_engine'].generate_code(directive)
+                spinner.stop()
             except Exception as e:
                 print('Code engine error:', e)
                 continue

@@ -1,0 +1,1032 @@
+[
+  {
+    "name": "False",
+    "type": "keyword",
+    "doc": "Boolean False"
+  },
+  {
+    "name": "None",
+    "type": "keyword",
+    "doc": "The None singleton"
+  },
+  {
+    "name": "True",
+    "type": "keyword",
+    "doc": "Boolean True"
+  },
+  {
+    "name": "and",
+    "type": "keyword",
+    "doc": "Logical and"
+  },
+  {
+    "name": "as",
+    "type": "keyword",
+    "doc": "Alias for imports"
+  },
+  {
+    "name": "assert",
+    "type": "keyword",
+    "doc": "Debug assertion"
+  },
+  {
+    "name": "async",
+    "type": "keyword",
+    "doc": "Declare async function"
+  },
+  {
+    "name": "await",
+    "type": "keyword",
+    "doc": "Await coroutine"
+  },
+  {
+    "name": "break",
+    "type": "keyword",
+    "doc": "Break loop"
+  },
+  {
+    "name": "class",
+    "type": "keyword",
+    "doc": "Define a class"
+  },
+  {
+    "name": "continue",
+    "type": "keyword",
+    "doc": "Continue to next loop iteration"
+  },
+  {
+    "name": "def",
+    "type": "keyword",
+    "doc": "Define a function"
+  },
+  {
+    "name": "del",
+    "type": "keyword",
+    "doc": "Delete a variable or item"
+  },
+  {
+    "name": "elif",
+    "type": "keyword",
+    "doc": "Else if branch"
+  },
+  {
+    "name": "else",
+    "type": "keyword",
+    "doc": "Alternative branch"
+  },
+  {
+    "name": "except",
+    "type": "keyword",
+    "doc": "Exception handler"
+  },
+  {
+    "name": "finally",
+    "type": "keyword",
+    "doc": "Finally clause"
+  },
+  {
+    "name": "for",
+    "type": "keyword",
+    "doc": "For-loop"
+  },
+  {
+    "name": "from",
+    "type": "keyword",
+    "doc": "Import specific symbols from module"
+  },
+  {
+    "name": "global",
+    "type": "keyword",
+    "doc": "Declare global variable"
+  },
+  {
+    "name": "if",
+    "type": "keyword",
+    "doc": "Conditional branch"
+  },
+  {
+    "name": "import",
+    "type": "keyword",
+    "doc": "Import module"
+  },
+  {
+    "name": "in",
+    "type": "keyword",
+    "doc": "Membership test / loop variable"
+  },
+  {
+    "name": "is",
+    "type": "keyword",
+    "doc": "Identity test"
+  },
+  {
+    "name": "lambda",
+    "type": "keyword",
+    "doc": "Anonymous function"
+  },
+  {
+    "name": "nonlocal",
+    "type": "keyword",
+    "doc": "Declare nonlocal variable"
+  },
+  {
+    "name": "not",
+    "type": "keyword",
+    "doc": "Logical not"
+  },
+  {
+    "name": "or",
+    "type": "keyword",
+    "doc": "Logical or"
+  },
+  {
+    "name": "pass",
+    "type": "keyword",
+    "doc": "No-op placeholder"
+  },
+  {
+    "name": "raise",
+    "type": "keyword",
+    "doc": "Raise an exception"
+  },
+  {
+    "name": "return",
+    "type": "keyword",
+    "doc": "Return from function"
+  },
+  {
+    "name": "try",
+    "type": "keyword",
+    "doc": "Start exception handling block"
+  },
+  {
+    "name": "while",
+    "type": "keyword",
+    "doc": "While-loop"
+  },
+  {
+    "name": "with",
+    "type": "keyword",
+    "doc": "Context manager"
+  },
+  {
+    "name": "yield",
+    "type": "keyword",
+    "doc": "Yield from generator"
+  },
+  {
+    "name": "ArithmeticError",
+    "type": "builtin",
+    "doc": "Base class for arithmetic errors."
+  },
+  {
+    "name": "AssertionError",
+    "type": "builtin",
+    "doc": "Assertion failed."
+  },
+  {
+    "name": "AttributeError",
+    "type": "builtin",
+    "doc": "Attribute not found."
+  },
+  {
+    "name": "BaseException",
+    "type": "builtin",
+    "doc": "Common base class for all exceptions"
+  },
+  {
+    "name": "BaseExceptionGroup",
+    "type": "builtin",
+    "doc": "A combination of multiple unrelated exceptions."
+  },
+  {
+    "name": "BlockingIOError",
+    "type": "builtin",
+    "doc": "I/O operation would block."
+  },
+  {
+    "name": "BrokenPipeError",
+    "type": "builtin",
+    "doc": "Broken pipe."
+  },
+  {
+    "name": "BufferError",
+    "type": "builtin",
+    "doc": "Buffer error."
+  },
+  {
+    "name": "BytesWarning",
+    "type": "builtin",
+    "doc": "Base class for warnings about bytes and buffer related problems, mostly"
+  },
+  {
+    "name": "ChildProcessError",
+    "type": "builtin",
+    "doc": "Child process error."
+  },
+  {
+    "name": "ConnectionAbortedError",
+    "type": "builtin",
+    "doc": "Connection aborted."
+  },
+  {
+    "name": "ConnectionError",
+    "type": "builtin",
+    "doc": "Connection error."
+  },
+  {
+    "name": "ConnectionRefusedError",
+    "type": "builtin",
+    "doc": "Connection refused."
+  },
+  {
+    "name": "ConnectionResetError",
+    "type": "builtin",
+    "doc": "Connection reset."
+  },
+  {
+    "name": "DeprecationWarning",
+    "type": "builtin",
+    "doc": "Base class for warnings about deprecated features."
+  },
+  {
+    "name": "EOFError",
+    "type": "builtin",
+    "doc": "Read beyond end of file."
+  },
+  {
+    "name": "Ellipsis",
+    "type": "builtin",
+    "doc": "The type of the Ellipsis singleton."
+  },
+  {
+    "name": "EncodingWarning",
+    "type": "builtin",
+    "doc": "Base class for warnings about encodings."
+  },
+  {
+    "name": "EnvironmentError",
+    "type": "builtin",
+    "doc": "Base class for I/O related errors."
+  },
+  {
+    "name": "Exception",
+    "type": "builtin",
+    "doc": "Common base class for all non-exit exceptions."
+  },
+  {
+    "name": "ExceptionGroup",
+    "type": "builtin",
+    "doc": "A combination of multiple unrelated exceptions."
+  },
+  {
+    "name": "False",
+    "type": "builtin",
+    "doc": "Returns True when the argument is true, False otherwise."
+  },
+  {
+    "name": "FileExistsError",
+    "type": "builtin",
+    "doc": "File already exists."
+  },
+  {
+    "name": "FileNotFoundError",
+    "type": "builtin",
+    "doc": "File not found."
+  },
+  {
+    "name": "FloatingPointError",
+    "type": "builtin",
+    "doc": "Floating-point operation failed."
+  },
+  {
+    "name": "FutureWarning",
+    "type": "builtin",
+    "doc": "Base class for warnings about constructs that will change semantically"
+  },
+  {
+    "name": "GeneratorExit",
+    "type": "builtin",
+    "doc": "Request that a generator exit."
+  },
+  {
+    "name": "IOError",
+    "type": "builtin",
+    "doc": "Base class for I/O related errors."
+  },
+  {
+    "name": "ImportError",
+    "type": "builtin",
+    "doc": "Import can't find module, or can't find name in module."
+  },
+  {
+    "name": "ImportWarning",
+    "type": "builtin",
+    "doc": "Base class for warnings about probable mistakes in module imports"
+  },
+  {
+    "name": "IndentationError",
+    "type": "builtin",
+    "doc": "Improper indentation."
+  },
+  {
+    "name": "IndexError",
+    "type": "builtin",
+    "doc": "Sequence index out of range."
+  },
+  {
+    "name": "InterruptedError",
+    "type": "builtin",
+    "doc": "Interrupted by signal."
+  },
+  {
+    "name": "IsADirectoryError",
+    "type": "builtin",
+    "doc": "Operation doesn't work on directories."
+  },
+  {
+    "name": "KeyError",
+    "type": "builtin",
+    "doc": "Mapping key not found."
+  },
+  {
+    "name": "KeyboardInterrupt",
+    "type": "builtin",
+    "doc": "Program interrupted by user."
+  },
+  {
+    "name": "LookupError",
+    "type": "builtin",
+    "doc": "Base class for lookup errors."
+  },
+  {
+    "name": "MemoryError",
+    "type": "builtin",
+    "doc": "Out of memory."
+  },
+  {
+    "name": "ModuleNotFoundError",
+    "type": "builtin",
+    "doc": "Module not found."
+  },
+  {
+    "name": "NameError",
+    "type": "builtin",
+    "doc": "Name not found globally."
+  },
+  {
+    "name": "None",
+    "type": "builtin",
+    "doc": "The type of the None singleton."
+  },
+  {
+    "name": "NotADirectoryError",
+    "type": "builtin",
+    "doc": "Operation only works on directories."
+  },
+  {
+    "name": "NotImplemented",
+    "type": "builtin",
+    "doc": "The type of the NotImplemented singleton."
+  },
+  {
+    "name": "NotImplementedError",
+    "type": "builtin",
+    "doc": "Method or function hasn't been implemented yet."
+  },
+  {
+    "name": "OSError",
+    "type": "builtin",
+    "doc": "Base class for I/O related errors."
+  },
+  {
+    "name": "OverflowError",
+    "type": "builtin",
+    "doc": "Result too large to be represented."
+  },
+  {
+    "name": "PendingDeprecationWarning",
+    "type": "builtin",
+    "doc": "Base class for warnings about features which will be deprecated"
+  },
+  {
+    "name": "PermissionError",
+    "type": "builtin",
+    "doc": "Not enough permissions."
+  },
+  {
+    "name": "ProcessLookupError",
+    "type": "builtin",
+    "doc": "Process not found."
+  },
+  {
+    "name": "PythonFinalizationError",
+    "type": "builtin",
+    "doc": "Operation blocked during Python finalization."
+  },
+  {
+    "name": "RecursionError",
+    "type": "builtin",
+    "doc": "Recursion limit exceeded."
+  },
+  {
+    "name": "ReferenceError",
+    "type": "builtin",
+    "doc": "Weak ref proxy used after referent went away."
+  },
+  {
+    "name": "ResourceWarning",
+    "type": "builtin",
+    "doc": "Base class for warnings about resource usage."
+  },
+  {
+    "name": "RuntimeError",
+    "type": "builtin",
+    "doc": "Unspecified run-time error."
+  },
+  {
+    "name": "RuntimeWarning",
+    "type": "builtin",
+    "doc": "Base class for warnings about dubious runtime behavior."
+  },
+  {
+    "name": "StopAsyncIteration",
+    "type": "builtin",
+    "doc": "Signal the end from iterator.__anext__()."
+  },
+  {
+    "name": "StopIteration",
+    "type": "builtin",
+    "doc": "Signal the end from iterator.__next__()."
+  },
+  {
+    "name": "SyntaxError",
+    "type": "builtin",
+    "doc": "Invalid syntax."
+  },
+  {
+    "name": "SyntaxWarning",
+    "type": "builtin",
+    "doc": "Base class for warnings about dubious syntax."
+  },
+  {
+    "name": "SystemError",
+    "type": "builtin",
+    "doc": "Internal error in the Python interpreter."
+  },
+  {
+    "name": "SystemExit",
+    "type": "builtin",
+    "doc": "Request to exit from the interpreter."
+  },
+  {
+    "name": "TabError",
+    "type": "builtin",
+    "doc": "Improper mixture of spaces and tabs."
+  },
+  {
+    "name": "TimeoutError",
+    "type": "builtin",
+    "doc": "Timeout expired."
+  },
+  {
+    "name": "True",
+    "type": "builtin",
+    "doc": "Returns True when the argument is true, False otherwise."
+  },
+  {
+    "name": "TypeError",
+    "type": "builtin",
+    "doc": "Inappropriate argument type."
+  },
+  {
+    "name": "UnboundLocalError",
+    "type": "builtin",
+    "doc": "Local name referenced but not bound to a value."
+  },
+  {
+    "name": "UnicodeDecodeError",
+    "type": "builtin",
+    "doc": "Unicode decoding error."
+  },
+  {
+    "name": "UnicodeEncodeError",
+    "type": "builtin",
+    "doc": "Unicode encoding error."
+  },
+  {
+    "name": "UnicodeError",
+    "type": "builtin",
+    "doc": "Unicode related error."
+  },
+  {
+    "name": "UnicodeTranslateError",
+    "type": "builtin",
+    "doc": "Unicode translation error."
+  },
+  {
+    "name": "UnicodeWarning",
+    "type": "builtin",
+    "doc": "Base class for warnings about Unicode related problems, mostly"
+  },
+  {
+    "name": "UserWarning",
+    "type": "builtin",
+    "doc": "Base class for warnings generated by user code."
+  },
+  {
+    "name": "ValueError",
+    "type": "builtin",
+    "doc": "Inappropriate argument value (of correct type)."
+  },
+  {
+    "name": "Warning",
+    "type": "builtin",
+    "doc": "Base class for warning categories."
+  },
+  {
+    "name": "WindowsError",
+    "type": "builtin",
+    "doc": "Base class for I/O related errors."
+  },
+  {
+    "name": "ZeroDivisionError",
+    "type": "builtin",
+    "doc": "Second argument to a division or modulo operation was zero."
+  },
+  {
+    "name": "_IncompleteInputError",
+    "type": "builtin",
+    "doc": "incomplete input."
+  },
+  {
+    "name": "abs",
+    "type": "builtin",
+    "doc": "Return the absolute value of the argument."
+  },
+  {
+    "name": "aiter",
+    "type": "builtin",
+    "doc": "Return an AsyncIterator for an AsyncIterable object."
+  },
+  {
+    "name": "all",
+    "type": "builtin",
+    "doc": "Return True if bool(x) is True for all values x in the iterable."
+  },
+  {
+    "name": "anext",
+    "type": "builtin",
+    "doc": "Return the next item from the async iterator."
+  },
+  {
+    "name": "any",
+    "type": "builtin",
+    "doc": "Return True if bool(x) is True for any x in the iterable."
+  },
+  {
+    "name": "ascii",
+    "type": "builtin",
+    "doc": "Return an ASCII-only representation of an object."
+  },
+  {
+    "name": "bin",
+    "type": "builtin",
+    "doc": "Return the binary representation of an integer."
+  },
+  {
+    "name": "bool",
+    "type": "builtin",
+    "doc": "Returns True when the argument is true, False otherwise."
+  },
+  {
+    "name": "breakpoint",
+    "type": "builtin",
+    "doc": "Call sys.breakpointhook(*args, **kws).  sys.breakpointhook() must accept"
+  },
+  {
+    "name": "bytearray",
+    "type": "builtin",
+    "doc": "bytearray(iterable_of_ints) -> bytearray"
+  },
+  {
+    "name": "bytes",
+    "type": "builtin",
+    "doc": "bytes(iterable_of_ints) -> bytes"
+  },
+  {
+    "name": "callable",
+    "type": "builtin",
+    "doc": "Return whether the object is callable (i.e., some kind of function)."
+  },
+  {
+    "name": "chr",
+    "type": "builtin",
+    "doc": "Return a Unicode string of one character with ordinal i; 0 <= i <= 0x10ffff."
+  },
+  {
+    "name": "classmethod",
+    "type": "builtin",
+    "doc": "Convert a function to be a class method."
+  },
+  {
+    "name": "compile",
+    "type": "builtin",
+    "doc": "Compile source into a code object that can be executed by exec() or eval()."
+  },
+  {
+    "name": "complex",
+    "type": "builtin",
+    "doc": "Create a complex number from a string or numbers."
+  },
+  {
+    "name": "copyright",
+    "type": "builtin",
+    "doc": "interactive prompt objects for printing the license text, a list of"
+  },
+  {
+    "name": "credits",
+    "type": "builtin",
+    "doc": "interactive prompt objects for printing the license text, a list of"
+  },
+  {
+    "name": "delattr",
+    "type": "builtin",
+    "doc": "Deletes the named attribute from the given object."
+  },
+  {
+    "name": "dict",
+    "type": "builtin",
+    "doc": "dict() -> new empty dictionary"
+  },
+  {
+    "name": "dir",
+    "type": "builtin",
+    "doc": "dir([object]) -> list of strings"
+  },
+  {
+    "name": "divmod",
+    "type": "builtin",
+    "doc": "Return the tuple (x//y, x%y).  Invariant: div*y + mod == x."
+  },
+  {
+    "name": "enumerate",
+    "type": "builtin",
+    "doc": "Return an enumerate object."
+  },
+  {
+    "name": "eval",
+    "type": "builtin",
+    "doc": "Evaluate the given source in the context of globals and locals."
+  },
+  {
+    "name": "exec",
+    "type": "builtin",
+    "doc": "Execute the given source in the context of globals and locals."
+  },
+  {
+    "name": "exit",
+    "type": "builtin",
+    "doc": ""
+  },
+  {
+    "name": "filter",
+    "type": "builtin",
+    "doc": "Return an iterator yielding those items of iterable for which function(item)"
+  },
+  {
+    "name": "float",
+    "type": "builtin",
+    "doc": "Convert a string or number to a floating-point number, if possible."
+  },
+  {
+    "name": "format",
+    "type": "builtin",
+    "doc": "Return type(value).__format__(value, format_spec)"
+  },
+  {
+    "name": "frozenset",
+    "type": "builtin",
+    "doc": "Build an immutable unordered collection of unique elements."
+  },
+  {
+    "name": "getattr",
+    "type": "builtin",
+    "doc": "getattr(object, name[, default]) -> value"
+  },
+  {
+    "name": "globals",
+    "type": "builtin",
+    "doc": "Return the dictionary containing the current scope's global variables."
+  },
+  {
+    "name": "hasattr",
+    "type": "builtin",
+    "doc": "Return whether the object has an attribute with the given name."
+  },
+  {
+    "name": "hash",
+    "type": "builtin",
+    "doc": "Return the hash value for the given object."
+  },
+  {
+    "name": "help",
+    "type": "builtin",
+    "doc": "Define the builtin 'help'."
+  },
+  {
+    "name": "hex",
+    "type": "builtin",
+    "doc": "Return the hexadecimal representation of an integer."
+  },
+  {
+    "name": "id",
+    "type": "builtin",
+    "doc": "Return the identity of an object."
+  },
+  {
+    "name": "input",
+    "type": "builtin",
+    "doc": "Read a string from standard input.  The trailing newline is stripped."
+  },
+  {
+    "name": "int",
+    "type": "builtin",
+    "doc": "int([x]) -> integer"
+  },
+  {
+    "name": "isinstance",
+    "type": "builtin",
+    "doc": "Return whether an object is an instance of a class or of a subclass thereof."
+  },
+  {
+    "name": "issubclass",
+    "type": "builtin",
+    "doc": "Return whether 'cls' is derived from another class or is the same class."
+  },
+  {
+    "name": "iter",
+    "type": "builtin",
+    "doc": "iter(iterable) -> iterator"
+  },
+  {
+    "name": "len",
+    "type": "builtin",
+    "doc": "Return the number of items in a container."
+  },
+  {
+    "name": "license",
+    "type": "builtin",
+    "doc": "interactive prompt objects for printing the license text, a list of"
+  },
+  {
+    "name": "list",
+    "type": "builtin",
+    "doc": "Built-in mutable sequence."
+  },
+  {
+    "name": "locals",
+    "type": "builtin",
+    "doc": "Return a dictionary containing the current scope's local variables."
+  },
+  {
+    "name": "map",
+    "type": "builtin",
+    "doc": "Make an iterator that computes the function using arguments from"
+  },
+  {
+    "name": "max",
+    "type": "builtin",
+    "doc": "max(iterable, *[, default=obj, key=func]) -> value"
+  },
+  {
+    "name": "memoryview",
+    "type": "builtin",
+    "doc": "Create a new memoryview object which references the given object."
+  },
+  {
+    "name": "min",
+    "type": "builtin",
+    "doc": "min(iterable, *[, default=obj, key=func]) -> value"
+  },
+  {
+    "name": "next",
+    "type": "builtin",
+    "doc": "next(iterator[, default])"
+  },
+  {
+    "name": "object",
+    "type": "builtin",
+    "doc": "The base class of the class hierarchy."
+  },
+  {
+    "name": "oct",
+    "type": "builtin",
+    "doc": "Return the octal representation of an integer."
+  },
+  {
+    "name": "open",
+    "type": "builtin",
+    "doc": "Open file and return a stream.  Raise OSError upon failure."
+  },
+  {
+    "name": "ord",
+    "type": "builtin",
+    "doc": "Return the ordinal value of a character."
+  },
+  {
+    "name": "pow",
+    "type": "builtin",
+    "doc": "Equivalent to base**exp with 2 arguments or base**exp % mod with 3 arguments"
+  },
+  {
+    "name": "print",
+    "type": "builtin",
+    "doc": "Prints the values to a stream, or to sys.stdout by default."
+  },
+  {
+    "name": "property",
+    "type": "builtin",
+    "doc": "Property attribute."
+  },
+  {
+    "name": "quit",
+    "type": "builtin",
+    "doc": ""
+  },
+  {
+    "name": "range",
+    "type": "builtin",
+    "doc": "range(stop) -> range object"
+  },
+  {
+    "name": "repr",
+    "type": "builtin",
+    "doc": "Return the canonical string representation of the object."
+  },
+  {
+    "name": "reversed",
+    "type": "builtin",
+    "doc": "Return a reverse iterator over the values of the given sequence."
+  },
+  {
+    "name": "round",
+    "type": "builtin",
+    "doc": "Round a number to a given precision in decimal digits."
+  },
+  {
+    "name": "set",
+    "type": "builtin",
+    "doc": "Build an unordered collection of unique elements."
+  },
+  {
+    "name": "setattr",
+    "type": "builtin",
+    "doc": "Sets the named attribute on the given object to the specified value."
+  },
+  {
+    "name": "slice",
+    "type": "builtin",
+    "doc": "slice(stop)"
+  },
+  {
+    "name": "sorted",
+    "type": "builtin",
+    "doc": "Return a new list containing all items from the iterable in ascending order."
+  },
+  {
+    "name": "staticmethod",
+    "type": "builtin",
+    "doc": "Convert a function to be a static method."
+  },
+  {
+    "name": "str",
+    "type": "builtin",
+    "doc": "str(object='') -> str"
+  },
+  {
+    "name": "sum",
+    "type": "builtin",
+    "doc": "Return the sum of a 'start' value (default: 0) plus an iterable of numbers"
+  },
+  {
+    "name": "super",
+    "type": "builtin",
+    "doc": "super() -> same as super(__class__, <first argument>)"
+  },
+  {
+    "name": "tuple",
+    "type": "builtin",
+    "doc": "Built-in immutable sequence."
+  },
+  {
+    "name": "type",
+    "type": "builtin",
+    "doc": "type(object) -> the object's type"
+  },
+  {
+    "name": "vars",
+    "type": "builtin",
+    "doc": "vars([object]) -> dictionary"
+  },
+  {
+    "name": "zip",
+    "type": "builtin",
+    "doc": "The zip object yields n-length tuples, where n is the number of iterables"
+  },
+  {
+    "name": "+",
+    "type": "operator",
+    "doc": "Addition operator"
+  },
+  {
+    "name": "-",
+    "type": "operator",
+    "doc": "Subtraction operator / unary negation"
+  },
+  {
+    "name": "*",
+    "type": "operator",
+    "doc": "Multiplication operator / unpacking"
+  },
+  {
+    "name": "**",
+    "type": "operator",
+    "doc": "Power operator"
+  },
+  {
+    "name": "/",
+    "type": "operator",
+    "doc": "True division"
+  },
+  {
+    "name": "//",
+    "type": "operator",
+    "doc": "Floor division"
+  },
+  {
+    "name": "%",
+    "type": "operator",
+    "doc": "Modulo (remainder)"
+  },
+  {
+    "name": "==",
+    "type": "operator",
+    "doc": "Equality comparison"
+  },
+  {
+    "name": "!=",
+    "type": "operator",
+    "doc": "Inequality comparison"
+  },
+  {
+    "name": "<",
+    "type": "operator",
+    "doc": "Less than"
+  },
+  {
+    "name": "<=",
+    "type": "operator",
+    "doc": "Less or equal"
+  },
+  {
+    "name": ">",
+    "type": "operator",
+    "doc": "Greater than"
+  },
+  {
+    "name": ">=",
+    "type": "operator",
+    "doc": "Greater or equal"
+  },
+  {
+    "name": "[]",
+    "type": "operator",
+    "doc": "List literal / indexing"
+  },
+  {
+    "name": "{}",
+    "type": "operator",
+    "doc": "Dict/set literal"
+  },
+  {
+    "name": "()",
+    "type": "operator",
+    "doc": "Tuple literal / call"
+  },
+  {
+    "name": ":",
+    "type": "operator",
+    "doc": "Colon; used in slices, blocks and dicts"
+  },
+  {
+    "name": "=",
+    "type": "operator",
+    "doc": "Assignment"
+  },
+  {
+    "name": "->",
+    "type": "operator",
+    "doc": "Function return type annotation"
+  }
+]

@@ -1,0 +1,3497 @@
+{
+  "Albert Einstein": [
+    {
+      "function": "albert_einstein_1_eq",
+      "params": [
+        "c",
+        "m"
+      ],
+      "expr": "c**2*m",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "albert_einstein_2_eq",
+      "params": [
+        "c",
+        "m"
+      ],
+      "expr": "c**2*m",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "albert_einstein_3_eq",
+      "params": [
+        "c",
+        "m"
+      ],
+      "expr": "c**2*m",
+      "note": "equation_rhs"
+    }
+  ],
+  "Alexandrine": [
+    {
+      "error": "Sympify of expression 'could not parse 'o=any syllable'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "o=any syllable"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'o=any syllable'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "o=any syllable"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'o=any syllable'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "o=any syllable"
+    }
+  ],
+  "add": [
+    {
+      "function": "add_1_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "add_2_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "add_3_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    }
+  ],
+  "addition": [
+    {
+      "function": "addition_1_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "addition_2_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "addition_3_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    }
+  ],
+  "binomial distribution": [
+    {
+      "function": "binomial_distribution_1_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "binomial_distribution_2_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "binomial_distribution_3_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    }
+  ],
+  "cancel out": [
+    {
+      "function": "cancel_out_1_eq",
+      "params": [
+        "a",
+        "c"
+      ],
+      "expr": "a*c",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "cancel_out_2_eq",
+      "params": [
+        "c"
+      ],
+      "expr": "c",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "cancel_out_3_eq",
+      "params": [
+        "a",
+        "c"
+      ],
+      "expr": "a*c",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "cancel_out_4_eq",
+      "params": [
+        "c"
+      ],
+      "expr": "c",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "cancel_out_5_eq",
+      "params": [
+        "a",
+        "c"
+      ],
+      "expr": "a*c",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "cancel_out_6_eq",
+      "params": [
+        "c"
+      ],
+      "expr": "c",
+      "note": "equation_rhs"
+    }
+  ],
+  "catastrophe": [
+    {
+      "function": "catastrophe_1_eq",
+      "params": [
+        "down"
+      ],
+      "expr": "down",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "catastrophe_2_eq",
+      "params": [
+        "turning"
+      ],
+      "expr": "turning",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "catastrophe_3_eq",
+      "params": [
+        "down"
+      ],
+      "expr": "down",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "catastrophe_4_eq",
+      "params": [
+        "turning"
+      ],
+      "expr": "turning",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "catastrophe_5_eq",
+      "params": [
+        "down"
+      ],
+      "expr": "down",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "catastrophe_6_eq",
+      "params": [
+        "turning"
+      ],
+      "expr": "turning",
+      "note": "equation_rhs"
+    }
+  ],
+  "centimeter": [
+    {
+      "function": "centimeter_1",
+      "params": [],
+      "expr": "1/100"
+    },
+    {
+      "function": "centimeter_2",
+      "params": [],
+      "expr": "1/100"
+    },
+    {
+      "function": "centimeter_3",
+      "params": [],
+      "expr": "1/100"
+    }
+  ],
+  "coarse": [
+    {
+      "function": "coarse_1",
+      "params": [],
+      "expr": "1/4"
+    },
+    {
+      "function": "coarse_2",
+      "params": [],
+      "expr": "1/2"
+    },
+    {
+      "function": "coarse_3",
+      "params": [],
+      "expr": "1/4"
+    },
+    {
+      "function": "coarse_4",
+      "params": [],
+      "expr": "1/2"
+    },
+    {
+      "function": "coarse_5",
+      "params": [],
+      "expr": "1/4"
+    },
+    {
+      "function": "coarse_6",
+      "params": [],
+      "expr": "1/2"
+    }
+  ],
+  "desperation": [
+    {
+      "function": "desperation_1",
+      "params": [],
+      "expr": "1899/1900"
+    },
+    {
+      "function": "desperation_2",
+      "params": [],
+      "expr": "1899/1900"
+    },
+    {
+      "function": "desperation_3",
+      "params": [],
+      "expr": "1899/1900"
+    }
+  ],
+  "fraction": [
+    {
+      "function": "fraction_1",
+      "params": [],
+      "expr": "3/4"
+    },
+    {
+      "function": "fraction_2",
+      "params": [],
+      "expr": "3/4"
+    },
+    {
+      "function": "fraction_3",
+      "params": [],
+      "expr": "3/4"
+    }
+  ],
+  "inch": [
+    {
+      "function": "inch_1",
+      "params": [],
+      "expr": "1/36"
+    },
+    {
+      "function": "inch_2",
+      "params": [],
+      "expr": "1/12"
+    },
+    {
+      "function": "inch_3",
+      "params": [],
+      "expr": "1/36"
+    },
+    {
+      "function": "inch_4",
+      "params": [],
+      "expr": "1/12"
+    },
+    {
+      "function": "inch_5",
+      "params": [],
+      "expr": "1/36"
+    },
+    {
+      "function": "inch_6",
+      "params": [],
+      "expr": "1/12"
+    }
+  ],
+  "look out": [
+    {
+      "function": "look_out_1",
+      "params": [],
+      "expr": "1"
+    },
+    {
+      "function": "look_out_2",
+      "params": [],
+      "expr": "1"
+    },
+    {
+      "function": "look_out_3",
+      "params": [],
+      "expr": "1"
+    }
+  ],
+  "lukewarm": [
+    {
+      "function": "lukewarm_1_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "lukewarm_2_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "lukewarm_3_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    }
+  ],
+  "meter": [
+    {
+      "function": "meter_1",
+      "params": [],
+      "expr": "1/299792458"
+    },
+    {
+      "function": "meter_2",
+      "params": [],
+      "expr": "1/299792458"
+    },
+    {
+      "function": "meter_3",
+      "params": [],
+      "expr": "1/299792458"
+    }
+  ],
+  "molecular weight": [
+    {
+      "function": "molecular_weight_1_eq",
+      "params": [
+        "m",
+        "n"
+      ],
+      "expr": "m/n",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "molecular_weight_2_eq",
+      "params": [
+        "m",
+        "n"
+      ],
+      "expr": "m/n",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "molecular_weight_3_eq",
+      "params": [
+        "m",
+        "n"
+      ],
+      "expr": "m/n",
+      "note": "equation_rhs"
+    }
+  ],
+  "null space": [
+    {
+      "function": "null_space_1_eq",
+      "params": [],
+      "expr": "0",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "null_space_2_eq",
+      "params": [],
+      "expr": "0",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "null_space_3_eq",
+      "params": [],
+      "expr": "0",
+      "note": "equation_rhs"
+    }
+  ],
+  "one-third": [
+    {
+      "function": "one_third_1",
+      "params": [],
+      "expr": "1/3"
+    },
+    {
+      "function": "one_third_2",
+      "params": [],
+      "expr": "1/3"
+    },
+    {
+      "function": "one_third_3",
+      "params": [],
+      "expr": "1/3"
+    }
+  ],
+  "order of magnitude": [
+    {
+      "function": "order_of_magnitude_1",
+      "params": [],
+      "expr": "1/10"
+    },
+    {
+      "function": "order_of_magnitude_2",
+      "params": [],
+      "expr": "1/10"
+    },
+    {
+      "function": "order_of_magnitude_3",
+      "params": [],
+      "expr": "1/10"
+    }
+  ],
+  "portrait": [
+    {
+      "function": "portrait_1",
+      "params": [],
+      "expr": "3/4"
+    },
+    {
+      "function": "portrait_2",
+      "params": [],
+      "expr": "3/4"
+    },
+    {
+      "function": "portrait_3",
+      "params": [],
+      "expr": "3/4"
+    }
+  ],
+  "probability": [
+    {
+      "function": "probability_1",
+      "params": [],
+      "expr": "1/2"
+    },
+    {
+      "function": "probability_2",
+      "params": [],
+      "expr": "1/2"
+    },
+    {
+      "function": "probability_3",
+      "params": [],
+      "expr": "1/2"
+    }
+  ],
+  "probable": [
+    {
+      "function": "probable_1",
+      "params": [],
+      "expr": "1/2"
+    },
+    {
+      "function": "probable_2",
+      "params": [],
+      "expr": "1/2"
+    },
+    {
+      "function": "probable_3",
+      "params": [],
+      "expr": "1/2"
+    }
+  ],
+  "rpm": [
+    {
+      "function": "rpm_1",
+      "params": [],
+      "expr": "1/60"
+    },
+    {
+      "function": "rpm_2",
+      "params": [],
+      "expr": "1/60"
+    },
+    {
+      "function": "rpm_3",
+      "params": [],
+      "expr": "1/60"
+    }
+  ],
+  "second": [
+    {
+      "function": "second_1_eq",
+      "params": [],
+      "expr": "86",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "second_2_eq",
+      "params": [],
+      "expr": "86",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "second_3_eq",
+      "params": [],
+      "expr": "86",
+      "note": "equation_rhs"
+    }
+  ],
+  "soprano": [
+    {
+      "error": "Sympify of expression 'could not parse 'C**4) = 261*Hz to A**5'' failed, because of exception being raised:\nSyntaxError: unmatched ')' (<string>, line 1)",
+      "fragment": "C4) = 261 Hz to A5 in choral music"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'C**4) = 261*Hz to A**5'' failed, because of exception being raised:\nSyntaxError: unmatched ')' (<string>, line 1)",
+      "fragment": "C4) = 261 Hz to A5 in choral music"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'C**4) = 261*Hz to A**5'' failed, because of exception being raised:\nSyntaxError: unmatched ')' (<string>, line 1)",
+      "fragment": "C4) = 261 Hz to A5 in choral music"
+    }
+  ],
+  "subtract": [
+    {
+      "function": "subtract_1_eq",
+      "params": [],
+      "expr": "3",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "subtract_2_eq",
+      "params": [],
+      "expr": "3",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "subtract_3_eq",
+      "params": [],
+      "expr": "3",
+      "note": "equation_rhs"
+    }
+  ],
+  "tangent": [
+    {
+      "error": "Sympify of expression 'could not parse 'c if the line passes through the point*(c)'' failed, because of exception being raised:\nSyntaxError: expected 'else' after 'if' expression (<string>, line 1)",
+      "fragment": "y = f(x) at a point x = c if the line passes through the point (c"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'c if the line passes through the point*(c)'' failed, because of exception being raised:\nSyntaxError: expected 'else' after 'if' expression (<string>, line 1)",
+      "fragment": "y = f(x) at a point x = c if the line passes through the point (c"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'c if the line passes through the point*(c)'' failed, because of exception being raised:\nSyntaxError: expected 'else' after 'if' expression (<string>, line 1)",
+      "fragment": "y = f(x) at a point x = c if the line passes through the point (c"
+    }
+  ],
+  "teeter": [
+    {
+      "skipped": true,
+      "fragment": "(1905/06-1972)"
+    },
+    {
+      "skipped": true,
+      "fragment": "1905/06"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1905/06-1972)"
+    },
+    {
+      "skipped": true,
+      "fragment": "1905/06"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1905/06-1972)"
+    },
+    {
+      "skipped": true,
+      "fragment": "1905/06"
+    }
+  ],
+  "two-thirds": [
+    {
+      "function": "two_thirds_1",
+      "params": [],
+      "expr": "2/3"
+    },
+    {
+      "function": "two_thirds_2",
+      "params": [],
+      "expr": "2/3"
+    },
+    {
+      "function": "two_thirds_3",
+      "params": [],
+      "expr": "2/3"
+    }
+  ],
+  "Anshar": [
+    {
+      "skipped": true,
+      "fragment": "An = Anum"
+    },
+    {
+      "skipped": true,
+      "fragment": "An = Anum"
+    },
+    {
+      "skipped": true,
+      "fragment": "An = Anum"
+    }
+  ],
+  "Artaxerxes II": [
+    {
+      "function": "artaxerxes_ii_1",
+      "params": [],
+      "expr": "405/4"
+    },
+    {
+      "function": "artaxerxes_ii_2",
+      "params": [],
+      "expr": "359/8"
+    },
+    {
+      "function": "artaxerxes_ii_3",
+      "params": [],
+      "expr": "405/4"
+    },
+    {
+      "function": "artaxerxes_ii_4",
+      "params": [],
+      "expr": "359/8"
+    },
+    {
+      "function": "artaxerxes_ii_5",
+      "params": [],
+      "expr": "405/4"
+    },
+    {
+      "function": "artaxerxes_ii_6",
+      "params": [],
+      "expr": "359/8"
+    }
+  ],
+  "Austrian schilling": [
+    {
+      "function": "austrian_schilling_1_eq",
+      "params": [],
+      "expr": "13",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "austrian_schilling_2_eq",
+      "params": [],
+      "expr": "13",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "austrian_schilling_3_eq",
+      "params": [],
+      "expr": "13",
+      "note": "equation_rhs"
+    }
+  ],
+  "Avena barbata": [
+    {
+      "function": "avena_barbata_1",
+      "params": [],
+      "expr": "28"
+    },
+    {
+      "function": "avena_barbata_2",
+      "params": [],
+      "expr": "14"
+    },
+    {
+      "function": "avena_barbata_3",
+      "params": [],
+      "expr": "28"
+    },
+    {
+      "function": "avena_barbata_4",
+      "params": [],
+      "expr": "14"
+    },
+    {
+      "function": "avena_barbata_5",
+      "params": [],
+      "expr": "28"
+    },
+    {
+      "function": "avena_barbata_6",
+      "params": [],
+      "expr": "28"
+    },
+    {
+      "function": "avena_barbata_7",
+      "params": [],
+      "expr": "14"
+    },
+    {
+      "function": "avena_barbata_8",
+      "params": [],
+      "expr": "14"
+    },
+    {
+      "function": "avena_barbata_9",
+      "params": [],
+      "expr": "28"
+    },
+    {
+      "function": "avena_barbata_10",
+      "params": [],
+      "expr": "14"
+    },
+    {
+      "function": "avena_barbata_11",
+      "params": [],
+      "expr": "28"
+    },
+    {
+      "function": "avena_barbata_12",
+      "params": [],
+      "expr": "14"
+    }
+  ],
+  "Cub Scout": [
+    {
+      "function": "cub_scout_1",
+      "params": [],
+      "expr": "7/8"
+    },
+    {
+      "function": "cub_scout_2",
+      "params": [],
+      "expr": "7/8"
+    },
+    {
+      "function": "cub_scout_3",
+      "params": [],
+      "expr": "7/8"
+    }
+  ],
+  "Czechoslovak": [
+    {
+      "skipped": true,
+      "fragment": "1889/90"
+    },
+    {
+      "skipped": true,
+      "fragment": "1889/90"
+    },
+    {
+      "skipped": true,
+      "fragment": "1889/90"
+    }
+  ],
+  "Czechoslovakian": [
+    {
+      "skipped": true,
+      "fragment": "1889/90"
+    },
+    {
+      "skipped": true,
+      "fragment": "1889/90"
+    },
+    {
+      "skipped": true,
+      "fragment": "1889/90"
+    }
+  ],
+  "Dano-Norwegian": [
+    {
+      "skipped": true,
+      "fragment": "(1536/1537–1814)"
+    },
+    {
+      "function": "dano_norwegian_2",
+      "params": [],
+      "expr": "1536/1537"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1536/1537–1814)"
+    },
+    {
+      "function": "dano_norwegian_4",
+      "params": [],
+      "expr": "1536/1537"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1536/1537–1814)"
+    },
+    {
+      "function": "dano_norwegian_6",
+      "params": [],
+      "expr": "1536/1537"
+    }
+  ],
+  "Einstein": [
+    {
+      "function": "einstein_1_eq",
+      "params": [
+        "c",
+        "m"
+      ],
+      "expr": "c**2*m",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "einstein_2_eq",
+      "params": [
+        "c",
+        "m"
+      ],
+      "expr": "c**2*m",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "einstein_3_eq",
+      "params": [
+        "c",
+        "m"
+      ],
+      "expr": "c**2*m",
+      "note": "equation_rhs"
+    }
+  ],
+  "Einsteinian": [
+    {
+      "function": "einsteinian_1_eq",
+      "params": [
+        "c",
+        "m"
+      ],
+      "expr": "c**2*m",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "einsteinian_2_eq",
+      "params": [
+        "c",
+        "m"
+      ],
+      "expr": "c**2*m",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "einsteinian_3_eq",
+      "params": [
+        "c",
+        "m"
+      ],
+      "expr": "c**2*m",
+      "note": "equation_rhs"
+    }
+  ],
+  "Finnish mark": [
+    {
+      "function": "finnish_mark_1_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "finnish_mark_2_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "finnish_mark_3_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    }
+  ],
+  "Frederick I": [
+    {
+      "skipped": true,
+      "fragment": "(815/16–834/38)"
+    },
+    {
+      "function": "frederick_i_2",
+      "params": [],
+      "expr": "815/16"
+    },
+    {
+      "function": "frederick_i_3",
+      "params": [],
+      "expr": "417/19"
+    },
+    {
+      "skipped": true,
+      "fragment": "(815/16–834/38)"
+    },
+    {
+      "function": "frederick_i_5",
+      "params": [],
+      "expr": "815/16"
+    },
+    {
+      "function": "frederick_i_6",
+      "params": [],
+      "expr": "417/19"
+    },
+    {
+      "skipped": true,
+      "fragment": "(815/16–834/38)"
+    },
+    {
+      "function": "frederick_i_8",
+      "params": [],
+      "expr": "815/16"
+    },
+    {
+      "function": "frederick_i_9",
+      "params": [],
+      "expr": "417/19"
+    }
+  ],
+  "Girru": [
+    {
+      "skipped": true,
+      "fragment": "An = Anum indicates his spouse was Ninirigal"
+    },
+    {
+      "skipped": true,
+      "fragment": "An = Anum indicates his spouse was Ninirigal"
+    },
+    {
+      "skipped": true,
+      "fragment": "An = Anum indicates his spouse was Ninirigal"
+    }
+  ],
+  "Hamilton": [
+    {
+      "skipped": true,
+      "fragment": "(1755/1757–1804)"
+    },
+    {
+      "function": "hamilton_2",
+      "params": [],
+      "expr": "1755/1757"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1755/1757–1804)"
+    },
+    {
+      "function": "hamilton_4",
+      "params": [],
+      "expr": "1755/1757"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1755/1757–1804)"
+    },
+    {
+      "function": "hamilton_6",
+      "params": [],
+      "expr": "1755/1757"
+    }
+  ],
+  "Heinlein": [
+    {
+      "skipped": true,
+      "fragment": "(1479/80–1542)"
+    },
+    {
+      "skipped": true,
+      "fragment": "1479/80"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1479/80–1542)"
+    },
+    {
+      "skipped": true,
+      "fragment": "1479/80"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1479/80–1542)"
+    },
+    {
+      "skipped": true,
+      "fragment": "1479/80"
+    }
+  ],
+  "Henry Russell": [
+    {
+      "skipped": true,
+      "fragment": "(1812/13–1900)"
+    },
+    {
+      "skipped": true,
+      "fragment": "1812/13"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1812/13–1900)"
+    },
+    {
+      "skipped": true,
+      "fragment": "1812/13"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1812/13–1900)"
+    },
+    {
+      "skipped": true,
+      "fragment": "1812/13"
+    }
+  ],
+  "Hooke's law": [
+    {
+      "function": "hooke_s_law_1_eq",
+      "params": [
+        "kx"
+      ],
+      "expr": "kx",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "hooke_s_law_2_eq",
+      "params": [
+        "kx"
+      ],
+      "expr": "kx",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "hooke_s_law_3_eq",
+      "params": [
+        "kx"
+      ],
+      "expr": "kx",
+      "note": "equation_rhs"
+    }
+  ],
+  "Iraqi dinar": [
+    {
+      "function": "iraqi_dinar_1_eq",
+      "params": [
+        "dinars"
+      ],
+      "expr": "1418*dinars",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "iraqi_dinar_2_eq",
+      "params": [
+        "dinars"
+      ],
+      "expr": "1418*dinars",
+      "note": "equation_rhs"
+    },
+    {
+      "error": "Sympify of expression 'could not parse '1 = 1418*dinars. The Iraqi dinar, Arabic pronunciation   di  n  r )*is the currency of Iraq. The Iraqi dinar is issued by the Central Bank of Iraq*(CBI). On 12*December 2025, the exchange rate with the US dollar was US'' failed, because of exception being raised:\nSyntaxError: unmatched ')' (<string>, line 1)",
+      "fragment": "1 = 1418 dinars. The Iraqi dinar, Arabic pronunciation: [diːˈnɑːr]) is the currency of Iraq. The Iraqi dinar is issued by the Central Bank of Iraq (CBI). On 12 December 2025, the exchange rate with the US dollar was US"
+    },
+    {
+      "function": "iraqi_dinar_4_eq",
+      "params": [
+        "dinars"
+      ],
+      "expr": "1418*dinars",
+      "note": "equation_rhs"
+    }
+  ],
+  "Joule": [
+    {
+      "error": "Sympify of expression 'could not parse 'J = 1*kg m**2 s-2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "J = 1 kg⋅m2⋅s−2)"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'J = 1*kg m**2 s-2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "J = 1 kg⋅m2⋅s−2)"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'J = 1*kg m**2 s-2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "J = 1 kg⋅m2⋅s−2)"
+    }
+  ],
+  "Larrea tridentata": [
+    {
+      "function": "larrea_tridentata_1_eq",
+      "params": [
+        "smelly"
+      ],
+      "expr": "smelly",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "larrea_tridentata_2_eq",
+      "params": [
+        "smelly"
+      ],
+      "expr": "smelly",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "larrea_tridentata_3_eq",
+      "params": [
+        "smelly"
+      ],
+      "expr": "smelly",
+      "note": "equation_rhs"
+    }
+  ],
+  "Lars Onsager": [
+    {
+      "error": "Sympify of expression 'could not parse 'religion =   '' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "religion = }}"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'religion =   '' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "religion = }}"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'religion =   '' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "religion = }}"
+    }
+  ],
+  "Medicago": [
+    {
+      "error": "Sympify of expression 'could not parse '2*n = 14*to 48'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "2n = 14 to 48"
+    },
+    {
+      "error": "Sympify of expression 'could not parse '2*n = 14*to 48'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "2n = 14 to 48"
+    },
+    {
+      "error": "Sympify of expression 'could not parse '2*n = 14*to 48'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "2n = 14 to 48"
+    }
+  ],
+  "Mogen David": [
+    {
+      "function": "mogen_david_1",
+      "params": [],
+      "expr": "1"
+    },
+    {
+      "function": "mogen_david_2",
+      "params": [],
+      "expr": "1"
+    },
+    {
+      "function": "mogen_david_3",
+      "params": [],
+      "expr": "1"
+    }
+  ],
+  "Newton": [
+    {
+      "skipped": true,
+      "fragment": "(1642–1726/1727)"
+    },
+    {
+      "function": "newton_2",
+      "params": [],
+      "expr": "1726/1727"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1642–1726/1727)"
+    },
+    {
+      "function": "newton_4",
+      "params": [],
+      "expr": "1726/1727"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1642–1726/1727)"
+    },
+    {
+      "function": "newton_6",
+      "params": [],
+      "expr": "1726/1727"
+    }
+  ],
+  "Old High German": [
+    {
+      "function": "old_high_german_1",
+      "params": [],
+      "expr": "2/3"
+    },
+    {
+      "function": "old_high_german_2",
+      "params": [],
+      "expr": "2/3"
+    },
+    {
+      "function": "old_high_german_3",
+      "params": [],
+      "expr": "2/3"
+    }
+  ],
+  "Palestine Authority": [
+    {
+      "function": "palestine_authority_1",
+      "params": [],
+      "expr": "67/19"
+    },
+    {
+      "function": "palestine_authority_2",
+      "params": [],
+      "expr": "67/19"
+    },
+    {
+      "function": "palestine_authority_3",
+      "params": [],
+      "expr": "67/19"
+    }
+  ],
+  "Palestine National Authority": [
+    {
+      "function": "palestine_national_authority_1",
+      "params": [],
+      "expr": "67/19"
+    },
+    {
+      "function": "palestine_national_authority_2",
+      "params": [],
+      "expr": "67/19"
+    },
+    {
+      "function": "palestine_national_authority_3",
+      "params": [],
+      "expr": "67/19"
+    }
+  ],
+  "Palestinian National Authority": [
+    {
+      "function": "palestinian_national_authority_1",
+      "params": [],
+      "expr": "67/19"
+    },
+    {
+      "function": "palestinian_national_authority_2",
+      "params": [],
+      "expr": "67/19"
+    },
+    {
+      "function": "palestinian_national_authority_3",
+      "params": [],
+      "expr": "67/19"
+    }
+  ],
+  "Pilate": [
+    {
+      "function": "pilate_1",
+      "params": [],
+      "expr": "26/27"
+    },
+    {
+      "function": "pilate_2",
+      "params": [],
+      "expr": "36/37"
+    },
+    {
+      "function": "pilate_3",
+      "params": [],
+      "expr": "26/27"
+    },
+    {
+      "function": "pilate_4",
+      "params": [],
+      "expr": "36/37"
+    },
+    {
+      "function": "pilate_5",
+      "params": [],
+      "expr": "26/27"
+    },
+    {
+      "function": "pilate_6",
+      "params": [],
+      "expr": "36/37"
+    }
+  ],
+  "Pontius Pilate": [
+    {
+      "function": "pontius_pilate_1",
+      "params": [],
+      "expr": "26/27"
+    },
+    {
+      "function": "pontius_pilate_2",
+      "params": [],
+      "expr": "36/37"
+    },
+    {
+      "function": "pontius_pilate_3",
+      "params": [],
+      "expr": "26/27"
+    },
+    {
+      "function": "pontius_pilate_4",
+      "params": [],
+      "expr": "36/37"
+    },
+    {
+      "function": "pontius_pilate_5",
+      "params": [],
+      "expr": "26/27"
+    },
+    {
+      "function": "pontius_pilate_6",
+      "params": [],
+      "expr": "36/37"
+    }
+  ],
+  "Ptolemy I": [
+    {
+      "function": "ptolemy_i_1",
+      "params": [],
+      "expr": "305/304"
+    },
+    {
+      "function": "ptolemy_i_2",
+      "params": [],
+      "expr": "305/304"
+    },
+    {
+      "function": "ptolemy_i_3",
+      "params": [],
+      "expr": "305/304"
+    }
+  ],
+  "Rankine scale": [
+    {
+      "function": "rankine_scale_1",
+      "params": [],
+      "expr": "5/9"
+    },
+    {
+      "function": "rankine_scale_2",
+      "params": [],
+      "expr": "1"
+    },
+    {
+      "function": "rankine_scale_3",
+      "params": [],
+      "expr": "5/9"
+    },
+    {
+      "function": "rankine_scale_4",
+      "params": [],
+      "expr": "1"
+    },
+    {
+      "function": "rankine_scale_5",
+      "params": [],
+      "expr": "5/9"
+    },
+    {
+      "function": "rankine_scale_6",
+      "params": [],
+      "expr": "1"
+    }
+  ],
+  "SIDS": [
+    {
+      "function": "sids_1",
+      "params": [],
+      "expr": "1/3"
+    },
+    {
+      "function": "sids_2",
+      "params": [],
+      "expr": "1/3"
+    },
+    {
+      "function": "sids_3",
+      "params": [],
+      "expr": "1/3"
+    }
+  ],
+  "Sarcocystis": [
+    {
+      "function": "sarcocystis_1",
+      "params": [
+        "bladder"
+      ],
+      "expr": "bladder"
+    },
+    {
+      "function": "sarcocystis_2",
+      "params": [
+        "bladder"
+      ],
+      "expr": "bladder"
+    },
+    {
+      "function": "sarcocystis_3",
+      "params": [
+        "bladder"
+      ],
+      "expr": "bladder"
+    }
+  ],
+  "Schiff base": [
+    {
+      "skipped": true,
+      "fragment": "R1R2C=NR3"
+    },
+    {
+      "skipped": true,
+      "fragment": "R1R2C=NR3"
+    },
+    {
+      "skipped": true,
+      "fragment": "R1R2C=NR3"
+    }
+  ],
+  "Schnabel": [
+    {
+      "skipped": true,
+      "fragment": "(1692–1751/8)"
+    },
+    {
+      "function": "schnabel_2",
+      "params": [],
+      "expr": "1751/8"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1692–1751/8)"
+    },
+    {
+      "function": "schnabel_4",
+      "params": [],
+      "expr": "1751/8"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1692–1751/8)"
+    },
+    {
+      "function": "schnabel_6",
+      "params": [],
+      "expr": "1751/8"
+    }
+  ],
+  "Sergei Eisenstein": [
+    {
+      "skipped": true,
+      "fragment": "(1945/1958)"
+    },
+    {
+      "function": "sergei_eisenstein_2",
+      "params": [],
+      "expr": "1945/1958"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1945/1958)"
+    },
+    {
+      "function": "sergei_eisenstein_4",
+      "params": [],
+      "expr": "1945/1958"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1945/1958)"
+    },
+    {
+      "function": "sergei_eisenstein_6",
+      "params": [],
+      "expr": "1945/1958"
+    }
+  ],
+  "Sergei Mikhailovich Eisenstein": [
+    {
+      "skipped": true,
+      "fragment": "(1945/1958)"
+    },
+    {
+      "function": "sergei_mikhailovich_eisenstein_2",
+      "params": [],
+      "expr": "1945/1958"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1945/1958)"
+    },
+    {
+      "function": "sergei_mikhailovich_eisenstein_4",
+      "params": [],
+      "expr": "1945/1958"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1945/1958)"
+    },
+    {
+      "function": "sergei_mikhailovich_eisenstein_6",
+      "params": [],
+      "expr": "1945/1958"
+    }
+  ],
+  "Stephenson": [
+    {
+      "skipped": true,
+      "fragment": "(1802–1881/2)"
+    },
+    {
+      "function": "stephenson_2",
+      "params": [],
+      "expr": "1881/2"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1802–1881/2)"
+    },
+    {
+      "function": "stephenson_4",
+      "params": [],
+      "expr": "1881/2"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1802–1881/2)"
+    },
+    {
+      "function": "stephenson_6",
+      "params": [],
+      "expr": "1881/2"
+    }
+  ],
+  "Zannichellia palustris": [
+    {
+      "function": "zannichellia_palustris_1_eq",
+      "params": [],
+      "expr": "24",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "zannichellia_palustris_2_eq",
+      "params": [],
+      "expr": "24",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "zannichellia_palustris_3_eq",
+      "params": [],
+      "expr": "24",
+      "note": "equation_rhs"
+    }
+  ],
+  "abfarad": [
+    {
+      "error": "Sympify of expression 'could not parse 'F = 1*kg-1 m-2 s**4 A**2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "F = 1 kg−1⋅m−2⋅s4⋅A2"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'F = 1*kg-1 m-2 s**4 A**2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "F = 1 kg−1⋅m−2⋅s4⋅A2"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'F = 1*kg-1 m-2 s**4 A**2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "F = 1 kg−1⋅m−2⋅s4⋅A2"
+    }
+  ],
+  "abut": [
+    {
+      "error": "Sympify of expression 'could not parse 'missus =  placed before'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "missus = \"placed before\""
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'missus =  placed before'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "missus = \"placed before\""
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'missus =  placed before'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "missus = \"placed before\""
+    }
+  ],
+  "acetaldehyde": [
+    {
+      "skipped": true,
+      "fragment": "CH3CH=O"
+    },
+    {
+      "skipped": true,
+      "fragment": "CH3CH=O"
+    },
+    {
+      "skipped": true,
+      "fragment": "CH3CH=O"
+    }
+  ],
+  "acetaldol": [
+    {
+      "skipped": true,
+      "fragment": "CH=O"
+    },
+    {
+      "skipped": true,
+      "fragment": "CH=O"
+    },
+    {
+      "skipped": true,
+      "fragment": "CH=O"
+    }
+  ],
+  "acrylamide": [
+    {
+      "error": "Sympify of expression 'could not parse 'C*H**2=CHC*(O)*N*H**2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "CH2=CHC(O)NH2"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'C*H**2=CHC*(O)*N*H**2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "CH2=CHC(O)NH2"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'C*H**2=CHC*(O)*N*H**2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "CH2=CHC(O)NH2"
+    }
+  ],
+  "acrylate": [
+    {
+      "function": "acrylate_1_eq",
+      "params": [
+        "CHCO"
+      ],
+      "expr": "CHCO - 2",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "acrylate_2_eq",
+      "params": [
+        "CHCO"
+      ],
+      "expr": "CHCO - 2",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "acrylate_3_eq",
+      "params": [
+        "CHCO"
+      ],
+      "expr": "CHCO - 2",
+      "note": "equation_rhs"
+    }
+  ],
+  "acrylic acid": [
+    {
+      "skipped": true,
+      "fragment": "CH2=CHCOOH"
+    },
+    {
+      "skipped": true,
+      "fragment": "CH2=CHCOOH"
+    },
+    {
+      "skipped": true,
+      "fragment": "CH2=CHCOOH"
+    }
+  ],
+  "acrylonitrile": [
+    {
+      "error": "Sympify of expression 'could not parse 'H2*C=CH-C N'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "H2C=CH−C≡N"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'H2*C=CH-C N'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "H2C=CH−C≡N"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'H2*C=CH-C N'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "H2C=CH−C≡N"
+    }
+  ],
+  "addend": [
+    {
+      "function": "addend_1_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "addend_2_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "addend_3_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    }
+  ],
+  "adjunction": [
+    {
+      "function": "adjunction_1_eq",
+      "params": [
+        "x"
+      ],
+      "expr": "x",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "adjunction_2_eq",
+      "params": [
+        "x"
+      ],
+      "expr": "x",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "adjunction_3_eq",
+      "params": [
+        "x"
+      ],
+      "expr": "x",
+      "note": "equation_rhs"
+    }
+  ],
+  "albert einstein": [
+    {
+      "function": "albert_einstein_1_eq",
+      "params": [
+        "c",
+        "m"
+      ],
+      "expr": "c**2*m",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "albert_einstein_2_eq",
+      "params": [
+        "c",
+        "m"
+      ],
+      "expr": "c**2*m",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "albert_einstein_3_eq",
+      "params": [
+        "c",
+        "m"
+      ],
+      "expr": "c**2*m",
+      "note": "equation_rhs"
+    }
+  ],
+  "aldehyde": [
+    {
+      "skipped": true,
+      "fragment": "CH=O"
+    },
+    {
+      "skipped": true,
+      "fragment": "CH=O"
+    },
+    {
+      "skipped": true,
+      "fragment": "CH=O"
+    }
+  ],
+  "aldehyde group": [
+    {
+      "skipped": true,
+      "fragment": "CH=O"
+    },
+    {
+      "skipped": true,
+      "fragment": "CH=O"
+    },
+    {
+      "skipped": true,
+      "fragment": "CH=O"
+    }
+  ],
+  "alexandrine": [
+    {
+      "error": "Sympify of expression 'could not parse 'o=any syllable'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "o=any syllable"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'o=any syllable'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "o=any syllable"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'o=any syllable'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "o=any syllable"
+    }
+  ],
+  "alkane": [
+    {
+      "function": "alkane_1_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "alkane_2_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "alkane_3_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    }
+  ],
+  "alkane series": [
+    {
+      "function": "alkane_series_1_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "alkane_series_2_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "alkane_series_3_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    }
+  ],
+  "allyl": [
+    {
+      "skipped": true,
+      "fragment": "HC=CH2"
+    },
+    {
+      "function": "allyl_2_eq",
+      "params": [
+        "C",
+        "CH",
+        "H"
+      ],
+      "expr": "-C*H**2 + CH",
+      "note": "equation_rhs"
+    },
+    {
+      "skipped": true,
+      "fragment": "HC=CH2"
+    },
+    {
+      "function": "allyl_4_eq",
+      "params": [
+        "C",
+        "CH",
+        "H"
+      ],
+      "expr": "-C*H**2 + CH",
+      "note": "equation_rhs"
+    },
+    {
+      "skipped": true,
+      "fragment": "HC=CH2"
+    },
+    {
+      "function": "allyl_6_eq",
+      "params": [
+        "C",
+        "CH",
+        "H"
+      ],
+      "expr": "-C*H**2 + CH",
+      "note": "equation_rhs"
+    }
+  ],
+  "allyl alcohol": [
+    {
+      "skipped": true,
+      "fragment": "CH2=CHCH2OH"
+    },
+    {
+      "skipped": true,
+      "fragment": "CH2=CHCH2OH"
+    },
+    {
+      "skipped": true,
+      "fragment": "CH2=CHCH2OH"
+    }
+  ],
+  "allyl group": [
+    {
+      "skipped": true,
+      "fragment": "HC=CH2"
+    },
+    {
+      "function": "allyl_group_2_eq",
+      "params": [
+        "C",
+        "CH",
+        "H"
+      ],
+      "expr": "-C*H**2 + CH",
+      "note": "equation_rhs"
+    },
+    {
+      "skipped": true,
+      "fragment": "HC=CH2"
+    },
+    {
+      "function": "allyl_group_4_eq",
+      "params": [
+        "C",
+        "CH",
+        "H"
+      ],
+      "expr": "-C*H**2 + CH",
+      "note": "equation_rhs"
+    },
+    {
+      "skipped": true,
+      "fragment": "HC=CH2"
+    },
+    {
+      "function": "allyl_group_6_eq",
+      "params": [
+        "C",
+        "CH",
+        "H"
+      ],
+      "expr": "-C*H**2 + CH",
+      "note": "equation_rhs"
+    }
+  ],
+  "allyl radical": [
+    {
+      "skipped": true,
+      "fragment": "HC=CH2"
+    },
+    {
+      "function": "allyl_radical_2_eq",
+      "params": [
+        "C",
+        "CH",
+        "H"
+      ],
+      "expr": "-C*H**2 + CH",
+      "note": "equation_rhs"
+    },
+    {
+      "skipped": true,
+      "fragment": "HC=CH2"
+    },
+    {
+      "function": "allyl_radical_4_eq",
+      "params": [
+        "C",
+        "CH",
+        "H"
+      ],
+      "expr": "-C*H**2 + CH",
+      "note": "equation_rhs"
+    },
+    {
+      "skipped": true,
+      "fragment": "HC=CH2"
+    },
+    {
+      "function": "allyl_radical_6_eq",
+      "params": [
+        "C",
+        "CH",
+        "H"
+      ],
+      "expr": "-C*H**2 + CH",
+      "note": "equation_rhs"
+    }
+  ],
+  "allylic": [
+    {
+      "skipped": true,
+      "fragment": "HC=CH2"
+    },
+    {
+      "function": "allylic_2_eq",
+      "params": [
+        "C",
+        "CH",
+        "H"
+      ],
+      "expr": "-C*H**2 + CH",
+      "note": "equation_rhs"
+    },
+    {
+      "skipped": true,
+      "fragment": "HC=CH2"
+    },
+    {
+      "function": "allylic_4_eq",
+      "params": [
+        "C",
+        "CH",
+        "H"
+      ],
+      "expr": "-C*H**2 + CH",
+      "note": "equation_rhs"
+    },
+    {
+      "skipped": true,
+      "fragment": "HC=CH2"
+    },
+    {
+      "function": "allylic_6_eq",
+      "params": [
+        "C",
+        "CH",
+        "H"
+      ],
+      "expr": "-C*H**2 + CH",
+      "note": "equation_rhs"
+    }
+  ],
+  "amicable": [
+    {
+      "function": "amicable_1",
+      "params": [
+        "a"
+      ],
+      "expr": "a"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'n)=sigma*(n) - n is equal to the sum of positive divisors of n except n itself*(see also'' failed, because of exception being raised:\nTokenError: ('unexpected EOF in multi-line statement', (1, 0))",
+      "fragment": "n)=σ(n) − n is equal to the sum of positive divisors of n except n itself (see also"
+    },
+    {
+      "function": "amicable_3",
+      "params": [
+        "a"
+      ],
+      "expr": "a"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'n)=sigma*(n) - n is equal to the sum of positive divisors of n except n itself*(see also'' failed, because of exception being raised:\nTokenError: ('unexpected EOF in multi-line statement', (1, 0))",
+      "fragment": "n)=σ(n) − n is equal to the sum of positive divisors of n except n itself (see also"
+    },
+    {
+      "function": "amicable_5",
+      "params": [
+        "a"
+      ],
+      "expr": "a"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'n)=sigma*(n) - n is equal to the sum of positive divisors of n except n itself*(see also'' failed, because of exception being raised:\nTokenError: ('unexpected EOF in multi-line statement', (1, 0))",
+      "fragment": "n)=σ(n) − n is equal to the sum of positive divisors of n except n itself (see also"
+    }
+  ],
+  "androsterone": [
+    {
+      "function": "androsterone_1",
+      "params": [],
+      "expr": "1/7"
+    },
+    {
+      "function": "androsterone_2",
+      "params": [],
+      "expr": "1/7"
+    },
+    {
+      "function": "androsterone_3",
+      "params": [],
+      "expr": "1/7"
+    }
+  ],
+  "anshar": [
+    {
+      "skipped": true,
+      "fragment": "An = Anum"
+    },
+    {
+      "skipped": true,
+      "fragment": "An = Anum"
+    },
+    {
+      "skipped": true,
+      "fragment": "An = Anum"
+    }
+  ],
+  "antielectron": [
+    {
+      "function": "antielectron_1",
+      "params": [],
+      "expr": "1/2"
+    },
+    {
+      "function": "antielectron_2",
+      "params": [],
+      "expr": "1/2"
+    },
+    {
+      "function": "antielectron_3",
+      "params": [],
+      "expr": "1/2"
+    }
+  ],
+  "antilog": [
+    {
+      "function": "antilog_1",
+      "params": [],
+      "expr": "1000"
+    },
+    {
+      "function": "antilog_2_eq",
+      "params": [
+        "by"
+      ],
+      "expr": "by",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "antilog_3_eq",
+      "params": [],
+      "expr": "3",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "antilog_4",
+      "params": [],
+      "expr": "1000"
+    },
+    {
+      "function": "antilog_5_eq",
+      "params": [
+        "by"
+      ],
+      "expr": "by",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "antilog_6_eq",
+      "params": [],
+      "expr": "3",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "antilog_7",
+      "params": [],
+      "expr": "1000"
+    },
+    {
+      "function": "antilog_8_eq",
+      "params": [
+        "by"
+      ],
+      "expr": "by",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "antilog_9_eq",
+      "params": [],
+      "expr": "3",
+      "note": "equation_rhs"
+    }
+  ],
+  "antilogarithm": [
+    {
+      "function": "antilogarithm_1",
+      "params": [],
+      "expr": "1000"
+    },
+    {
+      "function": "antilogarithm_2_eq",
+      "params": [
+        "by"
+      ],
+      "expr": "by",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "antilogarithm_3_eq",
+      "params": [],
+      "expr": "3",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "antilogarithm_4",
+      "params": [],
+      "expr": "1000"
+    },
+    {
+      "function": "antilogarithm_5_eq",
+      "params": [
+        "by"
+      ],
+      "expr": "by",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "antilogarithm_6_eq",
+      "params": [],
+      "expr": "3",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "antilogarithm_7",
+      "params": [],
+      "expr": "1000"
+    },
+    {
+      "function": "antilogarithm_8_eq",
+      "params": [
+        "by"
+      ],
+      "expr": "by",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "antilogarithm_9_eq",
+      "params": [],
+      "expr": "3",
+      "note": "equation_rhs"
+    }
+  ],
+  "antimuon": [
+    {
+      "function": "antimuon_1",
+      "params": [],
+      "expr": "1/2"
+    },
+    {
+      "function": "antimuon_2",
+      "params": [],
+      "expr": "1/2"
+    },
+    {
+      "function": "antimuon_3",
+      "params": [],
+      "expr": "1/2"
+    }
+  ],
+  "antitauon": [
+    {
+      "function": "antitauon_1",
+      "params": [],
+      "expr": "1/2"
+    },
+    {
+      "function": "antitauon_2",
+      "params": [],
+      "expr": "1/2"
+    },
+    {
+      "function": "antitauon_3",
+      "params": [],
+      "expr": "1/2"
+    }
+  ],
+  "arcminute": [
+    {
+      "function": "arcminute_1",
+      "params": [],
+      "expr": "1/60"
+    },
+    {
+      "function": "arcminute_2",
+      "params": [],
+      "expr": "1/360"
+    },
+    {
+      "function": "arcminute_3",
+      "params": [],
+      "expr": "1/21600"
+    },
+    {
+      "function": "arcminute_4",
+      "params": [],
+      "expr": "1/60"
+    },
+    {
+      "function": "arcminute_5",
+      "params": [],
+      "expr": "1/360"
+    },
+    {
+      "function": "arcminute_6",
+      "params": [],
+      "expr": "1/21600"
+    },
+    {
+      "function": "arcminute_7",
+      "params": [],
+      "expr": "1/60"
+    },
+    {
+      "function": "arcminute_8",
+      "params": [],
+      "expr": "1/360"
+    },
+    {
+      "function": "arcminute_9",
+      "params": [],
+      "expr": "1/21600"
+    }
+  ],
+  "arcsec": [
+    {
+      "function": "arcsec_1",
+      "params": [],
+      "expr": "1/60"
+    },
+    {
+      "function": "arcsec_2",
+      "params": [],
+      "expr": "1/360"
+    },
+    {
+      "function": "arcsec_3",
+      "params": [],
+      "expr": "1/21600"
+    },
+    {
+      "function": "arcsec_4",
+      "params": [],
+      "expr": "1/60"
+    },
+    {
+      "function": "arcsec_5",
+      "params": [],
+      "expr": "1/360"
+    },
+    {
+      "function": "arcsec_6",
+      "params": [],
+      "expr": "1/21600"
+    },
+    {
+      "function": "arcsec_7",
+      "params": [],
+      "expr": "1/60"
+    },
+    {
+      "function": "arcsec_8",
+      "params": [],
+      "expr": "1/360"
+    },
+    {
+      "function": "arcsec_9",
+      "params": [],
+      "expr": "1/21600"
+    }
+  ],
+  "arcsecond": [
+    {
+      "function": "arcsecond_1",
+      "params": [],
+      "expr": "1/60"
+    },
+    {
+      "function": "arcsecond_2",
+      "params": [],
+      "expr": "1/360"
+    },
+    {
+      "function": "arcsecond_3",
+      "params": [],
+      "expr": "1/21600"
+    },
+    {
+      "function": "arcsecond_4",
+      "params": [],
+      "expr": "1/60"
+    },
+    {
+      "function": "arcsecond_5",
+      "params": [],
+      "expr": "1/360"
+    },
+    {
+      "function": "arcsecond_6",
+      "params": [],
+      "expr": "1/21600"
+    },
+    {
+      "function": "arcsecond_7",
+      "params": [],
+      "expr": "1/60"
+    },
+    {
+      "function": "arcsecond_8",
+      "params": [],
+      "expr": "1/360"
+    },
+    {
+      "function": "arcsecond_9",
+      "params": [],
+      "expr": "1/21600"
+    }
+  ],
+  "around-the-clock": [
+    {
+      "function": "around_the_clock_1",
+      "params": [],
+      "expr": "24/7"
+    },
+    {
+      "function": "around_the_clock_2",
+      "params": [],
+      "expr": "24/7"
+    },
+    {
+      "function": "around_the_clock_3",
+      "params": [],
+      "expr": "24/7"
+    }
+  ],
+  "around the clock": [
+    {
+      "function": "around_the_clock_1",
+      "params": [],
+      "expr": "24/7"
+    },
+    {
+      "function": "around_the_clock_2",
+      "params": [],
+      "expr": "24/7"
+    },
+    {
+      "function": "around_the_clock_3",
+      "params": [],
+      "expr": "24/7"
+    }
+  ],
+  "arsine": [
+    {
+      "function": "arsine_1_eq",
+      "params": [
+        "aryl"
+      ],
+      "expr": "aryl",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "arsine_2_eq",
+      "params": [
+        "aryl"
+      ],
+      "expr": "aryl",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "arsine_3_eq",
+      "params": [
+        "aryl"
+      ],
+      "expr": "aryl",
+      "note": "equation_rhs"
+    }
+  ],
+  "atomic mass unit": [
+    {
+      "function": "atomic_mass_unit_1",
+      "params": [],
+      "expr": "1/12"
+    },
+    {
+      "function": "atomic_mass_unit_2",
+      "params": [
+        "Da"
+      ],
+      "expr": "Da"
+    },
+    {
+      "function": "atomic_mass_unit_3_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "atomic_mass_unit_4",
+      "params": [],
+      "expr": "1/12"
+    },
+    {
+      "function": "atomic_mass_unit_5",
+      "params": [
+        "Da"
+      ],
+      "expr": "Da"
+    },
+    {
+      "function": "atomic_mass_unit_6_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "atomic_mass_unit_7",
+      "params": [],
+      "expr": "1/12"
+    },
+    {
+      "function": "atomic_mass_unit_8",
+      "params": [
+        "Da"
+      ],
+      "expr": "Da"
+    },
+    {
+      "function": "atomic_mass_unit_9_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    }
+  ],
+  "atomic weight": [
+    {
+      "function": "atomic_weight_1",
+      "params": [],
+      "expr": "1/12"
+    },
+    {
+      "function": "atomic_weight_2",
+      "params": [],
+      "expr": "1/12"
+    },
+    {
+      "function": "atomic_weight_3",
+      "params": [],
+      "expr": "1/12"
+    }
+  ],
+  "augend": [
+    {
+      "function": "augend_1_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "augend_2_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "augend_3_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    }
+  ],
+  "austrian schilling": [
+    {
+      "function": "austrian_schilling_1_eq",
+      "params": [],
+      "expr": "13",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "austrian_schilling_2_eq",
+      "params": [],
+      "expr": "13",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "austrian_schilling_3_eq",
+      "params": [],
+      "expr": "13",
+      "note": "equation_rhs"
+    }
+  ],
+  "avena barbata": [
+    {
+      "function": "avena_barbata_1",
+      "params": [],
+      "expr": "28"
+    },
+    {
+      "function": "avena_barbata_2",
+      "params": [],
+      "expr": "14"
+    },
+    {
+      "function": "avena_barbata_3",
+      "params": [],
+      "expr": "28"
+    },
+    {
+      "function": "avena_barbata_4",
+      "params": [],
+      "expr": "14"
+    },
+    {
+      "function": "avena_barbata_5",
+      "params": [],
+      "expr": "28"
+    },
+    {
+      "function": "avena_barbata_6",
+      "params": [],
+      "expr": "28"
+    },
+    {
+      "function": "avena_barbata_7",
+      "params": [],
+      "expr": "14"
+    },
+    {
+      "function": "avena_barbata_8",
+      "params": [],
+      "expr": "14"
+    },
+    {
+      "function": "avena_barbata_9",
+      "params": [],
+      "expr": "28"
+    },
+    {
+      "function": "avena_barbata_10",
+      "params": [],
+      "expr": "14"
+    },
+    {
+      "function": "avena_barbata_11",
+      "params": [],
+      "expr": "28"
+    },
+    {
+      "function": "avena_barbata_12",
+      "params": [],
+      "expr": "14"
+    }
+  ],
+  "azide": [
+    {
+      "error": "Sympify of expression 'could not parse 'N-'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N+=N−"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'N-'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N+=N−"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'N-'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N+=N−"
+    }
+  ],
+  "azido": [
+    {
+      "error": "Sympify of expression 'could not parse 'N-'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N+=N−"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'N-'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N+=N−"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'N-'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N+=N−"
+    }
+  ],
+  "azido group": [
+    {
+      "error": "Sympify of expression 'could not parse 'N-'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N+=N−"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'N-'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N+=N−"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'N-'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N+=N−"
+    }
+  ],
+  "azo dye": [
+    {
+      "error": "Sympify of expression 'could not parse 'N=N-R '' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N−R′"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'N=N-C linkage'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N−C linkage"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'N=N-R '' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N−R′"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'N=N-C linkage'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N−C linkage"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'N=N-R '' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N−R′"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'N=N-C linkage'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "N=N−C linkage"
+    }
+  ],
+  "ball valve": [
+    {
+      "function": "ball_valve_1",
+      "params": [],
+      "expr": "1/4"
+    },
+    {
+      "function": "ball_valve_2",
+      "params": [],
+      "expr": "1/4"
+    },
+    {
+      "function": "ball_valve_3",
+      "params": [],
+      "expr": "1/4"
+    }
+  ],
+  "barium hydroxide": [
+    {
+      "function": "barium_hydroxide_1_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "barium_hydroxide_2_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "barium_hydroxide_3_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    }
+  ],
+  "barye": [
+    {
+      "function": "barye_1_eq",
+      "params": [],
+      "expr": "0",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "barye_2_eq",
+      "params": [],
+      "expr": "0",
+      "note": "equation_rhs"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'm**2 = 1*g cm-1 s-2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "m2 = 1 g⋅cm−1⋅s−2"
+    },
+    {
+      "function": "barye_4_eq",
+      "params": [],
+      "expr": "0",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "barye_5_eq",
+      "params": [],
+      "expr": "0",
+      "note": "equation_rhs"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'm**2 = 1*g cm-1 s-2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "m2 = 1 g⋅cm−1⋅s−2"
+    },
+    {
+      "function": "barye_7_eq",
+      "params": [],
+      "expr": "0",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "barye_8_eq",
+      "params": [],
+      "expr": "0",
+      "note": "equation_rhs"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'm**2 = 1*g cm-1 s-2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "m2 = 1 g⋅cm−1⋅s−2"
+    }
+  ],
+  "baryon number": [
+    {
+      "function": "baryon_number_1_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "baryon_number_2_eq",
+      "params": [],
+      "expr": "0",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "baryon_number_3_eq",
+      "params": [],
+      "expr": "-1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "baryon_number_4_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "baryon_number_5_eq",
+      "params": [],
+      "expr": "0",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "baryon_number_6_eq",
+      "params": [],
+      "expr": "-1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "baryon_number_7_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "baryon_number_8_eq",
+      "params": [],
+      "expr": "0",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "baryon_number_9_eq",
+      "params": [],
+      "expr": "-1",
+      "note": "equation_rhs"
+    }
+  ],
+  "bavaria": [
+    {
+      "function": "bavaria_1",
+      "params": [],
+      "expr": "1/5"
+    },
+    {
+      "function": "bavaria_2",
+      "params": [],
+      "expr": "1/5"
+    },
+    {
+      "function": "bavaria_3",
+      "params": [],
+      "expr": "1/5"
+    }
+  ],
+  "beauty quark": [
+    {
+      "function": "beauty_quark_1",
+      "params": [],
+      "expr": "1/3"
+    },
+    {
+      "function": "beauty_quark_2",
+      "params": [],
+      "expr": "1/3"
+    },
+    {
+      "function": "beauty_quark_3",
+      "params": [],
+      "expr": "1/3"
+    }
+  ],
+  "bigram": [
+    {
+      "function": "bigram_1_eq",
+      "params": [],
+      "expr": "2",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "bigram_2_eq",
+      "params": [],
+      "expr": "2",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "bigram_3_eq",
+      "params": [],
+      "expr": "2",
+      "note": "equation_rhs"
+    }
+  ],
+  "binding energy": [
+    {
+      "function": "binding_energy_1_eq",
+      "params": [
+        "DeltaE"
+      ],
+      "expr": "DeltaE",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "binding_energy_2_eq",
+      "params": [
+        "DeltaE"
+      ],
+      "expr": "DeltaE",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "binding_energy_3_eq",
+      "params": [
+        "DeltaE"
+      ],
+      "expr": "DeltaE",
+      "note": "equation_rhs"
+    }
+  ],
+  "binomial probability": [
+    {
+      "function": "binomial_probability_1_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "binomial_probability_2_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "binomial_probability_3_eq",
+      "params": [],
+      "expr": "1",
+      "note": "equation_rhs"
+    }
+  ],
+  "biquadrate": [
+    {
+      "function": "biquadrate_1_eq",
+      "params": [
+        "n"
+      ],
+      "expr": "n**4",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "biquadrate_2_eq",
+      "params": [
+        "n"
+      ],
+      "expr": "n**4",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "biquadrate_3_eq",
+      "params": [
+        "n"
+      ],
+      "expr": "n**4",
+      "note": "equation_rhs"
+    }
+  ],
+  "blameless": [
+    {
+      "skipped": true,
+      "fragment": "1993/94"
+    },
+    {
+      "skipped": true,
+      "fragment": "1993/94"
+    },
+    {
+      "skipped": true,
+      "fragment": "1993/94"
+    }
+  ],
+  "blue copperas": [
+    {
+      "function": "blue_copperas_1_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "blue_copperas_2_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "blue_copperas_3_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    }
+  ],
+  "blue vitriol": [
+    {
+      "function": "blue_vitriol_1_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "blue_vitriol_2_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "blue_vitriol_3_eq",
+      "params": [],
+      "expr": "5",
+      "note": "equation_rhs"
+    }
+  ],
+  "bottom quark": [
+    {
+      "function": "bottom_quark_1",
+      "params": [],
+      "expr": "1/3"
+    },
+    {
+      "function": "bottom_quark_2",
+      "params": [],
+      "expr": "1/3"
+    },
+    {
+      "function": "bottom_quark_3",
+      "params": [],
+      "expr": "1/3"
+    }
+  ],
+  "butadiene": [
+    {
+      "function": "butadiene_1",
+      "params": [
+        "C",
+        "H"
+      ],
+      "expr": "C*H**2"
+    },
+    {
+      "function": "butadiene_2",
+      "params": [
+        "C",
+        "H"
+      ],
+      "expr": "C*H**2"
+    },
+    {
+      "function": "butadiene_3",
+      "params": [
+        "C",
+        "H"
+      ],
+      "expr": "C*H**2"
+    }
+  ],
+  "calorie": [
+    {
+      "function": "calorie_1_eq",
+      "params": [
+        "cal"
+      ],
+      "expr": "1000*cal",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "calorie_2_eq",
+      "params": [
+        "cal"
+      ],
+      "expr": "1000*cal",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "calorie_3_eq",
+      "params": [
+        "cal"
+      ],
+      "expr": "1000*cal",
+      "note": "equation_rhs"
+    }
+  ],
+  "calorific": [
+    {
+      "function": "calorific_1_eq",
+      "params": [
+        "cal"
+      ],
+      "expr": "1000*cal",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "calorific_2_eq",
+      "params": [
+        "cal"
+      ],
+      "expr": "1000*cal",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "calorific_3_eq",
+      "params": [
+        "cal"
+      ],
+      "expr": "1000*cal",
+      "note": "equation_rhs"
+    }
+  ],
+  "carbon disulfide": [
+    {
+      "error": "Attribute 'free_symbols' was not installed on SymPy registry S",
+      "fragment": "S=C=S"
+    },
+    {
+      "error": "Attribute 'free_symbols' was not installed on SymPy registry S",
+      "fragment": "S=C=S"
+    },
+    {
+      "error": "Attribute 'free_symbols' was not installed on SymPy registry S",
+      "fragment": "S=C=S"
+    }
+  ],
+  "carbonate": [
+    {
+      "error": "Sympify of expression 'could not parse 'O=C*(-O-)*2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "O=C(−O−)2"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'O=C*(-O-)*2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "O=C(−O−)2"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'O=C*(-O-)*2'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "O=C(−O−)2"
+    }
+  ],
+  "carbonyl": [
+    {
+      "skipped": true,
+      "fragment": "C=O"
+    },
+    {
+      "skipped": true,
+      "fragment": "C=O"
+    },
+    {
+      "skipped": true,
+      "fragment": "C=O"
+    }
+  ],
+  "carbonyl group": [
+    {
+      "skipped": true,
+      "fragment": "C=O"
+    },
+    {
+      "skipped": true,
+      "fragment": "C=O"
+    },
+    {
+      "skipped": true,
+      "fragment": "C=O"
+    }
+  ],
+  "carducci": [
+    {
+      "skipped": true,
+      "fragment": "(1576/78–1638)"
+    },
+    {
+      "skipped": true,
+      "fragment": "1576/78"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1576/78–1638)"
+    },
+    {
+      "skipped": true,
+      "fragment": "1576/78"
+    },
+    {
+      "skipped": true,
+      "fragment": "(1576/78–1638)"
+    },
+    {
+      "skipped": true,
+      "fragment": "1576/78"
+    }
+  ],
+  "cash flow": [
+    {
+      "function": "cash_flow_1_eq",
+      "params": [
+        "CF",
+        "t"
+      ],
+      "expr": "CF*t",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "cash_flow_2_eq",
+      "params": [
+        "CF",
+        "t"
+      ],
+      "expr": "CF*t",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "cash_flow_3_eq",
+      "params": [
+        "CF",
+        "t"
+      ],
+      "expr": "CF*t",
+      "note": "equation_rhs"
+    }
+  ],
+  "catastrophic": [
+    {
+      "function": "catastrophic_1_eq",
+      "params": [
+        "down"
+      ],
+      "expr": "down",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "catastrophic_2_eq",
+      "params": [
+        "turning"
+      ],
+      "expr": "turning",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "catastrophic_3_eq",
+      "params": [
+        "down"
+      ],
+      "expr": "down",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "catastrophic_4_eq",
+      "params": [
+        "turning"
+      ],
+      "expr": "turning",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "catastrophic_5_eq",
+      "params": [
+        "down"
+      ],
+      "expr": "down",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "catastrophic_6_eq",
+      "params": [
+        "turning"
+      ],
+      "expr": "turning",
+      "note": "equation_rhs"
+    }
+  ],
+  "centimetre": [
+    {
+      "function": "centimetre_1",
+      "params": [],
+      "expr": "1/100"
+    },
+    {
+      "function": "centimetre_2",
+      "params": [],
+      "expr": "1/100"
+    },
+    {
+      "function": "centimetre_3",
+      "params": [],
+      "expr": "1/100"
+    }
+  ],
+  "centner": [
+    {
+      "function": "centner_1_eq",
+      "params": [
+        "kg"
+      ],
+      "expr": "100*kg",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "centner_2_eq",
+      "params": [
+        "kg"
+      ],
+      "expr": "100*kg",
+      "note": "equation_rhs"
+    },
+    {
+      "function": "centner_3_eq",
+      "params": [
+        "kg"
+      ],
+      "expr": "100*kg",
+      "note": "equation_rhs"
+    }
+  ],
+  "central element": [
+    {
+      "error": "Sympify of expression 'could not parse 'xg = gx for all g in G'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "xg = gx for all g in G"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'xr = rx for all r in R'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "xr = rx for all r in R"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'a  = 0*for all a in L'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "a] = 0 for all a in L"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'xg = gx for all g in G'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "xg = gx for all g in G"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'xr = rx for all r in R'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "xr = rx for all r in R"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'a  = 0*for all a in L'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "a] = 0 for all a in L"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'xg = gx for all g in G'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "xg = gx for all g in G"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'xr = rx for all r in R'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "xr = rx for all r in R"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'a  = 0*for all a in L'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "a] = 0 for all a in L"
+    }
+  ],
+  "charm quark": [
+    {
+      "function": "charm_quark_1",
+      "params": [],
+      "expr": "2/3"
+    },
+    {
+      "function": "charm_quark_2",
+      "params": [],
+      "expr": "2/3"
+    },
+    {
+      "function": "charm_quark_3",
+      "params": [],
+      "expr": "2/3"
+    }
+  ],
+  "chloroprene": [
+    {
+      "function": "chloroprene_1",
+      "params": [
+        "C",
+        "H"
+      ],
+      "expr": "C*H**2"
+    },
+    {
+      "function": "chloroprene_2",
+      "params": [
+        "C",
+        "H"
+      ],
+      "expr": "C*H**2"
+    },
+    {
+      "function": "chloroprene_3",
+      "params": [
+        "C",
+        "H"
+      ],
+      "expr": "C*H**2"
+    }
+  ],
+  "cholinesterase": [
+    {
+      "error": "Sympify of expression 'could not parse 'H2*O = choline + a carboxylate'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "H2O = choline + a carboxylate"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'H2*O = choline + a carboxylate'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "H2O = choline + a carboxylate"
+    },
+    {
+      "error": "Sympify of expression 'could not parse 'H2*O = choline + a carboxylate'' failed, because of exception being raised:\nSyntaxError: invalid syntax (<string>, line 1)",
+      "fragment": "H2O = choline + a carboxylate"
+    }
+  ],
+  "chump change": [
+    {
+      "function": "chump_change_1",
+      "params": [],
+      "expr": "500/501"
+    },
+    {
+      "function": "chump_change_2",
+      "params": [],
+      "expr": "500/501"
+    },
+    {
+      "function": "chump_change_3",
+      "params": [],
+      "expr": "500/501"
+    }
+  ],
+  "cinnamene": [
+    {
+      "skipped": true,
+      "fragment": "C6H5CH=CH2"
+    },
+    {
+      "skipped": true,
+      "fragment": "C6H5CH=CH2"
+    },
+    {
+      "skipped": true,
+      "fragment": "C6H5CH=CH2"
+    }
+  ]
+}
