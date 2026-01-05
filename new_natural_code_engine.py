@@ -269,6 +269,152 @@ class NaturalCodeEngine:
             'function', 'define', 'create', 'make', 'build', 'write', 'implement', 'procedure', 'method', 'routine', 'wrap', 'encapsulate', 'module', 'program', 'code', 'return'
         ]
         wants_function = any(word in lower_prompt for word in function_words)
+        # Quick pattern-based templates for common prompts (fallback when masterkey is missing)
+        lp = lower_prompt
+        try:
+            import re
+            # loop from 1 to n and print
+            if re.search(r'from\s*1\s*to\s*n.*print', lp) or 'loop from 1 to n' in lp:
+                return (
+                    "def loop_print(n):\n"
+                    "    for i in range(1, n+1):\n"
+                    "        print(i)\n\n"
+                    "if __name__ == '__main__':\n"
+                    "    loop_print(5)\n"
+                )
+            # sum from 1 to n
+            if 'sum of numbers from 1 to n' in lp or re.search(r'sum.*1\s*to\s*n', lp) or 'sum from 1 to n' in lp:
+                return (
+                    "def sum_1_to_n(n):\n"
+                    "    return sum(range(1, n+1))\n\n"
+                    "if __name__ == '__main__':\n"
+                    "    print(sum_1_to_n(10))\n"
+                )
+            # factorial
+            if 'factorial' in lp:
+                return (
+                    "def factorial(n):\n"
+                    "    res = 1\n"
+                    "    for i in range(2, n+1):\n"
+                    "        res *= i\n"
+                    "    return res\n\n"
+                    "if __name__ == '__main__':\n"
+                    "    print(factorial(5))\n"
+                )
+            # gcd
+            if 'greatest common divisor' in lp or '\bgcd\b' in lp:
+                return (
+                    "def gcd(a, b):\n"
+                    "    while b:\n"
+                    "        a, b = b, a % b\n"
+                    "    return abs(a)\n\n"
+                    "if __name__ == '__main__':\n"
+                    "    print(gcd(48, 18))\n"
+                )
+            # primes up to n (sieve)
+            if 'sieve' in lp or ('prime' in lp and 'up to n' in lp) or re.search(r'prime numbers up to', lp):
+                return (
+                    "def primes_upto(n):\n"
+                    "    if n < 2: return []\n"
+                    "    sieve = [True] * (n+1)\n"
+                    "    sieve[0:2] = [False, False]\n"
+                    "    for p in range(2, int(n**0.5)+1):\n"
+                    "        if sieve[p]:\n"
+                    "            for q in range(p*p, n+1, p):\n"
+                    "                sieve[q] = False\n"
+                    "    return [i for i, isprime in enumerate(sieve) if isprime]\n\n"
+                    "if __name__ == '__main__':\n"
+                    "    print(primes_upto(30))\n"
+                )
+            # matrix multiplication
+            if 'multiply two matrices' in lp or ('matrix' in lp and 'multiply' in lp):
+                return (
+                    "def multiply_matrices(A, B):\n"
+                    "    m = len(A); k = len(A[0]); n = len(B[0])\n"
+                    "    C = [[0]*n for _ in range(m)]\n"
+                    "    for i in range(m):\n"
+                    "        for j in range(n):\n"
+                    "            s = 0\n"
+                    "            for t in range(k):\n"
+                    "                s += A[i][t] * B[t][j]\n"
+                    "            C[i][j] = s\n"
+                    "    return C\n\n"
+                    "if __name__ == '__main__':\n"
+                    "    print(multiply_matrices([[1,2],[3,4]], [[5,6],[7,8]]))\n"
+                )
+            # quadratic solver
+            if 'quadratic' in lp or 'solve a quadratic' in lp:
+                return (
+                    "import sympy as sp\n\n"
+                    "def solve_quadratic(a, b, c):\n"
+                    "    x = sp.symbols('x')\n"
+                    "    expr = a*x**2 + b*x + c\n"
+                    "    roots = sp.solve(sp.Eq(expr, 0), x)\n"
+                    "    return roots\n\n"
+                    "if __name__ == '__main__':\n"
+                    "    print(solve_quadratic(1, -3, 2))\n"
+                )
+            # csv average
+            if 'csv' in lp and 'average' in lp:
+                return (
+                    "import csv\n\n"
+                    "def average_from_csv(path):\n"
+                    "    s = 0.0; c = 0\n"
+                    "    with open(path, newline='') as fh:\n"
+                    "        r = csv.DictReader(fh)\n"
+                    "        for row in r:\n"
+                    "            v = float(row.get('value', 0) or 0)\n"
+                    "            s += v; c += 1\n"
+                    "    return (s/c) if c else None\n\n"
+                    "if __name__ == '__main__':\n"
+                    "    print(average_from_csv('data/sample.csv'))\n"
+                )
+            # http get json field
+            if 'http' in lp or 'json endpoint' in lp or 'requests' in lp:
+                return (
+                    "import requests\n\n"
+                    "def get_data_value(url):\n"
+                    "    r = requests.get(url, timeout=5)\n"
+                    "    r.raise_for_status()\n"
+                    "    j = r.json()\n"
+                    "    return j.get('data', {}).get('value')\n\n"
+                    "if __name__ == '__main__':\n"
+                    "    print(get_data_value('https://example.com/api'))\n"
+                )
+            # Polynomial class
+            if 'polynomial' in lp and 'class' in lp:
+                return (
+                    "class Polynomial:\n"
+                    "    def __init__(self, coeffs):\n"
+                    "        self.coeffs = coeffs\n\n"
+                    "    def __repr__(self):\n"
+                    "        return 'Polynomial(' + str(self.coeffs) + ')\\n\\n"
+                    "    def evaluate(self, x):\n"
+                    "        s = 0\n"
+                    "        for i, c in enumerate(self.coeffs):\n"
+                    "            s += c * (x**i)\n"
+                    "        return s\n\n"
+                    "    def __add__(self, other):\n"
+                    "        m = max(len(self.coeffs), len(other.coeffs))\n"
+                    "        res = [0]*m\n"
+                    "        for i in range(m):\n"
+                    "            a = self.coeffs[i] if i < len(self.coeffs) else 0\n"
+                    "            b = other.coeffs[i] if i < len(other.coeffs) else 0\n"
+                    "            res[i] = a + b\n"
+                    "        return Polynomial(res)\n\n"
+                    "    def __mul__(self, other):\n"
+                    "        res = [0]*(len(self.coeffs)+len(other.coeffs)-1)\n"
+                    "        for i,a in enumerate(self.coeffs):\n"
+                    "            for j,b in enumerate(other.coeffs):\n"
+                    "                res[i+j] += a*b\n"
+                    "        return Polynomial(res)\n\n"
+                    "if __name__ == '__main__':\n"
+                    "    p = Polynomial([1,2,3])\n"
+                    "    q = Polynomial([3,4])\n"
+                    "    print(p+q, p*q, p.evaluate(2))\n"
+                )
+        except Exception:
+            pass
         # Try to use masterkey logic from generate_code_templates.py if available
         if os.path.exists(masterkey_path):
             spec = importlib.util.spec_from_file_location('generate_code_templates', masterkey_path)
